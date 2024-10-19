@@ -88,13 +88,18 @@ export class BSPLoader {
             return
         }
 
-        const mesh = new Mesh('BSP Mesh', this.scene)
-        mesh.parent = this.rootNode
-        mesh.material = material
+        for (let face of faces) {
+            const mesh = new Mesh('BSP Mesh', this.scene)
+            mesh.parent = this.rootNode
+            mesh.material = material
 
-        const vertexData = new VertexData()
-        vertexData.merge(faces.map(this.generatePolygonMesh))
-        vertexData.applyToMesh(mesh)
+            this.generatePolygonMesh(face).applyToMesh(mesh)
+            // const vertexData = new VertexData()
+            // let vertexDatas = faces.map(x => this.generatePolygonMesh(x)).filter(x => x !== null)
+            // console.log(vertexDatas)
+            // vertexData.merge(vertexDatas)
+            // vertexData.applyToMesh(mesh)
+        }
     }
 
     private generatePolygonMesh(face: Face): VertexData {
@@ -122,6 +127,9 @@ export class BSPLoader {
             mstep++
         }
 
+        if (positions.length === 0) {
+            return null
+        }
         data.positions = positions.flatMap(x => [x.x, x.y, x.z])
         data.uvs = uv.flatMap(x => [x.x, x.y])
         data.uvs2 = lmUv.flatMap(x => [x.x, x.y])
