@@ -1,3 +1,18 @@
+STILL NEED TO DOUBLE CHECK FOR CORRECTNESS
+- face.cs
+- leaf.cs
+- model.cs
+- node.cs
+- overlay.cs
+- patch.cs
+- staticprop.cs
+- texture.cs
+- numlist.cs
+- entity.cs
+- bspreader.cs
+
+
+
 GETTER/SETTER:
 public\s+(?<type>\w+)\s+(?<name>\w+)\s*\{\s*(?:(get\s*\{\s*(?<getterBody>[^}]+)\s*\})|(set\s*\{\s*(?<setterBody>[^}]+)\s*\}))\s*\}
 public get \l${name}(): ${type} {
