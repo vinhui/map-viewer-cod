@@ -1,12 +1,11 @@
 export class BinaryReader {
-    private readonly data: DataView
+    private readonly data: Uint8Array
+    private readonly view: DataView
     private readonly littleEndian: boolean
 
-    constructor(data: DataView | ArrayBuffer, littleEndian: boolean = true) {
-        if (data instanceof ArrayBuffer) {
-            data = new DataView(data)
-        }
+    constructor(data: Uint8Array, littleEndian: boolean = true) {
         this.data = data
+        this.view = new DataView(data.buffer)
         this.littleEndian = littleEndian
     }
 
@@ -21,11 +20,11 @@ export class BinaryReader {
     }
 
     public readUInt8(): number {
-        return this.data.getUint8(this._position++)
+        return this.view.getUint8(this._position++)
     }
 
     public readInt8(): number {
-        return this.data.getInt8(this._position++)
+        return this.view.getInt8(this._position++)
     }
 
     public readByte(): number {
@@ -33,31 +32,31 @@ export class BinaryReader {
     }
 
     public readUInt16(): number {
-        const result = this.data.getUint16(this._position, this.littleEndian)
+        const result = this.view.getUint16(this._position, this.littleEndian)
         this._position += 2
         return result
     }
 
     public readInt16(): number {
-        const result = this.data.getInt16(this._position, this.littleEndian)
+        const result = this.view.getInt16(this._position, this.littleEndian)
         this._position += 2
         return result
     }
 
     public readUInt32(): number {
-        const result = this.data.getUint32(this._position, this.littleEndian)
+        const result = this.view.getUint32(this._position, this.littleEndian)
         this._position += 4
         return result
     }
 
     public readInt32(): number {
-        const result = this.data.getInt32(this._position, this.littleEndian)
+        const result = this.view.getInt32(this._position, this.littleEndian)
         this._position += 4
         return result
     }
 
     public readFloat32(): number {
-        const result = this.data.getFloat32(this._position, this.littleEndian)
+        const result = this.view.getFloat32(this._position, this.littleEndian)
         this._position += 4
         return result
     }
@@ -75,10 +74,8 @@ export class BinaryReader {
     }
 
     public readBytes(count: number): Uint8Array {
-        const arr = new Uint8Array(count)
-        for (let i = 0; i < count; i++) {
-            arr[i] = this.readUInt8()
-        }
-        return arr
+        const data = this.data.slice(this._position, this._position + count)
+        this._position += count
+        return data
     }
 }
