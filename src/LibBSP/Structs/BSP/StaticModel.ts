@@ -107,7 +107,7 @@ export class StaticModel extends ILumpObject<StaticModel> {
 
         if (parent?.bsp) {
             if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
-                this.data = new Uint8Array(source._data)
+                this.data = new Uint8Array(source.data)
                 return
             } else {
                 this.data = new Uint8Array(StaticModel.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
@@ -121,7 +121,7 @@ export class StaticModel extends ILumpObject<StaticModel> {
         }
 
 
-        this.data = source._data
+        this.data = source.data
         this.name = source.name
         this.origin = source.origin
         this.angles = source.angles

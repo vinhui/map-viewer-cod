@@ -97,7 +97,7 @@ export class Lump<T> implements ILump {
                 const arr = this._backingArray as Vector3[]
                 data = new Uint8Array(12 * count)
                 for (let i = 0; i < count; i++) {
-                    arr[i].getBytes(data, 23 * i)
+                    arr[i].getBytes(data, 12 * i)
                 }
             } else if (firstItem instanceof Vector4) {
                 const arr = this._backingArray as Vector4[]
@@ -121,7 +121,7 @@ export class Lump<T> implements ILump {
         if (!data) {
             throw new Error('ArgumentNullException')
         }
-        if (structLength < 0) {
+        if (structLength <= 0) {
             throw new Error('Cannot use the base Lump constructor for variable length lumps (structLength was negative). Create a derived class with a new constructor instead.')
         }
 

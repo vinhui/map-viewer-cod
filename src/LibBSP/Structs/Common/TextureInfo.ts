@@ -208,6 +208,7 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
     protected ctorData(data: Uint8Array, parent: ILump) {
         super.ctorData(data, parent)
         this.scale = new Vector2(1, 1)
+        this.rotation = 0
     }
 
     protected ctorCopy(source: TextureInfo, parent: ILump) {
@@ -215,7 +216,7 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
 
         if (parent?.bsp) {
             if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
-                this.data = new Uint8Array(source._data)
+                this.data = new Uint8Array(source.data)
                 return
             } else {
                 this.data = new Uint8Array(TextureData.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))

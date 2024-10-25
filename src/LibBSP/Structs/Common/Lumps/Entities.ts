@@ -54,7 +54,7 @@ export class Entities extends Lump<Entity> {
 
     public getBytes(lumpOffset: int = 0): Uint8Array {
         if (this._backingArray.length === 0) {
-            return new Uint8Array(0)
+            return new Uint8Array(1)
         }
 
         let sb = ''

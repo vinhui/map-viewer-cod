@@ -6,7 +6,7 @@ class Vertex {
     public unknown1: string
     public unknown2: string
 
-    Vertex() {
+    public Vertex() {
         this.height = 0
         this.unknown1 = ''
         this.unknown2 = ''
@@ -49,7 +49,7 @@ export class MAPTerrainMoHAA {
     public partitions: Partition[]
     public vertices: Vertex[]
 
-    constructor(lines?: string[]) {
+    public constructor(lines?: string[]) {
         if (!lines) {
             this.partitions = new Array(4)
             this.vertices = new Array(81)

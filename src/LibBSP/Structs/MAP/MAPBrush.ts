@@ -4,7 +4,7 @@ import {MAPTerrainEF2} from './MAPTerrainEF2'
 import {MAPTerrainMoHAA} from './MAPTerrainMoHAA'
 
 export class MAPBrush {
-    public sides: MAPBrushSide[]
+    public sides: MAPBrushSide[] = new Array(6)
     public patch: MAPPatch
     public ef2Terrain: MAPTerrainEF2
     public mohTerrain: MAPTerrainMoHAA

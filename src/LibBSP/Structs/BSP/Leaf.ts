@@ -636,7 +636,7 @@ export class Leaf extends ILumpObject<Leaf> {
         this._parent = parent
         if (parent?.bsp) {
             if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
-                this.data = new Uint8Array(source._data)
+                this.data = new Uint8Array(source.data)
                 return
             } else {
                 this.data = new Uint8Array(Leaf.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))

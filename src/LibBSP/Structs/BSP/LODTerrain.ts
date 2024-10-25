@@ -89,7 +89,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
 
             const view = new DataView(this.data.buffer)
-            view.getInt8(36)
+            return view.getInt8(36)
         }
 
         return 0
@@ -264,7 +264,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
 
         if (parent?.bsp) {
             if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
-                this.data = new Uint8Array(source._data)
+                this.data = new Uint8Array(source.data)
                 return
             } else {
                 this.data = new Uint8Array(LODTerrain.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))

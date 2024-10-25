@@ -249,7 +249,7 @@ export class BrushSide extends ILumpObject<BrushSide> {
 
         if (parent?.bsp) {
             if (source.parent?.bsp && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
-                this.data = new Uint8Array(source._data)
+                this.data = new Uint8Array(source.data)
                 return
             } else {
                 this.data = new Uint8Array(BrushSide.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))

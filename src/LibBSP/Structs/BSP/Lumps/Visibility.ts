@@ -27,7 +27,7 @@ export class Visibility implements ILump {
         return this.data.length
     }
 
-    public get numClusters() {
+    public get numClusters(): int {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake3)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
@@ -95,7 +95,7 @@ export class Visibility implements ILump {
             offset = leaf.visibility
         }
 
-        for (let i = 0; i < leaf.parent.bsp.leaves.length; i++) {
+        for (let i = 1; i < leaf.parent.bsp.leaves.length; ++offset) {
             if (this.data[offset] === 0 && this.bsp.mapType !== MapType.Nightfire && !MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake)) {
                 i += 8 * this.data[offset + 1]
                 if (i > other) {
@@ -168,7 +168,7 @@ export class Visibility implements ILump {
                         zeroCount -= 255
                     }
                     compressed[writeOffset++] = 0
-                    compressed[writeOffset++] = zeroCount % 255
+                    compressed[writeOffset++] = zeroCount
                     zeroCount = 0
                 }
 
