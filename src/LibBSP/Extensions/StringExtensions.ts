@@ -97,7 +97,7 @@ export class StringExtensions {
             if (bytes[i + offset] === 0) {
                 break
             }
-            sb += String.fromCharCode(i + offset)
+            sb += String.fromCharCode(bytes[i + offset])
         }
         return sb
     }
