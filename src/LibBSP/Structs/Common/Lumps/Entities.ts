@@ -134,7 +134,7 @@ export class Entities extends Lump<Entity> {
             }
         }
 
-        if (braceCount != 0) {
+        if (braceCount !== 0) {
             throw new Error(`Brace mismatch when parsing entities! Entity: ${entities.length} Brace level: ${braceCount}`)
         }
 

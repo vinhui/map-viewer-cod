@@ -160,7 +160,7 @@ export class Displacement extends ILumpObject<Displacement> {
     }
 
     public get faceIndex(): int {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(36)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
@@ -174,7 +174,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public set faceIndex(value: int) {
 
 
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setInt32(36, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
@@ -217,11 +217,11 @@ export class Displacement extends ILumpObject<Displacement> {
         const allowedVertices: Uint32Array = new Uint32Array(10)
         let offset = -1
 
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             offset = 192
-        } else if (this.mapType == MapType.Source22) {
+        } else if (this.mapType === MapType.Source22) {
             offset = 140
-        } else if (this.mapType == MapType.Source23) {
+        } else if (this.mapType === MapType.Source23) {
             offset = 144
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             offset = 136
@@ -234,16 +234,16 @@ export class Displacement extends ILumpObject<Displacement> {
     }
 
     public set allowedVertices(value: Uint32Array) {
-        if (value.length != 10) {
+        if (value.length !== 10) {
             throw new Error('AllowedVerts array must have 10 elements.')
         }
         let offset = -1
 
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             offset = 192
-        } else if (this.mapType == MapType.Source22) {
+        } else if (this.mapType === MapType.Source22) {
             offset = 140
-        } else if (this.mapType == MapType.Source23) {
+        } else if (this.mapType === MapType.Source23) {
             offset = 144
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             offset = 136
@@ -255,7 +255,7 @@ export class Displacement extends ILumpObject<Displacement> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<Displacement> {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -265,9 +265,9 @@ export class Displacement extends ILumpObject<Displacement> {
     }
 
     public static GetStructLength(mapType: MapType, lumpVersion: int = 0): int {
-        if (mapType == MapType.Source23) {
+        if (mapType === MapType.Source23) {
             return 184
-        } else if (mapType == MapType.Vindictus) {
+        } else if (mapType === MapType.Vindictus) {
             return 232
         } else if (MapType.IsSubtypeOf(mapType, MapType.Source)) {
             return 176
@@ -304,14 +304,14 @@ export class Displacement extends ILumpObject<Displacement> {
 
     protected ctorCopy(source: Displacement, parent: ILump) {
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(Displacement.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(Displacement.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(Displacement.GetStructLength(MapType.Undefined, 0))
@@ -415,7 +415,7 @@ export class DisplacementSubNeighbor {
     }
 
     public get orientation(): int {
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             return view.getInt16(this.offset + 2)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
@@ -427,7 +427,7 @@ export class DisplacementSubNeighbor {
 
 
     public set orientation(value: int) {
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             view.setInt16(this.offset + 2, value)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
@@ -436,7 +436,7 @@ export class DisplacementSubNeighbor {
     }
 
     public get span(): int {
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             return view.getInt16(this.offset + 4)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
@@ -448,7 +448,7 @@ export class DisplacementSubNeighbor {
 
 
     public set span(value: int) {
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             view.setInt16(this.offset + 4, value)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
@@ -457,7 +457,7 @@ export class DisplacementSubNeighbor {
     }
 
     public get neighborSpan(): int {
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             return view.getInt16(this.offset + 6)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
@@ -469,7 +469,7 @@ export class DisplacementSubNeighbor {
 
 
     public set neighborSpan(value: int) {
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             view.setInt16(this.offset + 6, value)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
@@ -479,7 +479,7 @@ export class DisplacementSubNeighbor {
 
 
     public static GetStructLength(mapType: MapType, lumpVersion: int = 0): int {
-        if (mapType == MapType.Vindictus) {
+        if (mapType === MapType.Vindictus) {
             return 8
         } else if (MapType.IsSubtypeOf(mapType, MapType.Source)) {
             return 6
@@ -511,7 +511,7 @@ export class DisplacementCornerNeighbor {
     public get neighborIndices(): Int32Array {
         const neighborIndices = new Int32Array(10)
 
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             for (let i = 0; i < 4; ++i) {
                 neighborIndices[i] = view.getInt32(this.offset + i * 4)
@@ -528,11 +528,11 @@ export class DisplacementCornerNeighbor {
 
 
     public set neighborIndices(value: Int32Array) {
-        if (value.length != 4) {
+        if (value.length !== 4) {
             throw new Error('NeighborIndices array must have 4 elements.')
         }
 
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             this.parent.data.set(value, this.offset)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
             const view = new DataView(this.parent.data.buffer)
@@ -543,7 +543,7 @@ export class DisplacementCornerNeighbor {
     }
 
     public get numNeighbors(): int {
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             return view.getInt32(this.offset + 16)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
@@ -555,7 +555,7 @@ export class DisplacementCornerNeighbor {
 
 
     public set numNeighbors(value: int) {
-        if (this.parent.mapType == MapType.Vindictus) {
+        if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             view.setInt32(this.offset + 16, value)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
@@ -565,7 +565,7 @@ export class DisplacementCornerNeighbor {
 
 
     public static GetStructLength(mapType: MapType, lumpVersion: int = 0): int {
-        if (mapType == MapType.Vindictus) {
+        if (mapType === MapType.Vindictus) {
             return 20
         } else if (MapType.IsSubtypeOf(mapType, MapType.Source)) {
             return 10

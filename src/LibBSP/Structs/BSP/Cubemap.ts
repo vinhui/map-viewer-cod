@@ -41,7 +41,7 @@ export class Cubemap extends ILumpObject<Cubemap> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<Cubemap> {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -73,14 +73,14 @@ export class Cubemap extends ILumpObject<Cubemap> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(Cubemap.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(Cubemap.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(Cubemap.GetStructLength(MapType.Undefined, 0))

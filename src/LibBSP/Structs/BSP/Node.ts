@@ -37,7 +37,7 @@ export class Node extends ILumpObject<Node> {
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Nightfire) {
+            || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(4)
         }
@@ -52,7 +52,7 @@ export class Node extends ILumpObject<Node> {
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Nightfire) {
+            || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(4, value)
         }
@@ -72,7 +72,7 @@ export class Node extends ILumpObject<Node> {
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Nightfire) {
+            || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(8)
         }
@@ -87,7 +87,7 @@ export class Node extends ILumpObject<Node> {
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Nightfire) {
+            || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(8, value)
         }
@@ -98,14 +98,14 @@ export class Node extends ILumpObject<Node> {
             const view = new DataView(this.data.buffer)
             return new Vector3(view.getInt16(8), view.getInt16(10), view.getInt16(12))
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Vindictus) {
+            || this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return new Vector3(view.getInt32(12), view.getInt32(16), view.getInt32(20))
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
             const view = new DataView(this.data.buffer)
             return new Vector3(view.getInt16(12), view.getInt16(14), view.getInt16(16))
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             return Vector3Extensions.ToVector3(this.data, 12)
         }
 
@@ -119,7 +119,7 @@ export class Node extends ILumpObject<Node> {
             view.setInt16(10, Math.trunc(value.y))
             view.setInt16(12, Math.trunc(value.z))
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Vindictus) {
+            || this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setInt16(12, Math.trunc(value.x))
             view.setInt16(16, Math.trunc(value.y))
@@ -130,7 +130,7 @@ export class Node extends ILumpObject<Node> {
             view.setInt16(12, Math.trunc(value.x))
             view.setInt16(14, Math.trunc(value.y))
             view.setInt16(16, Math.trunc(value.z))
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             value.getBytes(this.data, 12)
         }
     }
@@ -140,14 +140,14 @@ export class Node extends ILumpObject<Node> {
             const view = new DataView(this.data.buffer)
             return new Vector3(view.getInt16(14), view.getInt16(16), view.getInt16(18))
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Vindictus) {
+            || this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return new Vector3(view.getInt32(24), view.getInt32(28), view.getInt32(32))
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
             const view = new DataView(this.data.buffer)
             return new Vector3(view.getInt16(18), view.getInt16(20), view.getInt16(22))
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             return Vector3Extensions.ToVector3(this.data, 24)
         }
 
@@ -161,7 +161,7 @@ export class Node extends ILumpObject<Node> {
             view.setInt16(16, Math.trunc(value.y))
             view.setInt16(18, Math.trunc(value.z))
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Vindictus) {
+            || this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setInt16(24, Math.trunc(value.x))
             view.setInt16(28, Math.trunc(value.y))
@@ -172,7 +172,7 @@ export class Node extends ILumpObject<Node> {
             view.setInt16(18, Math.trunc(value.x))
             view.setInt16(20, Math.trunc(value.y))
             view.setInt16(22, Math.trunc(value.z))
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             value.getBytes(this.data, 24)
         }
     }
@@ -189,7 +189,7 @@ export class Node extends ILumpObject<Node> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             return view.getUint16(20)
-        } else if (this.mapType == MapType.Vindictus) {
+        } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(36)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
@@ -205,7 +205,7 @@ export class Node extends ILumpObject<Node> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             view.setInt16(20, value)
-        } else if (this.mapType == MapType.Vindictus) {
+        } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setInt32(36, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
@@ -219,7 +219,7 @@ export class Node extends ILumpObject<Node> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             return view.getUint16(22)
-        } else if (this.mapType == MapType.Vindictus) {
+        } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(40)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
@@ -235,7 +235,7 @@ export class Node extends ILumpObject<Node> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             view.setInt16(22, value)
-        } else if (this.mapType == MapType.Vindictus) {
+        } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setInt32(40, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
@@ -246,7 +246,7 @@ export class Node extends ILumpObject<Node> {
     }
 
     public get areaIndex(): int {
-        if (MapType.IsSubtypeOf(this.mapType, MapType.Source) && this.mapType != MapType.Vindictus) {
+        if (MapType.IsSubtypeOf(this.mapType, MapType.Source) && this.mapType !== MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return view.getUint16(28)
         }
@@ -255,14 +255,14 @@ export class Node extends ILumpObject<Node> {
     }
 
     public set areaIndex(value: int) {
-        if (MapType.IsSubtypeOf(this.mapType, MapType.Source) && this.mapType != MapType.Vindictus) {
+        if (MapType.IsSubtypeOf(this.mapType, MapType.Source) && this.mapType !== MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setInt16(28, value)
         }
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<Node> {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -277,12 +277,12 @@ export class Node extends ILumpObject<Node> {
             return 24
         } else if (MapType.IsSubtypeOf(mapType, MapType.Quake2)) {
             return 28
-        } else if (mapType == MapType.Vindictus) {
+        } else if (mapType === MapType.Vindictus) {
             return 48
         } else if (MapType.IsSubtypeOf(mapType, MapType.Source)) {
             return 32
         } else if (MapType.IsSubtypeOf(mapType, MapType.Quake3)
-            || mapType == MapType.Nightfire) {
+            || mapType === MapType.Nightfire) {
             return 36
         }
 
@@ -302,14 +302,14 @@ export class Node extends ILumpObject<Node> {
             return 9
         } else if (MapType.IsSubtypeOf(type, MapType.STEF2)) {
             return 11
-        } else if (type == MapType.Nightfire) {
+        } else if (type === MapType.Nightfire) {
             return 8
-        } else if (type == MapType.CoD
-            || type == MapType.CoDDemo) {
+        } else if (type === MapType.CoD
+            || type === MapType.CoDDemo) {
             return 20
-        } else if (type == MapType.CoD2) {
+        } else if (type === MapType.CoD2) {
             return 25
-        } else if (type == MapType.CoD4) {
+        } else if (type === MapType.CoD4) {
             return 27
         } else if (MapType.IsSubtypeOf(type, MapType.Quake3)) {
             return 3
@@ -323,14 +323,14 @@ export class Node extends ILumpObject<Node> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(Node.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(Node.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(Node.GetStructLength(MapType.Undefined, 0))

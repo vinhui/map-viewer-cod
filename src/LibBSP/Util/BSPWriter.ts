@@ -26,7 +26,7 @@ export class BSPWriter {
 
         for (let i = 0; i < this._numLumps; i++) {
             let lump: ILump
-            if (i == GameLump.GetIndexForLump(this._bsp.mapType)) {
+            if (i === GameLump.GetIndexForLump(this._bsp.mapType)) {
                 lump = this._bsp.gameLump
             } else {
                 lump = this._bsp.getLoadedLump(i)

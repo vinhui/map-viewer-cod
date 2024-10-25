@@ -27,7 +27,7 @@ export class MAPPatch {
                     for (let j = 0; j < this.dims.y; ++j) {
                         let point = new Vector3(parseFloatUS(line[2 + (j * 7)]), parseFloatUS(line[3 + (j * 7)]), parseFloatUS(line[4 + (j * 7)]))
                         let uv = new Vector2(parseFloatUS(line[5 + (j * 7)]), parseFloatUS(line[6 + (j * 7)]))
-                        let vertex = VertexExtensions.CreateVertex1(point, new Vector3(0, 0, -1), ColorExtensions.FromArgb(255, 255, 255, 255), uv, new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), new Vector4(1, 0, 0, -1))
+                        let vertex = VertexExtensions.CreateVertexFromParams(point, new Vector3(0, 0, -1), ColorExtensions.FromArgb(255, 255, 255, 255), uv, new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), new Vector4(1, 0, 0, -1))
                         vertices.push(vertex)
                     }
                 }
@@ -42,7 +42,7 @@ export class MAPPatch {
                         let point = new Vector3(parseFloatUS(line[2 + (j * 12)]), parseFloatUS(line[3 + (j * 12)]), parseFloatUS(line[4 + (j * 12)]))
                         let uv = new Vector2(parseFloatUS(line[5 + (j * 12)]), parseFloatUS(line[6 + (j * 12)]))
                         let color = ColorExtensions.FromArgb(parseByte(line[7 + (j * 12)]), parseByte(line[8 + (j * 12)]), parseByte(line[9 + (j * 12)]), parseByte(line[10 + (j * 12)]))
-                        let vertex = VertexExtensions.CreateVertex1(point, new Vector3(0, 0, -1), color, uv, new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), new Vector4(1, 0, 0, -1))
+                        let vertex = VertexExtensions.CreateVertexFromParams(point, new Vector3(0, 0, -1), color, uv, new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), new Vector4(1, 0, 0, -1))
                         vertices.push(vertex)
                     }
                 }

@@ -23,29 +23,29 @@ export class MAPDisplacement {
         let inDistances = false
         let inAlphas = false
         for (let line of lines) {
-            if (line == '{') {
+            if (line === '{') {
                 ++braceCount
                 continue
-            } else if (line == '}') {
+            } else if (line === '}') {
                 --braceCount
-                if (braceCount == 1) {
+                if (braceCount === 1) {
                     inNormals = false
                     inDistances = false
                     inAlphas = false
                 }
                 continue
-            } else if (line == 'normals') {
+            } else if (line === 'normals') {
                 inNormals = true
                 continue
-            } else if (line == 'distances') {
+            } else if (line === 'distances') {
                 inDistances = true
                 continue
-            } else if (line == 'alphas') {
+            } else if (line === 'alphas') {
                 inAlphas = true
                 continue
             }
 
-            if (braceCount == 1) {
+            if (braceCount === 1) {
                 let tokens = StringExtensions.SplitUnlessInContainer(line, ' ', '\"', true)
                 switch (tokens[0]) {
                     case 'power': {
@@ -79,7 +79,7 @@ export class MAPDisplacement {
             }
         }
 
-        if (this.power == 0) {
+        if (this.power === 0) {
             throw new Error('Bad data given to MAPDisplacement, no power specified!')
         }
 

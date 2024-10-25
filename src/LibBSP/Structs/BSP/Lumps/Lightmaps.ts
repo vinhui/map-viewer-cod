@@ -36,7 +36,7 @@ export class Lightmaps implements ILump {
         } else if (MapType.IsSubtypeOf(type, MapType.Quake)
             || MapType.IsSubtypeOf(type, MapType.Source)) {
             return 8
-        } else if (type == MapType.Nightfire) {
+        } else if (type === MapType.Nightfire) {
             return 10
         } else if (MapType.IsSubtypeOf(type, MapType.Quake3)) {
             return 14

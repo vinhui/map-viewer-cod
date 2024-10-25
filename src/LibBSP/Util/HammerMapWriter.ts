@@ -55,7 +55,7 @@ export class HammerMapWriter {
                 sb += trimFormatNumber(connection.delay, 6, 3)
                 sb += ','
                 sb += connection.fireOnce
-                if (connection.unknown0 != '' || connection.unknown1 != '') {
+                if (connection.unknown0 !== '' || connection.unknown1 !== '') {
                     sb += ','
                     sb += connection.unknown0
                     sb += ','

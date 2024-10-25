@@ -60,7 +60,7 @@ export class Patch extends ILumpObject<Patch> {
     public get dimensions(): Vector2 {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 0) {
+                if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
                     return new Vector2(view.getInt16(4), view.getInt16(6))
                 } else {
@@ -77,7 +77,7 @@ export class Patch extends ILumpObject<Patch> {
     public set dimensions(value: Vector2) {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 0) {
+                if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
                     view.setInt16(4, Math.trunc(value.x))
                     view.setInt16(6, Math.trunc(value.y))
@@ -90,7 +90,7 @@ export class Patch extends ILumpObject<Patch> {
     public get flags(): int {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 0) {
+                if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
                     return view.getInt32(8)
                 } else {
@@ -107,7 +107,7 @@ export class Patch extends ILumpObject<Patch> {
     public set flags(value: int) {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 0) {
+                if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
                     view.setInt32(8, value)
                 }
@@ -128,10 +128,10 @@ export class Patch extends ILumpObject<Patch> {
     public get firstVertex(): int {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 0) {
+                if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
                     return view.getInt32(12)
-                } else if (this.type == 1) {
+                } else if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
                     return view.getInt32(8)
                 } else {
@@ -147,10 +147,10 @@ export class Patch extends ILumpObject<Patch> {
     public set firstVertex(value: int) {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 0) {
+                if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
                     view.setInt32(12, value)
-                } else if (this.type == 1) {
+                } else if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
                     view.setInt32(8, value)
                 }
@@ -162,10 +162,10 @@ export class Patch extends ILumpObject<Patch> {
     public get numVertices(): int {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 0) {
+                if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
                     return view.getInt16(4) * view.getInt16(6)
-                } else if (this.type == 1) {
+                } else if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
                     return view.getInt16(4)
                 } else {
@@ -181,7 +181,7 @@ export class Patch extends ILumpObject<Patch> {
     public set numVertices(value: int) {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 1) {
+                if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
                     view.setInt16(4, value)
                 } else {
@@ -203,7 +203,7 @@ export class Patch extends ILumpObject<Patch> {
     public get numVertexIndices(): int {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 1) {
+                if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
                     return view.getInt16(6)
                 } else {
@@ -219,7 +219,7 @@ export class Patch extends ILumpObject<Patch> {
     public set numVertexIndices(value: int) {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 1) {
+                if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
                     view.setInt16(6, value)
                 }
@@ -231,7 +231,7 @@ export class Patch extends ILumpObject<Patch> {
     public get firstVertexIndex(): int {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 1) {
+                if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
                     return view.getInt32(12)
                 } else {
@@ -247,7 +247,7 @@ export class Patch extends ILumpObject<Patch> {
     public set firstVertexIndex(value: int) {
         switch (this.mapType) {
             case MapType.CoD: {
-                if (this.type == 1) {
+                if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
                     view.setInt32(12, value)
                 }
@@ -257,7 +257,7 @@ export class Patch extends ILumpObject<Patch> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<Patch> {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -295,14 +295,14 @@ export class Patch extends ILumpObject<Patch> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(Patch.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(Patch.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(Patch.GetStructLength(MapType.Undefined, 0))
@@ -313,10 +313,10 @@ export class Patch extends ILumpObject<Patch> {
         this.shaderIndex = source.shaderIndex
         this.type = source.type
 
-        if (this.type == 0) {
+        if (this.type === 0) {
             this.dimensions = source.dimensions
             this.flags = source.flags
-        } else if (this.type == 1) {
+        } else if (this.type === 1) {
             this.numVertices = source.numVertices
             this.numVertexIndices = source.numVertexIndices
             this.firstVertexIndex = source.firstVertexIndex

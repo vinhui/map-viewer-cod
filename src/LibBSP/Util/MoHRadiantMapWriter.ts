@@ -34,7 +34,7 @@ export class MoHRadiantMapWriter {
 
     private parseEntity(entity: Entity, index: int): string {
         let sb = ''
-        if (index != 0) {
+        if (index !== 0) {
             sb += '// Entity '
             sb += index
             sb += '\r\n'

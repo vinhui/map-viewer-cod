@@ -56,7 +56,7 @@ export class MAPTerrainEF2 {
                         case 'V(': {
                             ++i
                             line = lines[i].split(' ').filter(x => x)
-                            if (this.side == 0) {
+                            if (this.side === 0) {
                                 this.side = line.length
                             }
                             this.heightMap = generate2dArray(this.side, this.side, 0)
@@ -72,7 +72,7 @@ export class MAPTerrainEF2 {
                         case 'A(': {
                             ++i
                             line = lines[i].split(' ').filter(x => x)
-                            if (this.side == 0) {
+                            if (this.side === 0) {
                                 this.side = line.length
                             }
                             this.alphaMap = generate2dArray(this.side, this.side, 0)

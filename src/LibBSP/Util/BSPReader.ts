@@ -45,7 +45,7 @@ export class BSPReader {
             let bytes = FakeFileSystem.ReadFile(this.bspFile)
             bytes = bytes.slice(0, length)
 
-            if (mapType == MapType.TacticalInterventionEncrypted) {
+            if (mapType === MapType.TacticalInterventionEncrypted) {
                 bytes = this.XorWithKeyStartingAtIndex(bytes)
             }
             return bytes

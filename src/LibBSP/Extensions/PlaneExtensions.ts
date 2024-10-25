@@ -19,7 +19,7 @@ export class PlaneExtensions {
         if (isNaN(p1.x) || isNaN(p1.y) || isNaN(p1.z) ||
             isNaN(p2.x) || isNaN(p2.y) || isNaN(p2.z) ||
             isNaN(p3.x) || isNaN(p3.y) || isNaN(p3.z) ||
-            p1.add(p2).cross(p1.add(p3)).magnitude == 0) {
+            p1.add(p2).cross(p1.add(p3)).magnitude === 0) {
             return new Plane(new Vector3(0, 0, 0), 0)
         }
 
@@ -57,7 +57,7 @@ export class PlaneExtensions {
         if (MapType.IsSubtypeOf(type, MapType.Quake)
             || MapType.IsSubtypeOf(type, MapType.Quake2)
             || MapType.IsSubtypeOf(type, MapType.Source)
-            || type == MapType.Nightfire) {
+            || type === MapType.Nightfire) {
             view.setInt32(16 + offset, this.Type(p))
         }
 

@@ -16,7 +16,7 @@ export class Model extends ILumpObject<Model> {
     }
 
     public get headNodeIndex(): int {
-        if (this.mapType == MapType.DMoMaM) {
+        if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(40)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
@@ -24,7 +24,7 @@ export class Model extends ILumpObject<Model> {
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(36)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(24)
         }
@@ -33,7 +33,7 @@ export class Model extends ILumpObject<Model> {
     }
 
     public set headNodeIndex(value: int) {
-        if (this.mapType == MapType.DMoMaM) {
+        if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             view.setInt32(40, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
@@ -41,7 +41,7 @@ export class Model extends ILumpObject<Model> {
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
             view.setInt32(36, value)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(24, value)
         }
@@ -51,7 +51,7 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(40)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(28)
         }
@@ -63,7 +63,7 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             view.setInt32(40, value)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(28, value)
         }
@@ -73,7 +73,7 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(44)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(32)
         }
@@ -85,7 +85,7 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             view.setInt32(44, value)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(32, value)
         }
@@ -95,7 +95,7 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(48)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(36)
         }
@@ -107,7 +107,7 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             view.setInt32(48, value)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(36, value)
         }
@@ -122,7 +122,7 @@ export class Model extends ILumpObject<Model> {
     }
 
     public get firstLeafIndex(): int {
-        if (this.mapType == MapType.Nightfire) {
+        if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(40)
         }
@@ -131,7 +131,7 @@ export class Model extends ILumpObject<Model> {
     }
 
     public set firstLeafIndex(value: int) {
-        if (this.mapType == MapType.Nightfire) {
+        if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(40, value)
         }
@@ -141,7 +141,7 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(52)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(44)
         }
@@ -153,7 +153,7 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             view.setInt32(52, value)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(44, value)
         }
@@ -220,13 +220,13 @@ export class Model extends ILumpObject<Model> {
     }
 
     public get firstFaceIndex(): int {
-        if (this.mapType == MapType.CoD4) {
+        if (this.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
             return view.getInt16(24)
-        } else if (this.mapType == MapType.DMoMaM) {
+        } else if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(44)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(48)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
@@ -237,7 +237,7 @@ export class Model extends ILumpObject<Model> {
             const view = new DataView(this.data.buffer)
             return view.getInt32(40)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(24)
         }
@@ -246,13 +246,13 @@ export class Model extends ILumpObject<Model> {
     }
 
     public set firstFaceIndex(value: int) {
-        if (this.mapType == MapType.CoD4) {
+        if (this.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
             view.setInt16(24, value)
-        } else if (this.mapType == MapType.DMoMaM) {
+        } else if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             view.setInt32(44, value)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(48, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
@@ -263,20 +263,20 @@ export class Model extends ILumpObject<Model> {
             const view = new DataView(this.data.buffer)
             view.setInt32(40, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             const view = new DataView(this.data.buffer)
             view.setInt32(24, value)
         }
     }
 
     public get numFaces(): int {
-        if (this.mapType == MapType.CoD4) {
+        if (this.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
             return view.getInt16(28)
-        } else if (this.mapType == MapType.DMoMaM) {
+        } else if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(48)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(52)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
@@ -287,7 +287,7 @@ export class Model extends ILumpObject<Model> {
             const view = new DataView(this.data.buffer)
             return view.getInt32(44)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(28)
         }
@@ -296,13 +296,13 @@ export class Model extends ILumpObject<Model> {
     }
 
     public set numFaces(value: int) {
-        if (this.mapType == MapType.CoD4) {
+        if (this.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
             view.setInt16(28, value)
-        } else if (this.mapType == MapType.DMoMaM) {
+        } else if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             view.setInt32(48, value)
-        } else if (this.mapType == MapType.Nightfire) {
+        } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
             view.setInt32(52, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
@@ -313,7 +313,7 @@ export class Model extends ILumpObject<Model> {
             const view = new DataView(this.data.buffer)
             view.setInt32(44, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             const view = new DataView(this.data.buffer)
             view.setInt32(28, value)
         }
@@ -328,8 +328,8 @@ export class Model extends ILumpObject<Model> {
     }
 
     public get firstPatchIndicesIndex(): int {
-        if (this.mapType == MapType.CoD
-            || this.mapType == MapType.CoDDemo) {
+        if (this.mapType === MapType.CoD
+            || this.mapType === MapType.CoDDemo) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(32)
         }
@@ -338,16 +338,16 @@ export class Model extends ILumpObject<Model> {
     }
 
     public set firstPatchIndicesIndex(value: int) {
-        if (this.mapType == MapType.CoD
-            || this.mapType == MapType.CoDDemo) {
+        if (this.mapType === MapType.CoD
+            || this.mapType === MapType.CoDDemo) {
             const view = new DataView(this.data.buffer)
             view.setInt32(32, value)
         }
     }
 
     public get numPatchIndices(): int {
-        if (this.mapType == MapType.CoD
-            || this.mapType == MapType.CoDDemo) {
+        if (this.mapType === MapType.CoD
+            || this.mapType === MapType.CoDDemo) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(36)
         }
@@ -356,8 +356,8 @@ export class Model extends ILumpObject<Model> {
     }
 
     public set numPatchIndices(value: int) {
-        if (this.mapType == MapType.CoD
-            || this.mapType == MapType.CoDDemo) {
+        if (this.mapType === MapType.CoD
+            || this.mapType === MapType.CoDDemo) {
             const view = new DataView(this.data.buffer)
             view.setInt32(36, value)
         }
@@ -367,9 +367,9 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Nightfire
+            || this.mapType === MapType.Nightfire
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             return Vector3Extensions.ToVector3(this.data)
         }
 
@@ -380,9 +380,9 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Nightfire
+            || this.mapType === MapType.Nightfire
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             value.getBytes(this.data, 0)
         }
     }
@@ -391,9 +391,9 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Nightfire
+            || this.mapType === MapType.Nightfire
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             return Vector3Extensions.ToVector3(this.data, 12)
         }
 
@@ -404,9 +404,9 @@ export class Model extends ILumpObject<Model> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
-            || this.mapType == MapType.Nightfire
+            || this.mapType === MapType.Nightfire
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             value.getBytes(this.data, 12)
         }
     }
@@ -428,7 +428,7 @@ export class Model extends ILumpObject<Model> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<Model> {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -439,9 +439,9 @@ export class Model extends ILumpObject<Model> {
 
 
     public static GetStructLength(mapType: MapType, lumpVersion: int = 0): int {
-        if (mapType == MapType.DMoMaM) {
+        if (mapType === MapType.DMoMaM) {
             return 52
-        } else if (mapType == MapType.Titanfall) {
+        } else if (mapType === MapType.Titanfall) {
             return 32
         } else if (MapType.IsSubtypeOf(mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(mapType, MapType.CoD)
@@ -451,7 +451,7 @@ export class Model extends ILumpObject<Model> {
             return 64
         } else if (MapType.IsSubtypeOf(mapType, MapType.Quake3)) {
             return 40
-        } else if (mapType == MapType.Nightfire) {
+        } else if (mapType === MapType.Nightfire) {
             return 56
         }
 
@@ -462,9 +462,9 @@ export class Model extends ILumpObject<Model> {
     public static GetIndexForLump(type: MapType): int {
         if (MapType.IsSubtypeOf(type, MapType.Quake)
             || MapType.IsSubtypeOf(type, MapType.Source)
-            || type == MapType.Nightfire
-            || type == MapType.Titanfall
-            || type == MapType.MOHAADemo) {
+            || type === MapType.Nightfire
+            || type === MapType.Titanfall
+            || type === MapType.MOHAADemo) {
             return 14
         } else if (MapType.IsSubtypeOf(type, MapType.MOHAA)
             || MapType.IsSubtypeOf(type, MapType.FAKK2)
@@ -472,12 +472,12 @@ export class Model extends ILumpObject<Model> {
             return 13
         } else if (MapType.IsSubtypeOf(type, MapType.STEF2)) {
             return 15
-        } else if (type == MapType.CoD
-            || type == MapType.CoDDemo) {
+        } else if (type === MapType.CoD
+            || type === MapType.CoDDemo) {
             return 27
-        } else if (type == MapType.CoD2) {
+        } else if (type === MapType.CoD2) {
             return 35
-        } else if (type == MapType.CoD4) {
+        } else if (type === MapType.CoD4) {
             return 37
         } else if (MapType.IsSubtypeOf(type, MapType.Quake3)) {
             return 7
@@ -491,14 +491,14 @@ export class Model extends ILumpObject<Model> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(Model.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(Model.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(Model.GetStructLength(MapType.Undefined, 0))

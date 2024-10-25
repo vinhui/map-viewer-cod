@@ -28,25 +28,25 @@ export class MAPBrush {
         for (let i = 0; i < lines.length; ++i) {
             const line = lines[i]
 
-            if (line[0] == '{') {
+            if (line[0] === '{') {
                 braceCount++
-                if (braceCount == 1 || brushDef3) {
+                if (braceCount === 1 || brushDef3) {
                     continue
                 }
-            } else if (line[0] == '}') {
+            } else if (line[0] === '}') {
                 braceCount--
-                if (braceCount == 0 || brushDef3) {
+                if (braceCount === 0 || brushDef3) {
                     continue
                 }
             }
 
-            if (braceCount == 1 || brushDef3) {
+            if (braceCount === 1 || brushDef3) {
                 // Source engine
-                if (line.length >= 'side'.length && line.substring(0, 'side'.length) == 'side') {
+                if (line.length >= 'side'.length && line.substring(0, 'side'.length) === 'side') {
 
                 }
                 // id Tech does this kinda thing
-                else if (line.length >= 'patch'.length && line.substring(0, 'patch'.length) == 'patch') {
+                else if (line.length >= 'patch'.length && line.substring(0, 'patch'.length) === 'patch') {
                     inPatch = true
                     // Gonna need this line too. We can switch on the type of patch definition, make things much easier.
                     child.push(line)
@@ -57,7 +57,7 @@ export class MAPBrush {
                     this.patch = new MAPPatch(child)
                     child = []
 
-                } else if (line.length >= 'terrainDef'.length && line.substring(0, 'terrainDef'.length) == 'terrainDef') {
+                } else if (line.length >= 'terrainDef'.length && line.substring(0, 'terrainDef'.length) === 'terrainDef') {
                     inTerrain = true
                     child.push(line)
 
@@ -68,13 +68,13 @@ export class MAPBrush {
                     this.ef2Terrain = new MAPTerrainEF2(child)
                     child = []
 
-                } else if (line.length >= 'brushDef3'.length && line.substring(0, 'brushDef3'.length) == 'brushDef3') {
+                } else if (line.length >= 'brushDef3'.length && line.substring(0, 'brushDef3'.length) === 'brushDef3') {
                     brushDef3 = true
 
-                } else if (line == '"BRUSHFLAGS" "DETAIL"') {
+                } else if (line === '"BRUSHFLAGS" "DETAIL"') {
                     this.isDetail = true
 
-                } else if (line.length >= '"id"'.length && line.substring(0, '"id"'.length) == '"id"') {
+                } else if (line.length >= '"id"'.length && line.substring(0, '"id"'.length) === '"id"') {
 
                 } else {
                     child.push(line)

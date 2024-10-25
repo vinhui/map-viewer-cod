@@ -12,7 +12,7 @@ import {ILump} from '../Common/Lumps/ILump'
 export class StaticProp extends ILumpObject<StaticProp> {
     public get origin(): Vector3 {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -33,7 +33,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set origin(value: Vector3) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -53,7 +53,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get angles(): Vector3 {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -74,7 +74,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set angles(value: Vector3) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -98,7 +98,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get modelIndex(): short {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -120,7 +120,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set modelIndex(value: short) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -187,7 +187,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
     }
 
     public get numLeafIndices(): short {
-        if (this.mapType == MapType.Source) {
+        if (this.mapType === MapType.Source) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -207,7 +207,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
     }
 
     public set numLeafIndices(value: short) {
-        if (this.mapType == MapType.Source) {
+        if (this.mapType === MapType.Source) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -227,7 +227,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get solidity(): byte {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -248,7 +248,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set solidity(value: byte) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -268,7 +268,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get flags(): byte {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -289,7 +289,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set flags(value: byte) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -309,7 +309,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get skin(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -323,7 +323,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return view.getInt32(32)
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
                         return view.getInt32(36)
                     } else {
@@ -338,7 +338,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set skin(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -353,7 +353,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
                         view.setInt32(36, value)
                     } else {
@@ -368,7 +368,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get minimumFadeDistance(): float {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -382,7 +382,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return view.getFloat32(36)
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
                         return view.getFloat32(40)
                     } else {
@@ -398,7 +398,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set minimumFadeDistance(value: float) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -413,7 +413,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
                         view.setFloat32(40, value)
                     } else {
@@ -428,7 +428,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get maximumFadeDistance(): float {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -442,7 +442,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return view.getFloat32(40)
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
                         return view.getInt32(44)
                     } else {
@@ -458,7 +458,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set maximumFadeDistance(value: float) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -473,7 +473,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
                         view.setInt32(44, value)
                     } else {
@@ -488,7 +488,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get lightingOrigin(): Vector3 {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -501,7 +501,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return Vector3Extensions.ToVector3(this.data, 44)
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         return Vector3Extensions.ToVector3(this.data, 48)
                     } else {
                         return Vector3Extensions.ToVector3(this.data, 44)
@@ -515,7 +515,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set lightingOrigin(value: Vector3) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 4:
                 case 5:
@@ -529,7 +529,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         value.getBytes(this.data, 48)
                     } else {
                         value.getBytes(this.data, 44)
@@ -542,7 +542,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get forcedFadeScale(): float {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 5:
                 case 6:
@@ -555,7 +555,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return view.getFloat32(56)
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
                         return view.getFloat32(60)
                     } else {
@@ -571,7 +571,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set forcedFadeScale(value: float) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 5:
                 case 6:
@@ -585,7 +585,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
                         view.setFloat32(60, value)
                     } else {
@@ -654,7 +654,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get minimumCPULevel(): byte {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 8:
                 case 10:
@@ -663,7 +663,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return this.data[60]
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         return this.data[64]
                     } else {
                         return this.data[60]
@@ -677,7 +677,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set minimumCPULevel(value: byte) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 8:
                 case 10:
@@ -687,7 +687,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         this.data[64] = value
                     } else {
                         this.data[60] = value
@@ -700,7 +700,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get maximumCPULevel(): byte {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 8:
                 case 10:
@@ -709,7 +709,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return this.data[61]
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         return this.data[65]
                     } else {
                         return this.data[61]
@@ -723,7 +723,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set maximumCPULevel(value: byte) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 8:
                 case 10:
@@ -733,7 +733,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         this.data[65] = value
                     } else {
                         this.data[61] = value
@@ -746,7 +746,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get minimumGPULevel(): byte {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 8:
                 case 10:
@@ -755,7 +755,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return this.data[62]
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         return this.data[66]
                     } else {
                         return this.data[62]
@@ -769,7 +769,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set minimumGPULevel(value: byte) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 8:
                 case 10:
@@ -779,7 +779,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         this.data[66] = value
                     } else {
                         this.data[62] = value
@@ -792,7 +792,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get maximumGPULevel(): byte {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 8:
                 case 10:
@@ -801,7 +801,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return this.data[63]
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         return this.data[67]
                     } else {
                         return this.data[63]
@@ -815,7 +815,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set maximumGPULevel(value: byte) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 8:
                 case 10:
@@ -825,7 +825,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         this.data[67] = value
                     } else {
                         this.data[63] = value
@@ -838,7 +838,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public get diffuseModulaton(): Color {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 7:
                 case 8:
@@ -848,7 +848,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     return ColorExtensions.FromArgb(this.data[67], this.data[64], this.data[65], this.data[66])
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         return ColorExtensions.FromArgb(this.data[72], this.data[69], this.data[70], this.data[71])
                     } else {
                         return ColorExtensions.FromArgb(this.data[67], this.data[64], this.data[65], this.data[66])
@@ -862,7 +862,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
 
     public set diffuseModulaton(value: Color) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)
-            || this.mapType == MapType.Titanfall) {
+            || this.mapType === MapType.Titanfall) {
             switch (this.lumpVersion) {
                 case 7:
                 case 8:
@@ -873,7 +873,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                     break
                 }
                 case 9: {
-                    if (this.data.length == 76) {
+                    if (this.data.length === 76) {
                         value.getBytes(this.data, 69)
                     } else {
                         value.getBytes(this.data, 64)
@@ -910,7 +910,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
     }
 
     public get name(): string {
-        if (this.mapType == MapType.Source20) {
+        if (this.mapType === MapType.Source20) {
             switch (this.lumpVersion) {
                 case 5:
                 case 6: {
@@ -926,7 +926,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
     }
 
     public set name(value: string) {
-        if (this.mapType == MapType.Source20) {
+        if (this.mapType === MapType.Source20) {
             switch (this.lumpVersion) {
                 case 5:
                 case 6: {
@@ -935,7 +935,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                         for (let i = 0; i < 128; ++i) {
                             this.data[this.data.length - i - 1] = 0
                         }
-                        if (value != null) {
+                        if (value !== null) {
                             for (let i = 0; i < 127; i++) {
                                 this.data[this.data.length - 128 + i] = value.charCodeAt(i)
                             }
@@ -948,7 +948,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): StaticProps {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -967,14 +967,14 @@ export class StaticProp extends ILumpObject<StaticProp> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 //Data = new byte[GetStructLength(parent.bsp.version, parent.LumpInfo.version)];
             }
         } else {
-            //if (source.parent?.bsp != null)
+            //if (source.parent?.bsp !== null)
             //{
             //    Data = new byte[GetStructLength(source.parent.bsp.version, source.Parent.LumpInfo.version)];
             //}

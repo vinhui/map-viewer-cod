@@ -333,14 +333,14 @@ export class Texture extends ILumpObject<Texture> {
             || MapType.IsSubtypeOf(type, MapType.CoD)) {
             return 0
         } else if (MapType.IsSubtypeOf(type, MapType.Quake)
-            || type == MapType.Nightfire) {
+            || type === MapType.Nightfire) {
             return 2
         } else if (MapType.IsSubtypeOf(type, MapType.Quake2)) {
             return 5
         } else if (MapType.IsSubtypeOf(type, MapType.Quake3)) {
             return 1
         } else if (MapType.IsSubtypeOf(type, MapType.Source)
-            || type == MapType.Titanfall) {
+            || type === MapType.Titanfall) {
             return 43
         }
 

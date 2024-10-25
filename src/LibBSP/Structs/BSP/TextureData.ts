@@ -78,7 +78,7 @@ export class TextureData extends ILumpObject<TextureData> {
     }
 
     public static GetStructLength(mapType: MapType, lumpVersion: int = 0): int {
-        if (mapType == MapType.Titanfall) {
+        if (mapType === MapType.Titanfall) {
             return 36
         } else if (MapType.IsSubtypeOf(mapType, MapType.Source)) {
             return 32
@@ -109,14 +109,14 @@ export class TextureData extends ILumpObject<TextureData> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(TextureData.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(TextureData.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(TextureData.GetStructLength(MapType.Undefined, 0))

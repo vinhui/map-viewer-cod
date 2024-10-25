@@ -44,7 +44,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
     }
 
     public set lightmapCoordinates(value: Uint8Array) {
-        if (value.length != 2) {
+        if (value.length !== 2) {
             throw new Error('LightmapCoordinates array must have 2 elements.')
         }
 
@@ -72,7 +72,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
     }
 
     public set uVs(value: float[]) {
-        if (value.length != 8) {
+        if (value.length !== 8) {
             throw new Error('UVs array must have 8 elements.')
         }
 
@@ -185,7 +185,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
 
     public set vertexFlags(value: Uint16Array[]) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
-            if (value.length != 2 || value[0].length != 63) {
+            if (value.length !== 2 || value[0].length !== 63) {
                 throw new Error('VertexFlags array must be size (2, 63) elements.')
             }
             const view = new DataView(this.data.buffer)
@@ -215,7 +215,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
 
     public set heightmap(value: Uint8Array[]) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
-            if (value.length != 9 || value[0].length != 9) {
+            if (value.length !== 9 || value[0].length !== 9) {
                 throw new Error('Heightmap array must be size (9, 9) elements.')
             }
             for (let i = 0; i < value.length; ++i
@@ -229,7 +229,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<LODTerrain> {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -249,7 +249,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
 
 
     public static GetIndexForLump(type: MapType): int {
-        if (type == MapType.MOHAADemo) {
+        if (type === MapType.MOHAADemo) {
             return 23
         } else if (MapType.IsSubtypeOf(type, MapType.MOHAA)) {
             return 22
@@ -263,14 +263,14 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(LODTerrain.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(LODTerrain.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(LODTerrain.GetStructLength(MapType.Undefined, 0))

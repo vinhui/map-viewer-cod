@@ -11,7 +11,7 @@ export class Edge extends ILumpObject<Edge> {
     }
 
     public get firstVertexIndex(): int {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(0)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
@@ -25,7 +25,7 @@ export class Edge extends ILumpObject<Edge> {
     }
 
     public set firstVertexIndex(value: int) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setInt32(0, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
@@ -41,7 +41,7 @@ export class Edge extends ILumpObject<Edge> {
     }
 
     public get secondVertexIndex(): int {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(4)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
@@ -55,7 +55,7 @@ export class Edge extends ILumpObject<Edge> {
     }
 
     public set secondVertexIndex(value: int) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setInt32(4, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
@@ -67,7 +67,7 @@ export class Edge extends ILumpObject<Edge> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<Edge> {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -78,7 +78,7 @@ export class Edge extends ILumpObject<Edge> {
 
 
     public static GetStructLength(mapType: MapType, lumpVersion: int = 0): int {
-        if (mapType == MapType.Vindictus) {
+        if (mapType === MapType.Vindictus) {
             return 8
         } else if (MapType.IsSubtypeOf(mapType, MapType.Quake)
             || MapType.IsSubtypeOf(mapType, MapType.Quake2)
@@ -106,14 +106,14 @@ export class Edge extends ILumpObject<Edge> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(Edge.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(Edge.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(Edge.GetStructLength(MapType.Undefined, 0))

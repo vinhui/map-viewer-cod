@@ -32,7 +32,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get textureInfoIndex(): int {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(4)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
@@ -44,7 +44,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set textureInfoIndex(value: int) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setInt16(4, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
@@ -54,7 +54,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get faceCountAndRenderOrder(): uint {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             return view.getUint32(8)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
@@ -66,7 +66,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set faceCountAndRenderOrder(value: uint) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
             view.setUint32(8, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
@@ -93,7 +93,7 @@ export class Overlay extends ILumpObject<Overlay> {
 
     public get faceIndices(): int[] {
         let offset
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             offset = 12
         } else {
             offset = 8
@@ -111,7 +111,7 @@ export class Overlay extends ILumpObject<Overlay> {
 
     public set faceIndices(value: int[]) {
         let offset
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             offset = 12
         } else {
             offset = 8
@@ -125,7 +125,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get u(): Vector2 {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             return Vector2Extensions.ToVector2(this.data, 268)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             return Vector2Extensions.ToVector2(this.data, 264)
@@ -135,7 +135,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set u(value: Vector2) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             value.getBytes(this.data, 268)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             value.getBytes(this.data, 264)
@@ -143,7 +143,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get v(): Vector2 {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             return Vector2Extensions.ToVector2(this.data, 276)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             return Vector2Extensions.ToVector2(this.data, 272)
@@ -153,7 +153,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set v(value: Vector2) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             value.getBytes(this.data, 276)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             value.getBytes(this.data, 272)
@@ -161,7 +161,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get uVPoint0(): Vector3 {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             return Vector3Extensions.ToVector3(this.data, 284)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             return Vector3Extensions.ToVector3(this.data, 280)
@@ -171,7 +171,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set uVPoint0(value: Vector3) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             value.getBytes(this.data, 284)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             value.getBytes(this.data, 280)
@@ -179,7 +179,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get uVPoint1(): Vector3 {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             return Vector3Extensions.ToVector3(this.data, 296)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             return Vector3Extensions.ToVector3(this.data, 292)
@@ -189,7 +189,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set uVPoint1(value: Vector3) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             value.getBytes(this.data, 296)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             value.getBytes(this.data, 292)
@@ -197,7 +197,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get uVPoint2(): Vector3 {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             return Vector3Extensions.ToVector3(this.data, 308)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             return Vector3Extensions.ToVector3(this.data, 304)
@@ -207,7 +207,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set uVPoint2(value: Vector3) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             value.getBytes(this.data, 308)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             value.getBytes(this.data, 304)
@@ -215,7 +215,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get uVPoint3(): Vector3 {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             return Vector3Extensions.ToVector3(this.data, 320)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             return Vector3Extensions.ToVector3(this.data, 316)
@@ -225,7 +225,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set uVPoint3(value: Vector3) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             value.getBytes(this.data, 320)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             value.getBytes(this.data, 316)
@@ -233,7 +233,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get origin(): Vector3 {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             return Vector3Extensions.ToVector3(this.data, 332)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             return Vector3Extensions.ToVector3(this.data, 328)
@@ -243,7 +243,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set origin(value: Vector3) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             value.getBytes(this.data, 332)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             value.getBytes(this.data, 328)
@@ -251,7 +251,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public get basisNormal(): Vector3 {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             return Vector3Extensions.ToVector3(this.data, 344)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             return Vector3Extensions.ToVector3(this.data, 340)
@@ -261,7 +261,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public set basisNormal(value: Vector3) {
-        if (this.mapType == MapType.Vindictus) {
+        if (this.mapType === MapType.Vindictus) {
             value.getBytes(this.data, 344)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             value.getBytes(this.data, 340)
@@ -269,7 +269,7 @@ export class Overlay extends ILumpObject<Overlay> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<Overlay> {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -280,7 +280,7 @@ export class Overlay extends ILumpObject<Overlay> {
 
 
     public static GetStructLength(mapType: MapType, lumpVersion: int = 0): int {
-        if (mapType == MapType.Vindictus) {
+        if (mapType === MapType.Vindictus) {
             return 356
         } else if (MapType.IsSubtypeOf(mapType, MapType.Source)) {
             return 352
@@ -301,14 +301,14 @@ export class Overlay extends ILumpObject<Overlay> {
 
     protected ctorCopy(source: Overlay, parent: ILump) {
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(Overlay.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(Overlay.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(Overlay.GetStructLength(MapType.Undefined, 0))

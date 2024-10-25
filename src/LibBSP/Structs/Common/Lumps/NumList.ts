@@ -82,12 +82,12 @@ export class NumList implements ILump {
     }
 
     public static GetIndexForLeafFacesLump(version: MapType): { index: int, type: DataType } {
-        if (version == MapType.Nightfire) {
+        if (version === MapType.Nightfire) {
             return {
                 type: DataType.UInt32,
                 index: 12,
             }
-        } else if (version == MapType.Vindictus) {
+        } else if (version === MapType.Vindictus) {
             return {
                 type: DataType.UInt32,
                 index: 16,
@@ -97,8 +97,8 @@ export class NumList implements ILump {
                 type: DataType.UInt16,
                 index: 11,
             }
-        } else if (version == MapType.CoD
-            || version == MapType.CoDDemo
+        } else if (version === MapType.CoD
+            || version === MapType.CoDDemo
         ) {
             return {
                 type: DataType.UInt32,
@@ -159,7 +159,7 @@ export class NumList implements ILump {
     }
 
     public static GetIndexForLeafBrushesLump(version: MapType): { index: int, type: DataType } {
-        if (version == MapType.Nightfire) {
+        if (version === MapType.Nightfire) {
             return {
                 type: DataType.UInt32,
                 index: 13,
@@ -174,23 +174,23 @@ export class NumList implements ILump {
                 type: DataType.UInt16,
                 index: 10,
             }
-        } else if (version == MapType.Vindictus) {
+        } else if (version === MapType.Vindictus) {
             return {
                 type: DataType.UInt32,
                 index: 17,
             }
-        } else if (version == MapType.CoD
-            || version == MapType.CoDDemo) {
+        } else if (version === MapType.CoD
+            || version === MapType.CoDDemo) {
             return {
                 type: DataType.UInt32,
                 index: 22,
             }
-        } else if (version == MapType.CoD2) {
+        } else if (version === MapType.CoD2) {
             return {
                 type: DataType.UInt32,
                 index: 27,
             }
-        } else if (version == MapType.CoD4) {
+        } else if (version === MapType.CoD4) {
             return {
                 type: DataType.UInt32,
                 index: 29,
@@ -214,23 +214,23 @@ export class NumList implements ILump {
     }
 
     public static GetIndexForIndicesLump(version: MapType): { index: int, type: DataType } {
-        if (version == MapType.Nightfire) {
+        if (version === MapType.Nightfire) {
             return {
                 type: DataType.UInt32,
                 index: 6,
             }
-        } else if (version == MapType.CoD
-            || version == MapType.CoDDemo) {
+        } else if (version === MapType.CoD
+            || version === MapType.CoDDemo) {
             return {
                 type: DataType.UInt16,
                 index: 8,
             }
-        } else if (version == MapType.CoD2) {
+        } else if (version === MapType.CoD2) {
             return {
                 type: DataType.UInt16,
                 index: 9,
             }
-        } else if (version == MapType.CoD4) {
+        } else if (version === MapType.CoD4) {
             return {
                 type: DataType.UInt16,
                 index: 11,
@@ -288,7 +288,7 @@ export class NumList implements ILump {
 
     public static GetIndexForLeafStaticModelsLump(version: MapType): { index: int, type: DataType } {
 
-        if (version == MapType.MOHAADemo) {
+        if (version === MapType.MOHAADemo) {
             return {
                 type: DataType.UInt16,
                 index: 27,

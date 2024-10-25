@@ -72,7 +72,7 @@ export class StaticModel extends ILumpObject<StaticModel> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<StaticModel> {
-        if (data == null) {
+        if (data === null) {
             throw new Error('ArgumentNullException')
         }
 
@@ -92,7 +92,7 @@ export class StaticModel extends ILumpObject<StaticModel> {
 
 
     public static GetIndexForLump(type: MapType): int {
-        if (type == MapType.MOHAADemo) {
+        if (type === MapType.MOHAADemo) {
             return 26
         } else if (MapType.IsSubtypeOf(type, MapType.MOHAA)) {
             return 25
@@ -106,14 +106,14 @@ export class StaticModel extends ILumpObject<StaticModel> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(StaticModel.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(StaticModel.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(StaticModel.GetStructLength(MapType.Undefined, 0))

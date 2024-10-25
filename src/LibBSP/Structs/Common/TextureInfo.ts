@@ -89,14 +89,14 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
     }
 
     public get flags(): int {
-        if (this.mapType == MapType.DMoMaM) {
+        if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(88)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(64)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
-            || this.mapType == MapType.Undefined) {
+            || this.mapType === MapType.Undefined) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(36)
         }
@@ -105,28 +105,28 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
     }
 
     public set flags(value: int) {
-        if (this.mapType == MapType.DMoMaM) {
+        if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             view.setInt32(88, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
             view.setInt32(64, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
-            || this.mapType == MapType.Undefined) {
+            || this.mapType === MapType.Undefined) {
             const view = new DataView(this.data.buffer)
             view.setInt32(36, value)
         }
     }
 
     public get textureIndex(): int {
-        if (this.mapType == MapType.DMoMaM) {
+        if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(92)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(68)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
-            || this.mapType == MapType.Undefined) {
+            || this.mapType === MapType.Undefined) {
             const view = new DataView(this.data.buffer)
             return view.getInt32(32)
         }
@@ -135,14 +135,14 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
     }
 
     public set textureIndex(value: int) {
-        if (this.mapType == MapType.DMoMaM) {
+        if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
             view.setInt32(92, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
             view.setInt32(68, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
-            || this.mapType == MapType.Undefined) {
+            || this.mapType === MapType.Undefined) {
             const view = new DataView(this.data.buffer)
             view.setInt32(32, value)
         }
@@ -214,14 +214,14 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source._data)
                 return
             } else {
                 this.data = new Uint8Array(TextureData.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent != null && source.parent.bsp != null) {
+            if (source.parent !== null && source.parent.bsp !== null) {
                 this.data = new Uint8Array(TextureData.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(TextureData.GetStructLength(MapType.Undefined, 0))

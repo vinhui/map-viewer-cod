@@ -164,9 +164,9 @@ export class Entity extends ILumpObject<Entity> {
 
     public static GetIndexForLump(type: MapType): int {
 
-        if (type == MapType.BlueShift) {
+        if (type === MapType.BlueShift) {
             return 1
-        } else if (type == MapType.MOHAADemo) {
+        } else if (type === MapType.MOHAADemo) {
             return 15
         } else if (MapType.IsSubtypeOf(type, MapType.Source)
             || MapType.IsSubtypeOf(type, MapType.Quake)
@@ -177,15 +177,15 @@ export class Entity extends ILumpObject<Entity> {
         } else if (MapType.IsSubtypeOf(type, MapType.FAKK2)
             || MapType.IsSubtypeOf(type, MapType.MOHAA)) {
             return 14
-        } else if (type == MapType.CoD
-            || type == MapType.CoDDemo) {
+        } else if (type === MapType.CoD
+            || type === MapType.CoDDemo) {
             return 29
-        } else if (type == MapType.CoD2) {
+        } else if (type === MapType.CoD2) {
             return 37
-        } else if (type == MapType.CoD4) {
+        } else if (type === MapType.CoD4) {
             return 39
         } else if (MapType.IsSubtypeOf(type, MapType.Quake3)
-            || type == MapType.Nightfire) {
+            || type === MapType.Nightfire) {
             return 0
         }
 
@@ -289,7 +289,7 @@ export class Entity extends ILumpObject<Entity> {
 
         st = st.replace(/^[ \t\r]+|[ \t\r]+$/g, '')
         for (let i = 0; i < st.length; i++) {
-            if (st[i] == '\"' && (i == 0 || i == st.length - 1 || st[i - 1] != '\\')) {
+            if (st[i] === '\"' && (i === 0 || i === st.length - 1 || st[i - 1] !== '\\')) {
                 if (inQuotes) {
                     if (isVal) {
                         break
@@ -303,7 +303,7 @@ export class Entity extends ILumpObject<Entity> {
                         key += st[i]
                     } else {
                         val += st[i]
-                        if (st[i] == ',' || st[i] == Entity.ConnectionMemberSeparater) {
+                        if (st[i] === ',' || st[i] === Entity.ConnectionMemberSeparater) {
                             numCommas++
                         }
                     }

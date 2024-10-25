@@ -25,9 +25,9 @@ export class GameLump implements ILump {
         this._lumpInfo = lumpInfo
 
         let structLength = 0
-        if (bsp.mapType == MapType.DMoMaM || bsp.mapType == MapType.Vindictus) {
+        if (bsp.mapType === MapType.DMoMaM || bsp.mapType === MapType.Vindictus) {
             structLength = 20
-        } else if (MapType.IsSubtypeOf(bsp.mapType, MapType.Source) || bsp.mapType == MapType.Titanfall) {
+        } else if (MapType.IsSubtypeOf(bsp.mapType, MapType.Source) || bsp.mapType === MapType.Titanfall) {
             structLength = 16
         } else {
             throw new Error(`Game lump does not exist in map type ${bsp.mapType} or has not been implemented.`)
@@ -101,8 +101,8 @@ export class GameLump implements ILump {
             return 4
         }
 
-        const lumpInfoLength = this.bsp.mapType == MapType.DMoMaM || this.bsp.mapType == MapType.Vindictus ? 20 : 16
-        const lumpDictionaryOffset = this.bsp.mapType == MapType.DMoMaM ? 8 : 4
+        const lumpInfoLength = this.bsp.mapType === MapType.DMoMaM || this.bsp.mapType === MapType.Vindictus ? 20 : 16
+        const lumpDictionaryOffset = this.bsp.mapType === MapType.DMoMaM ? 8 : 4
         let length = lumpDictionaryOffset + lumpInfoLength * this._backingMap.size
 
         for (let type of this._backingMap.keys()) {
@@ -201,8 +201,8 @@ export class GameLump implements ILump {
             return new Uint8Array(4)
         }
 
-        const lumpInfoLength = this.bsp.mapType == MapType.DMoMaM || this.bsp.mapType == MapType.Vindictus ? 20 : 16
-        const lumpDictionaryOffset = this.bsp.mapType == MapType.DMoMaM ? 8 : 4
+        const lumpInfoLength = this.bsp.mapType === MapType.DMoMaM || this.bsp.mapType === MapType.Vindictus ? 20 : 16
+        const lumpDictionaryOffset = this.bsp.mapType === MapType.DMoMaM ? 8 : 4
         let lumpLength = lumpDictionaryOffset + lumpInfoLength * this._backingMap.size
 
         const lumpBytes: Map<GameLumpType, Uint8Array> = new Map()
@@ -233,7 +233,7 @@ export class GameLump implements ILump {
 
             view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset, info.ident)
 
-            if (this.bsp.mapType == MapType.Vindictus) {
+            if (this.bsp.mapType === MapType.Vindictus) {
                 view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 4, info.flags)
                 view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 8, info.version)
                 view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 12, info.offset)

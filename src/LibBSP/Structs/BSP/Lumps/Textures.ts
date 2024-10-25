@@ -7,7 +7,7 @@ export class Textures extends Lump<Texture> {
     public get length(): int {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake3)
-            || this.bsp.mapType == MapType.Nightfire) {
+            || this.bsp.mapType === MapType.Nightfire) {
             return super.length
         } else if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
             let length = 0
@@ -31,7 +31,7 @@ export class Textures extends Lump<Texture> {
                     mipLength += Math.trunc(texture.dimensions.x * texture.dimensions.y / 64)
                     if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.GoldSrc)) {
                         let paletteLength = texture.palette.length + 2
-                        while (paletteLength % 4 != 0) {
+                        while (paletteLength % 4 !== 0) {
                             ++paletteLength
                         }
                         mipLength += paletteLength
@@ -115,9 +115,9 @@ export class Textures extends Lump<Texture> {
             }
 
             return
-        } else if (this.bsp.mapType == MapType.Nightfire) {
+        } else if (this.bsp.mapType === MapType.Nightfire) {
             structLength = 64
-        } else if (this.bsp.mapType == MapType.SiN) {
+        } else if (this.bsp.mapType === MapType.SiN) {
             structLength = 180
         } else if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.STEF2)
@@ -163,11 +163,11 @@ export class Textures extends Lump<Texture> {
     public getBytes(offset: int): Uint8Array {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake3)
-            || this.bsp.mapType == MapType.Nightfire) {
+            || this.bsp.mapType === MapType.Nightfire) {
             return super.getBytes()
         } else if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
             let sb = ''
-            if (this._backingArray.length == 0) {
+            if (this._backingArray.length === 0) {
                 return new Uint8Array(0)
             }
 
@@ -206,7 +206,7 @@ export class Textures extends Lump<Texture> {
                     || texture.mipmapEighthOffset > 0) {
                     if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.GoldSrc)) {
                         let paletteLength = texture.palette.length + 2
-                        while (paletteLength % 4 != 0) {
+                        while (paletteLength % 4 !== 0) {
                             ++paletteLength
                         }
                         offset += paletteLength
@@ -242,7 +242,7 @@ export class Textures extends Lump<Texture> {
             view.setInt32(0, this._backingArray.length)
             offset = lumpBytes.length
             for (let i = 0; i < this._backingArray.length; ++i) {
-                if (this._backingArray[i].name.length == 0 && this._backingArray[i].mipmapFullOffset == 0) {
+                if (this._backingArray[i].name.length === 0 && this._backingArray[i].mipmapFullOffset === 0) {
                     view.setInt32((i + 1) * 4, -1)
                 } else {
                     view.setInt32((i + 1) * 4, offset)

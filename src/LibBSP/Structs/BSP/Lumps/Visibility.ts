@@ -70,19 +70,19 @@ export class Visibility implements ILump {
             return 4
         } else if (MapType.IsSubtypeOf(type, MapType.STEF2)) {
             return 17
-        } else if (type == MapType.MOHAADemo) {
+        } else if (type === MapType.MOHAADemo) {
             return 16
         } else if (MapType.IsSubtypeOf(type, MapType.FAKK2)
             || MapType.IsSubtypeOf(type, MapType.MOHAA)) {
             return 15
-        } else if (type == MapType.CoD
-            || type == MapType.CoDDemo) {
+        } else if (type === MapType.CoD
+            || type === MapType.CoDDemo) {
             return 28
-        } else if (type == MapType.CoD2) {
+        } else if (type === MapType.CoD2) {
             return 36
-        } else if (type == MapType.Nightfire) {
+        } else if (type === MapType.Nightfire) {
             return 7
-        } else if (MapType.IsSubtypeOf(type, MapType.Quake3) && type != MapType.CoD4) {
+        } else if (MapType.IsSubtypeOf(type, MapType.Quake3) && type !== MapType.CoD4) {
             return 16
         }
 

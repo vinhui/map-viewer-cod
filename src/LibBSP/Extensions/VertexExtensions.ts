@@ -7,10 +7,10 @@ import {Vector2Extensions} from './Vector2Extensions'
 import {Vector4Extensions} from './Vector4Extensions'
 import {Lump} from '../Structs/Common/Lumps/Lump'
 import {Color} from '../Util/Color'
-import {int} from '../../utils/number'
+import {float, int} from '../../utils/number'
 
 export class VertexExtensions {
-    public static Scale(vertex: Vertex, scalar: int): Vertex {
+    public static Scale(vertex: Vertex, scalar: float): Vertex {
         vertex.position.x *= scalar
         vertex.position.y *= scalar
         vertex.position.z *= scalar
@@ -31,7 +31,7 @@ export class VertexExtensions {
         return vertex
     }
 
-    public static CreateVertex1(
+    public static CreateVertexFromParams(
         position: Vector3,
         normal: Vector3,
         color: Color,
@@ -53,7 +53,7 @@ export class VertexExtensions {
         return v
     }
 
-    public static CreateVertex(data: Uint8Array, type: MapType, version: int = 0): Vertex {
+    public static CreateVertexFromData(data: Uint8Array, type: MapType, version: int = 0): Vertex {
         if (!data) {
             throw new Error('ArgumentNullException')
         }
@@ -67,7 +67,7 @@ export class VertexExtensions {
         let uv2 = new Vector2()
         let uv3 = new Vector2()
 
-        if (type == MapType.CoD2 || type == MapType.CoD4) {
+        if (type === MapType.CoD2 || type === MapType.CoD4) {
             normal = Vector3Extensions.ToVector3(data, 12)
             color = ColorExtensions.FromArgb(data[27], data[24], data[25], data[26])
             uv0 = Vector2Extensions.ToVector2(data, 28)
@@ -81,7 +81,7 @@ export class VertexExtensions {
             uv2 = new Vector2(view.getFloat32(28), 0)
             color = ColorExtensions.FromArgb(data[35], data[32], data[33], data[34])
             normal = Vector3Extensions.ToVector3(data, 36)
-        } else if (type == MapType.Raven) {
+        } else if (type === MapType.Raven) {
             uv0 = Vector2Extensions.ToVector2(data, 12)
             uv1 = Vector2Extensions.ToVector2(data, 20)
             uv2 = Vector2Extensions.ToVector2(data, 28)
@@ -98,7 +98,7 @@ export class VertexExtensions {
             color = ColorExtensions.FromArgb(data[43], data[40], data[41], data[42])
         }
 
-        return this.CreateVertex1(
+        return this.CreateVertexFromParams(
             position,
             normal,
             color,
@@ -120,7 +120,7 @@ export class VertexExtensions {
         for (let i = 0; i < numObjects; i++) {
             const bytes = data.slice(i * structLength, (i * structLength) + structLength)
             arr.push(
-                this.CreateVertex(bytes, bsp.mapType, lumpInfo.version),
+                this.CreateVertexFromData(bytes, bsp.mapType, lumpInfo.version),
             )
         }
         return new Lump(Vertex, arr, bsp, lumpInfo)
@@ -176,7 +176,7 @@ export class VertexExtensions {
         const bytes = targetArray ?? new Uint8Array(this.GetStructLength(type, version))
         const view = new DataView(bytes.buffer)
 
-        if (type == MapType.CoD2 || type == MapType.CoD4) {
+        if (type === MapType.CoD2 || type === MapType.CoD4) {
             vertex.normal.getBytes(bytes, 12 + offset)
             vertex.color.getBytes(bytes, 24 + offset)
             vertex.uv0.getBytes(bytes, 28 + offset)

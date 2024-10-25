@@ -25,7 +25,7 @@ export class MAPBrushSide {
         }
 
         // If lines.Length is 1, then this line contains all data for a brush side
-        if (lines.length == 1) {
+        if (lines.length === 1) {
             let tokens = StringExtensions.SplitUnlessInContainer(lines[0], ' ', '\"', true)
 
             // If this succeeds, assume brushDef3
@@ -46,7 +46,7 @@ export class MAPBrushSide {
                 this.plane = PlaneExtensions.CreateFromVertices(v1, v2, v3)
                 this.texture = tokens[15]
                 // GearCraft
-                if (tokens[16] == '[') {
+                if (tokens[16] === '[') {
                     this.textureInfo = TextureInfo.CreateFromProps(new Vector3(parseFloatUS(tokens[17]), parseFloatUS(tokens[18]), parseFloatUS(tokens[19])),
                         new Vector3(parseFloatUS(tokens[23]), parseFloatUS(tokens[24]), parseFloatUS(tokens[25])),
                         new Vector2(parseFloatUS(tokens[20]), parseFloatUS(tokens[26])),
@@ -69,22 +69,22 @@ export class MAPBrushSide {
             this.textureInfo = new TextureInfo(new LumpObjDataCtor(null, null))
             let child = []
             for (let line of lines) {
-                if (line == '{') {
+                if (line === '{') {
                     ++braceCount
-                } else if (line == '}') {
+                } else if (line === '}') {
                     --braceCount
-                    if (braceCount == 1) {
+                    if (braceCount === 1) {
                         child.push(line)
                         this.displacement = new MAPDisplacement(child)
                         child = []
                         inDispInfo = false
                     }
-                } else if (line == 'dispinfo') {
+                } else if (line === 'dispinfo') {
                     inDispInfo = true
                     continue
                 }
 
-                if (braceCount == 1) {
+                if (braceCount === 1) {
                     let tokens = StringExtensions.SplitUnlessInContainer(line, ' ', '\"', true)
                     switch (tokens[0]) {
                         case 'material': {
