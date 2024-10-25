@@ -28,7 +28,7 @@ export class Displacement extends ILumpObject<Displacement> {
         const numVertices = this.numVertices
         const arr: DisplacementVertex[] = []
         for (let i = 0; i < numVertices; ++i) {
-            arr.push(this._parent.bsp.displacementVertices.get(this.firstVertexIndex + 1))
+            arr.push(this._parent.bsp.displacementVertices.get(this.firstVertexIndex + i))
         }
         return arr
     }
@@ -53,7 +53,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public get triangles(): ushort[] {
         const arr: ushort[] = []
         for (let i = 0; i < this.numTriangles; ++i) {
-            arr.push(Number(this._parent.bsp.displacementTriangles.get(this.firstTriangleIndex + 1)))
+            arr.push(Number(this._parent.bsp.displacementTriangles.get(this.firstTriangleIndex + i)))
         }
         return arr
     }
@@ -190,7 +190,7 @@ export class Displacement extends ILumpObject<Displacement> {
 
     public set lightmapAlphaStart(value: int) {
         const view = new DataView(this.data.buffer)
-        view.setInt16(40, value)
+        view.setInt32(40, value)
     }
 
     public get lightmapSamplePositionStart(): int {
@@ -228,7 +228,10 @@ export class Displacement extends ILumpObject<Displacement> {
         }
 
         if (offset >= 0) {
-            allowedVertices.set(this.data, offset)
+            const view = new DataView(this.data.buffer)
+            for (let i = 0; i < 10; i++) {
+                allowedVertices[i] = view.getUint32(offset + i * 4)
+            }
         }
         return allowedVertices
     }
@@ -250,7 +253,10 @@ export class Displacement extends ILumpObject<Displacement> {
         }
 
         if (offset >= 0) {
-            this.data.set(value, offset)
+            const view = new DataView(this.data.buffer)
+            for (let i = 0; i < 10; i++) {
+                view.setInt32(offset + i * 4, value[i])
+            }
         }
     }
 
@@ -400,7 +406,7 @@ export class DisplacementSubNeighbor {
     public get neighborIndex(): int {
         if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
             const view = new DataView(this.parent.data.buffer)
-            view.getInt16(this.offset)
+            return view.getInt16(this.offset)
         }
 
         return -1
@@ -537,7 +543,7 @@ export class DisplacementCornerNeighbor {
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
             const view = new DataView(this.parent.data.buffer)
             for (let i = 0; i < value.length; ++i) {
-                view.setInt16(this.offset, value[i])
+                view.setInt16(this.offset + i*2, value[i])
             }
         }
     }

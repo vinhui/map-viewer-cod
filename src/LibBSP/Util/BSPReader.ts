@@ -248,7 +248,7 @@ export class BSPReader {
                 case 29:
                     current = MapType.Quake
                     break
-                case 32:
+                case 30:
                     current = MapType.BlueShift
                     binaryReader.seek(4)
                     const lump0offset = binaryReader.readInt32()

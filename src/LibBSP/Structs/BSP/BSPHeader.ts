@@ -278,7 +278,7 @@ export class BSPHeader {
     }
 
     public getLumpInfo(index: int): LumpInfo {
-        if (index < 0 || index > BSP.GetNumLumps(this.bsp.mapType)) {
+        if (index < 0 || index >= BSP.GetNumLumps(this.bsp.mapType)) {
             throw new Error('Index out of range')
         }
 
