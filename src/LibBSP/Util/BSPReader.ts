@@ -1,8 +1,8 @@
 import {BSP, LumpInfo, MapType} from '../Structs/BSP/BSP'
 import {BSPHeader} from '../Structs/BSP/BSPHeader'
 import {BinaryReader} from '../../utils/BinaryReader'
-import {LibBSP} from '../LibBSP'
 import {int} from '../../utils/number'
+import {FakeFileSystem} from '../FakeFileSystem'
 
 export class BSPReader {
     public bspFile: string
@@ -11,7 +11,7 @@ export class BSPReader {
     private key: Uint8Array = new Uint8Array(0)
 
     constructor(file?: string) {
-        if (!LibBSP.HasFile(file)) {
+        if (!FakeFileSystem.FileExists(file)) {
             throw new Error(`Unable to open BSP file: File ${file} was not found.`)
         }
         this.bspFile = file
@@ -25,7 +25,7 @@ export class BSPReader {
             const lumpInfoLength = BSPHeader.GetLumpInfoLength(mapType)
             const magicLength = BSPHeader.GetMagic(mapType).length
 
-            const bytes = LibBSP.GetFile(this.bspFile)
+            const bytes = FakeFileSystem.ReadFile(this.bspFile)
             const binaryReader = new BinaryReader(bytes)
             binaryReader.seek(magicLength)
             const numLumps = binaryReader.readInt32()
@@ -42,7 +42,7 @@ export class BSPReader {
                 length += 4
             }
 
-            let bytes = LibBSP.GetFile(this.bspFile)
+            let bytes = FakeFileSystem.ReadFile(this.bspFile)
             bytes = bytes.slice(0, length)
 
             if (mapType == MapType.TacticalInterventionEncrypted) {
@@ -77,11 +77,11 @@ export class BSPReader {
             filename = this.bspFile
         }
 
-        if (!LibBSP.HasFile(filename)) {
-            throw new Error(`Lump file ${filename} has not been loaded`)
+        if (!FakeFileSystem.FileExists(filename)) {
+            throw new Error(`Lump file ${filename} doesn't exist`)
         }
 
-        const bytes = LibBSP.GetFile(filename)
+        const bytes = FakeFileSystem.ReadFile(filename)
         return bytes.slice(offset, offset + length)
     }
 
@@ -99,7 +99,7 @@ export class BSPReader {
     public getVersion(bigEndian: boolean = false): MapType {
         let current = MapType.Undefined
         if (this.bspFile !== null) {
-            const bytes = LibBSP.GetFile(this.bspFile)
+            const bytes = FakeFileSystem.ReadFile(this.bspFile)
 
             if (bytes.length < 4) {
                 return current
@@ -301,12 +301,12 @@ export class BSPReader {
             let match = false
             for (const c of ['l', 'h', 's']) {
                 const name = `${baseName}_${c}_${i}.lmp`
-                if (!LibBSP.HasFile(name)) {
+                if (!FakeFileSystem.FileExists(name)) {
                     continue
                 }
 
                 match = true
-                const bytes = LibBSP.GetFile(name)
+                const bytes = FakeFileSystem.ReadFile(name)
                 const br = new BinaryReader(bytes)
                 const l = new LumpInfo()
                 l.offset = br.readInt32()
