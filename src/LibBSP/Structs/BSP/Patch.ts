@@ -2,7 +2,7 @@ import {ILumpObject} from '../Common/ILumpObject'
 import {Texture} from './Texture'
 import {int, short} from '../../../utils/number'
 import {BSP, LumpInfo, MapType} from './BSP'
-import {Vector2, Vector3} from '../../Utils/Vector'
+import {Vector2, Vector3} from '../../Util/Vector'
 import {ILump} from '../Common/Lumps/ILump'
 import {Lump} from '../Common/Lumps/Lump'
 

@@ -1,4 +1,4 @@
-import {Vector3, Vector4} from '../../Utils/Vector'
+import {Vector3, Vector4} from '../../Util/Vector'
 import {float, int, parseFloatUS} from '../../../utils/number'
 import {generate2dArray} from '../../../utils/array'
 

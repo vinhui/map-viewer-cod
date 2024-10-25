@@ -1,4 +1,4 @@
-import {Vector3} from '../Utils/Vector'
+import {Vector3} from '../Util/Vector'
 import {BSP, LumpInfo, MapType} from '../Structs/BSP/BSP'
 import {Lump} from '../Structs/Common/Lumps/Lump'
 import {int} from '../../utils/number'

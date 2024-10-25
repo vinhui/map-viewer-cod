@@ -1,10 +1,10 @@
 import {ILump} from './ILump'
 import {BSP, LumpInfo} from '../../BSP/BSP'
 import {ILumpObject, LumpObjCopyCtor, LumpObjDataCtor} from '../ILumpObject'
-import {Vector2, Vector3, Vector4} from '../../../Utils/Vector'
+import {Vector2, Vector3, Vector4} from '../../../Util/Vector'
 import {Vertex} from '../Vertex'
 import {VertexExtensions} from '../../../Extensions/VertexExtensions'
-import {Plane} from '../../../Utils/Plane'
+import {Plane} from '../../../Util/Plane'
 import {PlaneExtensions} from '../../../Extensions/PlaneExtensions'
 import {byte, int} from '../../../../utils/number'
 

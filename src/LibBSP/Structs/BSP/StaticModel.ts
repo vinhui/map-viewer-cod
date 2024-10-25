@@ -1,7 +1,7 @@
 import {ILumpObject} from '../Common/ILumpObject'
 import {BSP, LumpInfo, MapType} from './BSP'
 import {StringExtensions} from '../../Extensions/StringExtensions'
-import {Vector3} from '../../Utils/Vector'
+import {Vector3} from '../../Util/Vector'
 import {Vector3Extensions} from '../../Extensions/Vector3Extensions'
 import {float, int} from '../../../utils/number'
 import {ILump} from '../Common/Lumps/ILump'

@@ -1,4 +1,4 @@
-import {Vector3} from '../../Utils/Vector'
+import {Vector3} from '../../Util/Vector'
 import {StringExtensions} from '../../Extensions/StringExtensions'
 import {float, int, parseFloatUS} from '../../../utils/number'
 import {generate2dArray} from '../../../utils/array'

@@ -1,5 +1,5 @@
-import {Vector2, Vector3, Vector4} from '../../Utils/Vector'
-import {Color} from '../../Utils/Color'
+import {Vector2, Vector3, Vector4} from '../../Util/Vector'
+import {Color} from '../../Util/Color'
 
 export class Vertex {
     public position: Vector3

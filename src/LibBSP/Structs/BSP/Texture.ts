@@ -4,7 +4,7 @@ import {BSP, LumpInfo, MapType} from './BSP'
 import {StringExtensions} from '../../Extensions/StringExtensions'
 import {TextureInfo} from '../Common/TextureInfo'
 import {Vector3Extensions} from '../../Extensions/Vector3Extensions'
-import {Vector2} from '../../Utils/Vector'
+import {Vector2} from '../../Util/Vector'
 import {Textures} from './Lumps/Textures'
 import {int} from '../../../utils/number'
 

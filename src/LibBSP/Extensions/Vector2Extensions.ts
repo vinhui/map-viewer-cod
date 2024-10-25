@@ -1,4 +1,4 @@
-import {Vector2} from '../Utils/Vector'
+import {Vector2} from '../Util/Vector'
 import {int} from '../../utils/number'
 
 export class Vector2Extensions {

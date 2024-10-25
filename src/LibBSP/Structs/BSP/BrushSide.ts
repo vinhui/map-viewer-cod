@@ -1,6 +1,6 @@
 import {ILumpObject} from '../Common/ILumpObject'
 import {BSP, LumpInfo, MapType} from './BSP'
-import {Plane} from '../../Utils/Plane'
+import {Plane} from '../../Util/Plane'
 import {Texture} from './Texture'
 import {ILump} from '../Common/Lumps/ILump'
 import {Lump} from '../Common/Lumps/Lump'

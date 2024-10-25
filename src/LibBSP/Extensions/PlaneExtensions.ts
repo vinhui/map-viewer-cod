@@ -1,5 +1,5 @@
-import {Vector3} from '../Utils/Vector'
-import {Plane} from '../Utils/Plane'
+import {Vector3} from '../Util/Vector'
+import {Plane} from '../Util/Plane'
 import {BSP, LumpInfo, MapType} from '../Structs/BSP/BSP'
 import {Lump} from '../Structs/Common/Lumps/Lump'
 import {Vector3Extensions} from './Vector3Extensions'

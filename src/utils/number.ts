@@ -35,3 +35,16 @@ export function parseFloatUS(value: string): number {
     // Parse and return the float value
     return parseFloat(normalizedValue)
 }
+
+export function trimFormatNumber(value: number, decimalPlaces: number, beforeDecimalPlaces: number = 4): string {
+    let formatted = value.toFixed(decimalPlaces)
+    formatted = formatted.replace(/(\.\d*?)0+$/, '$1')
+    formatted = formatted.replace(/\.$/, '')
+
+    const [whole, decimal] = formatted.split('.')
+    if (whole.length > beforeDecimalPlaces) {
+        formatted = whole.slice(-beforeDecimalPlaces) + (decimal ? '.' + decimal : '')
+    }
+
+    return formatted
+}

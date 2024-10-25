@@ -1,5 +1,5 @@
 import {byte, parseFloatUS} from '../../../utils/number'
-import {Vector2, Vector3, Vector4} from '../../Utils/Vector'
+import {Vector2, Vector3, Vector4} from '../../Util/Vector'
 import {Vertex} from '../Common/Vertex'
 import {VertexExtensions} from '../../Extensions/VertexExtensions'
 import {ColorExtensions} from '../../Extensions/ColorExtensions'

@@ -1,5 +1,5 @@
 import {ILumpObject} from '../Common/ILumpObject'
-import {Vector3} from '../../Utils/Vector'
+import {Vector3} from '../../Util/Vector'
 import {BSP, LumpInfo, MapType} from './BSP'
 import {Vector3Extensions} from '../../Extensions/Vector3Extensions'
 import {float, int} from '../../../utils/number'

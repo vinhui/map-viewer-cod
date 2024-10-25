@@ -2,7 +2,7 @@ import {ILump} from './Lumps/ILump'
 import {BSP, LumpInfo, MapType} from '../BSP/BSP'
 import {Vector3} from '@babylonjs/core'
 import {StringExtensions} from '../../Extensions/StringExtensions'
-import {Vector4} from '../../Utils/Vector'
+import {Vector4} from '../../Util/Vector'
 import {ILumpObject, LumpObjDataCtor} from './ILumpObject'
 import {float, int, numberToStringUS, parseFloatUS, uint} from '../../../utils/number'
 import {Entities} from './Lumps/Entities'
@@ -37,6 +37,9 @@ export class Entity extends ILumpObject<Entity> {
     public connections: EntityConnection[] = []
     public brushes: MAPBrush[] = []
     private _map: Map<string, string> = new Map()
+    public get map(): Map<string, string> {
+        return this._map
+    }
 
     get data(): Uint8Array {
         return new TextEncoder().encode(this.toString())

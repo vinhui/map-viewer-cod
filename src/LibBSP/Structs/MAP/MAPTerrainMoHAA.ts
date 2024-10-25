@@ -1,4 +1,4 @@
-import {Vector2, Vector3} from '../../Utils/Vector'
+import {Vector2, Vector3} from '../../Util/Vector'
 import {float, int} from '../../../utils/number'
 
 class Vertex {

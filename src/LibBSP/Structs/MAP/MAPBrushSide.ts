@@ -1,5 +1,5 @@
-import {Vector2, Vector3} from '../../Utils/Vector'
-import {Plane} from '../../Utils/Plane'
+import {Vector2, Vector3} from '../../Util/Vector'
+import {Plane} from '../../Util/Plane'
 import {TextureInfo} from '../Common/TextureInfo'
 import {StringExtensions} from '../../Extensions/StringExtensions'
 import {float, int, parseFloatUS} from '../../../utils/number'

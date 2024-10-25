@@ -1,12 +1,12 @@
 import {Vertex} from '../Structs/Common/Vertex'
-import {Vector2, Vector3, Vector4} from '../Utils/Vector'
+import {Vector2, Vector3, Vector4} from '../Util/Vector'
 import {BSP, LumpInfo, MapType} from '../Structs/BSP/BSP'
 import {Vector3Extensions} from './Vector3Extensions'
 import {ColorExtensions} from './ColorExtensions'
 import {Vector2Extensions} from './Vector2Extensions'
 import {Vector4Extensions} from './Vector4Extensions'
 import {Lump} from '../Structs/Common/Lumps/Lump'
-import {Color} from '../Utils/Color'
+import {Color} from '../Util/Color'
 import {int} from '../../utils/number'
 
 export class VertexExtensions {
