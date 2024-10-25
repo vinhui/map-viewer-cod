@@ -1,0 +1,199 @@
+GETTER/SETTER:
+public\s+(?<type>\w+)\s+(?<name>\w+)\s*\{\s*(?:(get\s*\{\s*(?<getterBody>[^}]+)\s*\})|(set\s*\{\s*(?<setterBody>[^}]+)\s*\}))\s*\}
+public get \l${name}(): ${type} {
+    ${getterBody}
+}
+public set \l${name}(value: ${type}) {
+    ${setterBody}
+}
+
+
+GETTER+SETTER:
+
+public\s+(?<type>\w+)\s+(?<name>\w+)\s*\{\s*get\s*\{\s*(?<getterBody>[^}]+)\s*\}\s*set\s*\{\s*(?<setterBody>[^}]+)\s*\}\s*\}
+public get \l${name}(): ${type} {
+    ${getterBody}
+}
+public set \l${name}(value: ${type}) {
+    ${setterBody}
+}
+
+
+
+
+FUNCTION SIG:
+
+public\s+static (?<returnType>\w+(?:<[^>]+>)?)\s+(?<methodName>\w+)\s*\((?<arguments>[^\)]*)\)\s*(?!\{[^}]*\b(get|set)\b)
+public static ${methodName}(${arguments}): ${returnType}
+
+FUNCTION ARGS:
+(?<=\(|,)\s*(?<argType>\w+(?:<[^>]+>)?(?:\[\])?)\s+(?<argName>\w+)(?=\s*(?:,|\)|=))
+${argName}: ${argType}
+
+
+NULL EXCEPTION:
+throw new ArgumentNullException\(\);
+throw new Error('ArgumentNullException')
+
+BYTES:
+byte\[\]
+Uint8Array
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function parseAndReplaceProperties(code) {
+    const propertyRegex = /public\s+([\w<>\[\]]+)\s+(\w+)\s*\{/g;
+    let match;
+    let result = code;
+    const replacements = [];
+
+    while ((match = propertyRegex.exec(code)) !== null) {
+        const type = match[1];
+        const name = match[2];
+        const propertyStartIndex = match.index;
+        let braceCount = 1;
+        let currentIndex = propertyRegex.lastIndex;
+
+        // Find the entire property block by matching braces
+        while (braceCount > 0 && currentIndex < code.length) {
+            if (code[currentIndex] === '{') {
+                braceCount++;
+            } else if (code[currentIndex] === '}') {
+                braceCount--;
+            }
+            currentIndex++;
+        }
+
+        const propertyBlock = code.substring(propertyStartIndex, currentIndex);
+
+        // Extract getter body while accounting for nested braces
+        const getterMatch = /get\s*\{/.exec(propertyBlock);
+        let getterBody = null;
+        if (getterMatch) {
+            let getterStart = getterMatch.index + getterMatch[0].length;
+            let getterBraceCount = 1;
+            let getterEnd = getterStart;
+            while (getterBraceCount > 0 && getterEnd < propertyBlock.length) {
+                if (propertyBlock[getterEnd] === '{') {
+                    getterBraceCount++;
+                } else if (propertyBlock[getterEnd] === '}') {
+                    getterBraceCount--;
+                }
+                getterEnd++;
+            }
+            getterBody = propertyBlock.substring(getterStart, getterEnd - 1).trim();
+        }
+
+        // Extract setter body while accounting for nested braces
+        const setterMatch = /set\s*\{/.exec(propertyBlock);
+        let setterBody = null;
+        if (setterMatch) {
+            let setterStart = setterMatch.index + setterMatch[0].length;
+            let setterBraceCount = 1;
+            let setterEnd = setterStart;
+            while (setterBraceCount > 0 && setterEnd < propertyBlock.length) {
+                if (propertyBlock[setterEnd] === '{') {
+                    setterBraceCount++;
+                } else if (propertyBlock[setterEnd] === '}') {
+                    setterBraceCount--;
+                }
+                setterEnd++;
+            }
+            setterBody = propertyBlock.substring(setterStart, setterEnd - 1).trim();
+        }
+        
+        function optimizeDataViewUsage(code) {
+    // Split the code into lines
+    const lines = code.split('\n');
+    let optimizedLines = [];
+    let inDataViewSequence = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        // Check if the line contains 'new DataView(this._data.buffer)'
+        if (line.includes('new DataView(this._data.buffer)')) {
+            // If we are not already in a sequence, add the new view declaration
+            if (!inDataViewSequence) {
+                optimizedLines.push('        const view = new DataView(this._data.buffer)');
+                inDataViewSequence = true;
+            }
+            // Replace the occurrence with 'view'
+            optimizedLines.push(line.replace(/new DataView\(this\._data\.buffer\)/g, 'view'));
+        } else {
+            // If the line doesn't match, reset the sequence flag
+            inDataViewSequence = false;
+            optimizedLines.push(line);
+        }
+    }
+
+    // Join the lines back into a single string
+    return optimizedLines.join('\n');
+}
+        
+        const patchBody = (str) => {
+          str = str.replaceAll(/MapType\.IsSubtypeOf\((.+?)\)/gm, 'MapType.IsSubtypeOf(this.mapType, $1)')
+          str = str.replaceAll(/BitConverter\.To(\w+)\(Data,\s*(.+?)\)/gm, 'new DataView(this._data.buffer).get$1($2)')
+          str = str.replaceAll(/BitConverter\.GetBytes\((.*?)\).CopyTo\(Data,\s(.+?)\);/gm, 'new DataView(this._data.buffer).set($2, $1)')
+          str = str.replace(/(\w+?)\.(\w)\(\)/gm, (match, p1, p2) => {
+              return `${p1}.${p2.toLowerCase()}`;
+          });
+          str = str.replaceAll('byte[] bytes = BitConverter.GetBytes(value);', '')
+          str = str.replaceAll(/bytes\.CopyTo\(Data,\s(.+?)\);/gm, 'new DataView(this._data.buffer).set($1, value)')
+          str = str.replaceAll(/value\.GetBytes\(\).CopyTo\(Data,\s(.+?)\);/g, 'value.getBytes(this._data, $1)')
+          str = optimizeDataViewUsage(str)
+          return str
+        }
+        
+        if(getterBody)
+          getterBody = patchBody(getterBody)
+        if(setterBody)
+          setterBody = patchBody(setterBody)
+
+        // Create the replacement string
+        const newName = name.charAt(0).toLowerCase() + name.slice(1);
+        const replacement = `
+public get ${newName}(): ${type} {
+    ${getterBody || ''}
+}
+public set ${newName}(value: ${type}) {
+    ${setterBody || ''}
+}
+`.trim();
+
+        // Store the replacement for later
+        replacements.push({ start: propertyStartIndex, end: currentIndex, replacement });
+    }
+
+    // Replace the original code with the new formatted code in reverse order
+    for (let i = replacements.length - 1; i >= 0; i--) {
+        const { start, end, replacement } = replacements[i];
+        result = result.slice(0, start) + replacement + result.slice(end);
+    }
+
+    return result;
+}
+
+// Example usage:
+const code = `
+
+`;
+
+const result = parseAndReplaceProperties(code)
+console.log(result);
