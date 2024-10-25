@@ -14,6 +14,7 @@ export type short = Int16
 export type ushort = UInt16
 export type float = number
 export type byte = UInt8
+export type sbyte = Int8
 
 const formatter = new Intl.NumberFormat('en-US', {maximumFractionDigits: 10})
 

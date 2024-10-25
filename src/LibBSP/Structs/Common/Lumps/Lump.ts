@@ -1,20 +1,20 @@
 import {ILump} from './ILump'
 import {BSP, LumpInfo} from '../../BSP/BSP'
-import {ILumpObject} from '../ILumpObject'
+import {ILumpObject, LumpObjCopyCtor, LumpObjDataCtor} from '../ILumpObject'
 import {Vector2, Vector3, Vector4} from '../../../Utils/Vector'
 import {Vertex} from '../Vertex'
 import {VertexExtensions} from '../../../Extensions/VertexExtensions'
 import {Plane} from '../../../Utils/Plane'
 import {PlaneExtensions} from '../../../Extensions/PlaneExtensions'
-import {byte} from '../../../../utils/number'
+import {byte, int} from '../../../../utils/number'
 
 export class Lump<T> implements ILump {
     public bsp: BSP
     protected _backingArray: T[] = []
-    private _TConstructor: { new(data: Uint8Array, parent: ILump): T; }
+    private _TConstructor: { new(obj: LumpObjDataCtor | LumpObjCopyCtor<T>): T; }
 
     constructor(TConstructor: {
-        new(data: Uint8Array, parent: ILump): T;
+        new(obj: LumpObjDataCtor | LumpObjCopyCtor<T>): T;
     }, items?: T[], bsp?: BSP, lumpInfo: LumpInfo = new LumpInfo()) {
         this._TConstructor = TConstructor
         this._backingArray = items ?? []
@@ -38,7 +38,7 @@ export class Lump<T> implements ILump {
             const firstItem = this._backingArray[0]
 
             let count = this.count
-            if (ILumpObject.IsInstanceOf(firstItem)) {
+            if (firstItem instanceof ILumpObject) {
                 return firstItem.data.byteLength * count
             } else if (firstItem instanceof Vertex) {
                 return VertexExtensions.GetStructLength(this.bsp.mapType, this.lumpInfo.version) * count
@@ -65,8 +65,8 @@ export class Lump<T> implements ILump {
         if (count > 0) {
             const firstItem = this._backingArray[0]
 
-            if (ILumpObject.IsInstanceOf(this._backingArray)) {
-                const arr = this._backingArray as ILumpObject[]
+            if (firstItem instanceof ILumpObject) {
+                const arr = this._backingArray as ILumpObject<unknown>[]
 
                 const length = arr[0].data.byteLength
                 data = new Uint8Array(length * count)
@@ -127,7 +127,7 @@ export class Lump<T> implements ILump {
 
         for (let i = 0; i < data.length / structLength; i++) {
             const bytes = data.slice(i * structLength, i * structLength + structLength)
-            this._backingArray.push(new this._TConstructor(bytes, this))
+            this._backingArray.push(new this._TConstructor(new LumpObjDataCtor(bytes, this)))
         }
     }
 

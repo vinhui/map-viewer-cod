@@ -1,6 +1,7 @@
 import {ILump} from '../../Common/Lumps/ILump'
 import {BSP, LumpInfo, MapType} from '../BSP'
-import {byte} from '../../../../utils/number'
+import {byte, int} from '../../../../utils/number'
+import {Leaf} from '../Leaf'
 
 export class Visibility implements ILump {
     public bsp: BSP
@@ -88,8 +89,8 @@ export class Visibility implements ILump {
         return -1
     }
 
-    public canSee(leaf: Leaf, order: int): boolean {
-        let offset = this.getOffsetForCluster(leaf.visibility)
+    public canSee(leaf: Leaf, other: int): boolean {
+        let offset = this.getOffsetForClusterPVS(leaf.visibility)
         if (offset < 0) {
             offset = leaf.visibility
         }

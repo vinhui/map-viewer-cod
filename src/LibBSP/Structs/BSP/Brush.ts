@@ -4,6 +4,7 @@ import {BSP, LumpInfo, MapType} from './BSP'
 import {Texture} from './Texture'
 import {Lump} from '../Common/Lumps/Lump'
 import {BrushSide} from './BrushSide'
+import {int} from '../../../utils/number'
 
 export class Brush extends ILumpObject<Brush> {
     public get sides(): BrushSide[] {
@@ -16,12 +17,12 @@ export class Brush extends ILumpObject<Brush> {
 
     public get firstSideIndex(): int {
         if (this.mapType == MapType.Nightfire || this.mapType == MapType.STEF2) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(4)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || (MapType.IsSubtypeOf(this.mapType, MapType.Quake3) && !MapType.IsSubtypeOf(this.mapType, MapType.CoD))
             || (this.mapType & MapType.Source) == MapType.Source) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(0)
         }
 
@@ -30,30 +31,30 @@ export class Brush extends ILumpObject<Brush> {
 
     public set firstSideIndex(value: int) {
         if (this.mapType == MapType.Nightfire || this.mapType == MapType.STEF2) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(4, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || (MapType.IsSubtypeOf(this.mapType, MapType.Quake3) && !MapType.IsSubtypeOf(this.mapType, MapType.CoD))
             || (this.mapType & MapType.Source) == MapType.Source) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(0, value)
         }
     }
 
     public get numSides(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt16(0)
         } else if (this.mapType == MapType.STEF2) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(0)
         } else if (this.mapType == MapType.Nightfire) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(8)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || (this.mapType & MapType.Source) == MapType.Source) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(4)
         }
 
@@ -62,18 +63,18 @@ export class Brush extends ILumpObject<Brush> {
 
     public set numSides(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt16(0, value)
         } else if (this.mapType == MapType.STEF2) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(0, value)
         } else if (this.mapType == MapType.Nightfire) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(8, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || (this.mapType & MapType.Source) == MapType.Source) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(4, value)
         }
     }
@@ -84,10 +85,10 @@ export class Brush extends ILumpObject<Brush> {
 
     public get textureIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt16(2)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(8)
         }
 
@@ -96,21 +97,21 @@ export class Brush extends ILumpObject<Brush> {
 
     public set textureIndex(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt16(2, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(8, value)
         }
     }
 
     public get contents(): int {
         if (this.mapType == MapType.Nightfire) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(0)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(8)
         }
 
@@ -119,11 +120,11 @@ export class Brush extends ILumpObject<Brush> {
 
     public set contents(value: int) {
         if (this.mapType == MapType.Nightfire) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(0, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(8, value)
         }
     }
@@ -133,7 +134,9 @@ export class Brush extends ILumpObject<Brush> {
             throw new Error('ArgumentNullException')
         }
 
-        return new Lump<Brush>(Brush, data, Brush.GetStructLength(bsp.mapType, lumpInfo.version), bsp, lumpInfo)
+        const l = new Lump<Brush>(Brush, null, bsp, lumpInfo)
+        l.fromData(data, Brush.GetStructLength(bsp.mapType, lumpInfo.version))
+        return l
     }
 
     public static GetStructLength(mapType: MapType, lumpVersion: int = 0): int {
@@ -176,16 +179,16 @@ export class Brush extends ILumpObject<Brush> {
     protected ctorCopy(source: Brush, parent: ILump) {
         if (parent?.bsp) {
             if (source.parent?.bsp && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
-                this._data = new Uint8Array(source._data)
+                this.data = new Uint8Array(source._data)
                 return
             } else {
-                this._data = new Uint8Array(Brush.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
+                this.data = new Uint8Array(Brush.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
             if (source._parent?.bsp) {
-                this._data = new Uint8Array(Brush.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
+                this.data = new Uint8Array(Brush.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
-                this._data = new Uint8Array(Brush.GetStructLength(MapType.Undefined, 0))
+                this.data = new Uint8Array(Brush.GetStructLength(MapType.Undefined, 0))
             }
         }
 

@@ -6,27 +6,13 @@ import {TextureInfo} from '../Common/TextureInfo'
 import {Vector3Extensions} from '../../Extensions/Vector3Extensions'
 import {Vector2} from '../../Utils/Vector'
 import {Textures} from './Lumps/Textures'
+import {int} from '../../../utils/number'
 
 export class Texture extends ILumpObject<Texture> {
-    /// <summary>
-    /// Number of MipMap levels used by Quake/GoldSrc engines.
-    /// </summary>
     public static readonly NumMipmaps = 4
-    /// <summary>
-    /// Index of the full mipmap.
-    /// </summary>
     public static readonly FullMipmap = 0
-    /// <summary>
-    /// Index of the half mipmap.
-    /// </summary>
     public static readonly HalfMipmap = 1
-    /// <summary>
-    /// Index of the quarter mipmap.
-    /// </summary>
     public static readonly QuarterMipmap = 2
-    /// <summary>
-    /// Index of the eighth mipmap.
-    /// </summary>
     public static readonly EighthMipmap = 3
 
     private _mipmaps: Uint8Array[]
@@ -49,16 +35,16 @@ export class Texture extends ILumpObject<Texture> {
     public get name(): string {
         const mapType = this.mapType
         if (MapType.IsSubtypeOf(mapType, MapType.Quake)) {
-            return StringExtensions.ToNullTerminatedString(this._data, 0, 16)
+            return StringExtensions.ToNullTerminatedString(this.data, 0, 16)
         } else if (mapType === MapType.SiN) {
-            return StringExtensions.ToNullTerminatedString(this._data, 36, 64)
+            return StringExtensions.ToNullTerminatedString(this.data, 36, 64)
         } else if (MapType.IsSubtypeOf(mapType, MapType.Quake2)) {
-            return StringExtensions.ToNullTerminatedString(this._data, 40, 32)
+            return StringExtensions.ToNullTerminatedString(this.data, 40, 32)
         } else if (MapType.IsSubtypeOf(mapType, MapType.Quake3)
             || mapType === MapType.Nightfire) {
-            return StringExtensions.ToNullTerminatedString(this._data, 0, 64)
+            return StringExtensions.ToNullTerminatedString(this.data, 0, 64)
         } else if (MapType.IsSubtypeOf(mapType, MapType.Source) || mapType === MapType.Titanfall) {
-            return StringExtensions.ToRawString(this._data)
+            return StringExtensions.ToRawString(this.data)
         }
 
         return null
@@ -70,45 +56,45 @@ export class Texture extends ILumpObject<Texture> {
         const mapType = this.mapType
         if (MapType.IsSubtypeOf(mapType, MapType.Quake)) {
             for (let i = 0; i < 16; ++i) {
-                this._data[i] = 0
+                this.data[i] = 0
             }
             if (bytes.length > 15) {
                 bytes = bytes.slice(0, 15)
             }
-            this._data.set(bytes, 0)
+            this.data.set(bytes, 0)
         } else if (mapType === MapType.SiN) {
             for (let i = 0; i < 64; ++i) {
-                this._data[i + 36] = 0
+                this.data[i + 36] = 0
             }
             if (bytes.length > 63) {
                 bytes = bytes.slice(0, 63)
             }
-            this._data.set(bytes, 36)
+            this.data.set(bytes, 36)
         } else if (MapType.IsSubtypeOf(mapType, MapType.Quake2)) {
             for (let i = 0; i < 32; ++i) {
-                this._data[i + 40] = 0
+                this.data[i + 40] = 0
             }
             if (bytes.length > 31) {
                 bytes = bytes.slice(0, 31)
             }
-            this._data.set(bytes, 40)
+            this.data.set(bytes, 40)
         } else if (MapType.IsSubtypeOf(mapType, MapType.Quake3)
             || mapType === MapType.Nightfire) {
             for (let i = 0; i < 64; ++i) {
-                this._data[i] = 0
+                this.data[i] = 0
             }
             if (bytes.length > 63) {
                 bytes = bytes.slice(0, 63)
             }
-            this._data.set(bytes, 0)
+            this.data.set(bytes, 0)
         } else if (MapType.IsSubtypeOf(mapType, MapType.Source) || mapType === MapType.Titanfall) {
-            this._data = bytes
+            this.data = bytes
         }
     }
 
     public get mask(): string {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
-            return StringExtensions.ToNullTerminatedString(this._data, 76, 64)
+            return StringExtensions.ToNullTerminatedString(this.data, 76, 64)
         }
         return null
     }
@@ -116,65 +102,65 @@ export class Texture extends ILumpObject<Texture> {
     public set mask(val: string) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             for (let i = 0; i < 64; i++) {
-                this._data[i + 76] = 0
+                this.data[i + 76] = 0
             }
             let bytes = new TextEncoder().encode(val)
             if (bytes.length > 63) {
                 bytes = bytes.slice(0, 63)
             }
-            this._data.set(bytes, 76)
+            this.data.set(bytes, 76)
         }
     }
 
     public get flags(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
-            return new DataView(this._data.buffer).getInt32(32)
+            return new DataView(this.data.buffer).getInt32(32)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)) {
-            return new DataView(this._data.buffer).getInt32(64)
+            return new DataView(this.data.buffer).getInt32(64)
         }
         return -1
     }
 
     public set flags(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
-            new DataView(this._data.buffer).setInt32(32, val)
+            new DataView(this.data.buffer).setInt32(32, val)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)) {
-            new DataView(this._data.buffer).setInt32(64, val)
+            new DataView(this.data.buffer).setInt32(64, val)
         }
     }
 
     public get contents(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)) {
-            return new DataView(this._data.buffer).getInt32(68)
+            return new DataView(this.data.buffer).getInt32(68)
         }
         return -1
     }
 
     public set contents(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)) {
-            new DataView(this._data.buffer).setInt32(68, val)
+            new DataView(this.data.buffer).setInt32(68, val)
         }
     }
 
     public get textureInfo(): TextureInfo {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
 
             return TextureInfo.CreateFromProps(
-                Vector3Extensions.ToVector3(this._data),
-                Vector3Extensions.ToVector3(this._data, 16),
+                Vector3Extensions.ToVector3(this.data),
+                Vector3Extensions.ToVector3(this.data, 16),
                 new Vector2(view.getFloat32(12), view.getFloat32(28)),
                 new Vector2(1, 1),
                 -1, -1, 0,
             )
         }
 
-        return new TextureInfo()
+        return new TextureInfo(new LumpObjDataCtor(null, null))
     }
 
     public set textureInfo(val: TextureInfo) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             val.uAxis.getBytes(view, 0)
             val.vAxis.getBytes(view, 16)
             view.setFloat32(12, val.translation.x)
@@ -184,7 +170,7 @@ export class Texture extends ILumpObject<Texture> {
 
     public get dimensions(): Vector2 {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return new Vector2(
                 view.getInt32(16),
                 view.getInt32(20),
@@ -195,7 +181,7 @@ export class Texture extends ILumpObject<Texture> {
 
     public set dimensions(val: Vector2) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(16, val.x)
             view.setInt32(20, val.y)
         }
@@ -203,7 +189,7 @@ export class Texture extends ILumpObject<Texture> {
 
     public get mipmapFullOffset(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(24)
         }
         return -1
@@ -211,14 +197,14 @@ export class Texture extends ILumpObject<Texture> {
 
     public set mipmapFullOffset(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(24, val)
         }
     }
 
     public get mipmapHalfOffset(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(28)
         }
         return -1
@@ -226,14 +212,14 @@ export class Texture extends ILumpObject<Texture> {
 
     public set mipmapHalfOffset(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(28, val)
         }
     }
 
     public get mipmapQuarterOffset(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(32)
         }
         return -1
@@ -241,7 +227,7 @@ export class Texture extends ILumpObject<Texture> {
 
     public set mipmapQuarterOffset(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(32, val)
         }
     }
@@ -252,7 +238,7 @@ export class Texture extends ILumpObject<Texture> {
 
     public get mipmapEighthOffset(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(36)
         }
         return -1
@@ -260,14 +246,14 @@ export class Texture extends ILumpObject<Texture> {
 
     public set mipmapEighthOffset(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(36, val)
         }
     }
 
     public get value(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2) && this.mapType !== MapType.SiN) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(36)
         }
         return 0
@@ -275,17 +261,17 @@ export class Texture extends ILumpObject<Texture> {
 
     public set value(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2) && this.mapType !== MapType.SiN) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(36, value)
         }
     }
 
     public get next(): int {
         if (this.mapType === MapType.SiN) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(100)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(72)
         }
         return 0
@@ -293,17 +279,17 @@ export class Texture extends ILumpObject<Texture> {
 
     public set next(value: int) {
         if (this.mapType === MapType.SiN) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(100, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(72, value)
         }
     }
 
     public get subdivisions(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.UberTools)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(72)
         }
         return 16
@@ -311,7 +297,7 @@ export class Texture extends ILumpObject<Texture> {
 
     public set subdivisions(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.UberTools)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(72, value)
         }
     }
@@ -333,7 +319,7 @@ export class Texture extends ILumpObject<Texture> {
             throw new Error('ArgumentNullException')
         }
 
-        const c = new Textures(null, bsp, lumpInfo)
+        const c = new Textures(Texture, null, bsp, lumpInfo)
         c.fromData(data, Texture.GetStructLength(bsp.mapType, lumpInfo.version))
         return c
     }
@@ -428,18 +414,18 @@ export class Texture extends ILumpObject<Texture> {
     protected ctorCopy(source: Texture, parent: ILump) {
         if (!parent?.bsp) {
             if (source.parent?.bsp && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
-                this._data = new Uint8Array(source.data)
+                this.data = new Uint8Array(source.data)
                 this._mipmaps = source.mipmaps
                 this._palette = source.palette
                 return this
             } else {
-                this._data = new Uint8Array(Texture.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
+                this.data = new Uint8Array(Texture.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
             if (source.parent?.bsp) {
-                this._data = new Uint8Array(Texture.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
+                this.data = new Uint8Array(Texture.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
-                this._data = new Uint8Array(Texture.GetStructLength(MapType.Undefined, 0))
+                this.data = new Uint8Array(Texture.GetStructLength(MapType.Undefined, 0))
             }
         }
 

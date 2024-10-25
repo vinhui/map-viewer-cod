@@ -1,4 +1,5 @@
 import {BSP, LumpInfo} from '../../BSP/BSP'
+import {int} from '../../../../utils/number'
 
 export interface ILump {
     bsp: BSP

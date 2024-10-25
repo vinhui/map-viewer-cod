@@ -3,6 +3,7 @@ import {Plane} from '../Utils/Plane'
 import {BSP, LumpInfo, MapType} from '../Structs/BSP/BSP'
 import {Lump} from '../Structs/Common/Lumps/Lump'
 import {Vector3Extensions} from './Vector3Extensions'
+import {int} from '../../utils/number'
 
 export class PlaneExtensions {
     public static readonly baseAxes: Vector3[] = [
@@ -40,7 +41,11 @@ export class PlaneExtensions {
             const d = view.getFloat32(structLength * i)
             arr.push(new Plane(normal, d))
         }
-        return new Lump(Plane, arr, bsp, lumpInfo)
+
+        const c = () => {
+            return new Plane(new Vector3(0, 0, 0), 0)
+        }
+        return new Lump<Plane>(c as any, arr, bsp, lumpInfo)
     }
 
     public static GetBytes(p: Plane, type: MapType, version: int = 0, targetArray?: Uint8Array, offset?: int): Uint8Array {

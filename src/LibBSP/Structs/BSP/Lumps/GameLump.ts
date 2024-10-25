@@ -1,15 +1,13 @@
 import {ILump} from '../../Common/Lumps/ILump'
 import {BSP, LumpInfo, MapType} from '../BSP'
 import {int} from '../../../../utils/number'
+import {StaticProps} from './StaticProps'
+import {StaticProp} from '../StaticProp'
 
 export enum GameLumpType {
-    /// <summary> LDR detail prop lighting. </summary>
     hlpd = 1685089384,
-    /// <summary> HDR detail prop lighting. </summary>
     tlpd = 1685089396,
-    /// <summary> Detail props. </summary>
     prpd = 1685090928,
-    /// <summary> <see cref="StaticProps"/>. </summary>
     prps = 1936749168,
 }
 
@@ -80,7 +78,7 @@ export class GameLump implements ILump {
                     lowestLumpOffset = info.offset
                 }
             }
-            if (lowestLumpOffset < lumpInfo.offset + numGameLumps * structLength + lumpDictionaryOffset + lumpVersion) {
+            if (lowestLumpOffset < lumpInfo.offset + numGameLumps * structLength + lumpDictionaryOffset) {
                 this.lumpOffsetsRelativeToGameLumpOffset = true
             }
         }
@@ -123,10 +121,10 @@ export class GameLump implements ILump {
 
         if (this._backingMap.has(type)) {
             if (!this._lumps.has(type)) {
-                this._lumps.set(type, StaticProp.LumpFactory(GameLumps.ReadLump(this._backingMap.get(type)), bsp, this._backingMap.get(type)))
+                this._lumps.set(type, StaticProp.LumpFactory(this.readLump(this._backingMap.get(type)), this.bsp, this._backingMap.get(type)))
             }
 
-            return this._lumps.get(type)
+            return this._lumps.get(type) as StaticProps
         }
     }
 

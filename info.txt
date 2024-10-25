@@ -117,13 +117,13 @@ function parseAndReplaceProperties(code) {
             }
             setterBody = propertyBlock.substring(setterStart, setterEnd - 1).trim();
         }
-        
+
         function optimizeDataViewUsage(code) {
     // Split the code into lines
     const lines = code.split('\n');
     let optimizedLines = [];
     let inDataViewSequence = false;
-    
+
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
 
@@ -146,7 +146,7 @@ function parseAndReplaceProperties(code) {
     // Join the lines back into a single string
     return optimizedLines.join('\n');
 }
-        
+
         const patchBody = (str) => {
           str = str.replaceAll(/MapType\.IsSubtypeOf\((.+?)\)/gm, 'MapType.IsSubtypeOf(this.mapType, $1)')
           str = str.replaceAll(/BitConverter\.To(\w+)\(Data,\s*(.+?)\)/gm, 'new DataView(this._data.buffer).get$1($2)')
@@ -158,9 +158,35 @@ function parseAndReplaceProperties(code) {
           str = str.replaceAll(/bytes\.CopyTo\(Data,\s(.+?)\);/gm, 'new DataView(this._data.buffer).set($1, value)')
           str = str.replaceAll(/value\.GetBytes\(\).CopyTo\(Data,\s(.+?)\);/g, 'value.getBytes(this._data, $1)')
           str = optimizeDataViewUsage(str)
+
+          str = str.replaceAll('Parent', 'this._parent')
+          str = str.replaceAll('this._parent.Bsp', 'this._parent.bsp')
+          str = str.replaceAll(/\bData\b/gm, 'this._data')
+
+          str = str.replaceAll(/this\._parent\.bsp.(\w+)\[(.+?)\]\;/gm, (match, p1, p2) => {
+  return  `this._parent.bsp.${p1[0].toLowerCase()}${p1.substring(1)}.get(this.${p2[0].toLowerCase()}${p2.substring(1)})`
+});
+
+          str = str.replaceAll('MapType == MapType.', 'this.mapType == MapType.')
+          str = str.replaceAll('MapType != MapType.', 'this.mapType != MapType.')
+
+          str = str.replaceAll('view.getUInt16', 'view.getUint16')
+          str = str.replaceAll('view.setUInt16', 'view.setUint16')
+
+          str = str.replaceAll('view.getUInt32', 'view.getUint32')
+          str = str.replaceAll('view.setUInt32', 'view.setUint32')
+
+          str = str.replaceAll('getSingle(', 'getFloat32(')
+
+          str = str.replaceAll('switch (MapType)', 'switch (this.mapType)')
+          str = str.replaceAll('switch (LumpVersion)', 'switch (this.lumpVersion)')
+          str = str.replaceAll(/for\s*\(int (\w) = 0; (\w) < (\w*); (.*?)\)/gm, (m, p1, p2, p3, p4) => `for (let ${p1} = 0; ${p2} < this.${p3[0].toLowerCase()}${p3.substring(1)}; ${p4})`)
+
+          str = str.replaceAll(/throw new (\w+)Exception\("(.*?)"\);/gm, 'throw new Error(\'$2\')')
+          str = str.replaceAll(/IEnumerable\<(\w+)\>/g, '$1[]')
           return str
         }
-        
+
         if(getterBody)
           getterBody = patchBody(getterBody)
         if(setterBody)
@@ -168,14 +194,17 @@ function parseAndReplaceProperties(code) {
 
         // Create the replacement string
         const newName = name.charAt(0).toLowerCase() + name.slice(1);
-        const replacement = `
+        let replacement = `
 public get ${newName}(): ${type} {
-    ${getterBody || ''}
-}
+    ${getterBody.trim() || ''}
+}`.trim()
+if(setterBody) {
+replacement += `
 public set ${newName}(value: ${type}) {
-    ${setterBody || ''}
+    ${setterBody.trim() || ''}
 }
 `.trim();
+}
 
         // Store the replacement for later
         replacements.push({ start: propertyStartIndex, end: currentIndex, replacement });
@@ -190,10 +219,52 @@ public set ${newName}(value: ${type}) {
     return result;
 }
 
-// Example usage:
 const code = `
 
-`;
+`
 
 const result = parseAndReplaceProperties(code)
-console.log(result);
+console.log(result)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function parseAndReplace(code) {
+    // Replace method signatures with static typing
+    code = code.replaceAll(/public\s+static (\w+(?:<[^>]+>)?)\s+(\w+)\s*\(([^)]*)\)\s*(?!\{[^}]*\b(get|set)\b)/g, 'public static $2($3): $1');
+
+    // Replace argument types with TypeScript style typing
+    code = code.replaceAll(/(?<=\(|,)\s*(\w+(?:<[^>]+>)?(?:\[\])?)\s+(\w+)(?=\s*(?:,|\)|=))/g, '$2: $1');
+
+    // Replace exception throwing syntax
+    code = code.replaceAll(/throw new ArgumentNullException\(\);/g, 'throw new Error(\'ArgumentNullException\')');
+
+    // Replace byte array type
+    code = code.replaceAll(/byte\[\]/g, 'Uint8Array');
+
+    code = code.replaceAll('mapType.IsSubtypeOf(', 'MapType.IsSubtypeOf(mapType, ')
+    code = code.replaceAll('type.IsSubtypeOf(', 'MapType.IsSubtypeOf(type, ')
+    code = code.replaceAll('throw new ArgumentException("Lump object " + MethodBase.GetCurrentMethod().DeclaringType.Name + " does not exist in map type " + mapType + " or has not been implemented.");', 'throw new Error(`Lump object \'REPLACEME\' does not exist in map type ${mapType} or has not been implemented.`)')
+    code = code.replaceAll('bsp.MapType', 'bsp.mapType')
+
+    return code;
+}
+
+const code = `
+
+`
+
+const result = parseAndReplace(code)
+console.log(result)

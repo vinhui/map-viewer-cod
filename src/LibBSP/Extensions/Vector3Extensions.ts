@@ -1,6 +1,7 @@
 import {Vector3} from '../Utils/Vector'
 import {BSP, LumpInfo, MapType} from '../Structs/BSP/BSP'
 import {Lump} from '../Structs/Common/Lumps/Lump'
+import {int} from '../../utils/number'
 
 export class Vector3Extensions {
 
@@ -30,7 +31,10 @@ export class Vector3Extensions {
         for (let i = 0; i < numObjects; i++) {
             arr.push(this.ToVector3(data, i * structLength))
         }
-        return new Lump(Vector3, arr, bsp, lumpInfo)
+        const c = () => {
+            return new Vector3()
+        }
+        return new Lump(c as any, arr, bsp, lumpInfo)
     }
 
     public static GetIndexForNormalsLump(type: MapType): int {

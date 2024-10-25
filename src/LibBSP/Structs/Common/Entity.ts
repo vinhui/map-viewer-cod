@@ -3,7 +3,7 @@ import {BSP, LumpInfo, MapType} from '../BSP/BSP'
 import {Vector3} from '@babylonjs/core'
 import {StringExtensions} from '../../Extensions/StringExtensions'
 import {Vector4} from '../../Utils/Vector'
-import {ILumpObject} from './ILumpObject'
+import {ILumpObject, LumpObjDataCtor} from './ILumpObject'
 import {float, int, numberToStringUS, parseFloatUS, uint} from '../../../utils/number'
 import {Entities} from './Lumps/Entities'
 import {MAPBrush} from '../MAP/MAPBrush'
@@ -32,41 +32,18 @@ export class EntityConnection {
     }
 }
 
-export class Entity implements ILumpObject {
+export class Entity extends ILumpObject<Entity> {
     public static readonly ConnectionMemberSeparater = String.fromCharCode(0x1B)
     public connections: EntityConnection[] = []
     public brushes: MAPBrush[] = []
     private _map: Map<string, string> = new Map()
 
-    constructor(DONTUSETHISDIRECTLY: unknown) {
-    }
-
-    private _parent: ILump
-
-    public get parent(): ILump {
-        return this._parent
-    }
-
-    public get data(): Uint8Array {
+    get data(): Uint8Array {
         return new TextEncoder().encode(this.toString())
     }
 
-    public set data(data: Uint8Array) {
-        this.parseString(new TextDecoder().decode(data))
-    }
-
-    public get mapType(): MapType {
-        if (!this._parent?.bsp) {
-            return MapType.Undefined
-        }
-        return this._parent.bsp.mapType
-    }
-
-    public get lumpVersion(): int {
-        if (!this._parent) {
-            return 0
-        }
-        return this._parent.lumpInfo.version
+    public set data(value: Uint8Array) {
+        this.parseString(new TextDecoder().decode(value))
     }
 
     public get isBrushBased(): boolean {
@@ -166,40 +143,20 @@ export class Entity implements ILumpObject {
         }
     }
 
-    public static CreateWithParent<T extends ILump>(parent?: T) {
-        const e = new Entity(null)
-        e._parent = parent
-        return e
-    }
-
-    public static CreateWithData<T extends ILump>(data: Uint8Array, parent?: T) {
-        const e = new Entity(null)
-        e._parent = parent
-        e.data = data
-        return e
-    }
-
     public static CreateWithClass(className: string, parent?: ILump) {
-        const e = new Entity(null)
-        e._parent = parent
+        const e = new Entity(new LumpObjDataCtor(new Uint8Array(0), parent))
         e.set('classname', className)
-        return e
-    }
-
-    public static CreateCopy(copy: Entity, parent?: ILump) {
-        const e = new Entity(null)
-        e._parent = parent
-        e.connections = copy.connections.slice()
-        e.brushes = copy.brushes.slice()
         return e
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Entities {
         if (!data) {
-            throw new Error('ArgumentNullException')
+            throw new Error('ArgumentNullExcept ion')
         }
 
-        return new Entities(data, bsp, lumpInfo)
+        const l = new Entities(Entity, null, bsp, lumpInfo)
+        l.fromData(data)
+        return l
     }
 
     public static GetIndexForLump(type: MapType): int {
@@ -472,5 +429,11 @@ export class Entity implements ILumpObject {
 
         const comparison = this.className.localeCompare(obj.className)
         return comparison !== 0 ? comparison : this.name.localeCompare(obj.name)
+    }
+
+    protected ctorCopy(source: Entity, parent: ILump) {
+        this.connections = source.connections.slice()
+        this.brushes = source.brushes.slice()
+        this._parent = parent
     }
 }

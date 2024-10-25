@@ -1,4 +1,5 @@
 import {Vector3} from './Vector'
+import {int} from '../../utils/number'
 
 export class Plane {
     public d: int

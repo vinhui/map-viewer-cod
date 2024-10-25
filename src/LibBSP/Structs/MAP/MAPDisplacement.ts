@@ -50,7 +50,7 @@ export class MAPDisplacement {
                 switch (tokens[0]) {
                     case 'power': {
                         this.power = parseInt(tokens[1], 10)
-                        const side = Math.floor(Math.pow(2, this.power) + 1)
+                        const side = Math.trunc(Math.pow(2, this.power) + 1)
                         this.normals = generate2dArray(side, side, Vector3)
                         this.distances = generate2dArray(side, side, 0)
                         this.alphas = generate2dArray(side, side, 0)

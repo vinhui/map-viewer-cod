@@ -1,4 +1,5 @@
 import {Vector2} from '../Utils/Vector'
+import {int} from '../../utils/number'
 
 export class Vector2Extensions {
     public static ToVector2(data: Uint8Array, startIndex: int = 0): Vector2 {

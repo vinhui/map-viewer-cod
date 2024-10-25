@@ -1,12 +1,9 @@
 import {Lump} from '../../Common/Lumps/Lump'
 import {BSP, LumpInfo, MapType} from '../BSP'
 import {Texture} from '../Texture'
+import {int} from '../../../../utils/number'
 
 export class Textures extends Lump<Texture> {
-    constructor(items: Texture[], bsp: BSP, lumpInfo: LumpInfo) {
-        super(items, bsp, lumpInfo)
-    }
-
     public get length(): int {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake3)
@@ -28,10 +25,10 @@ export class Textures extends Lump<Texture> {
                 if (texture.mipmapFullOffset > 0) {
                     let mipLength = 0
 
-                    mipLength += Math.floor(texture.dimensions.x * texture.dimensions.y)
-                    mipLength += Math.floor(texture.dimensions.x * texture.dimensions.y / 4)
-                    mipLength += Math.floor(texture.dimensions.x * texture.dimensions.y / 16)
-                    mipLength += Math.floor(texture.dimensions.x * texture.dimensions.y / 64)
+                    mipLength += Math.trunc(texture.dimensions.x * texture.dimensions.y)
+                    mipLength += Math.trunc(texture.dimensions.x * texture.dimensions.y / 4)
+                    mipLength += Math.trunc(texture.dimensions.x * texture.dimensions.y / 16)
+                    mipLength += Math.trunc(texture.dimensions.x * texture.dimensions.y / 64)
                     if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.GoldSrc)) {
                         let paletteLength = texture.palette.length + 2
                         while (paletteLength % 4 != 0) {
@@ -55,7 +52,7 @@ export class Textures extends Lump<Texture> {
             throw new Error('ArgumentNullException')
         }
 
-        const c = new Textures(null, bsp, lumpInfo)
+        const c = new Textures(Texture, null, bsp, lumpInfo)
         c.fromData(data, structLength)
         return c
     }
@@ -188,19 +185,19 @@ export class Textures extends Lump<Texture> {
                 if (texture.mipmapFullOffset > 0) {
                     offset = 40
                     texture.mipmapFullOffset = offset
-                    offset += Math.floor(texture.dimensions.x * texture.dimensions.y)
+                    offset += Math.trunc(texture.dimensions.x * texture.dimensions.y)
                 }
                 if (texture.mipmapHalfOffset > 0) {
                     texture.mipmapHalfOffset = offset
-                    offset += Math.floor(texture.dimensions.x * texture.dimensions.y / 4)
+                    offset += Math.trunc(texture.dimensions.x * texture.dimensions.y / 4)
                 }
                 if (texture.mipmapQuarterOffset > 0) {
                     texture.mipmapQuarterOffset = offset
-                    offset += Math.floor(texture.dimensions.x * texture.dimensions.y / 16)
+                    offset += Math.trunc(texture.dimensions.x * texture.dimensions.y / 16)
                 }
                 if (texture.mipmapEighthOffset > 0) {
                     texture.mipmapEighthOffset = offset
-                    offset += Math.floor(texture.dimensions.x * texture.dimensions.y / 64)
+                    offset += Math.trunc(texture.dimensions.x * texture.dimensions.y / 64)
                 }
 
                 if (texture.mipmapFullOffset > 0
@@ -220,15 +217,15 @@ export class Textures extends Lump<Texture> {
                     bytes.set(texture.data, 0)
                     offset += 40
                     bytes.set(texture.mipmaps[Texture.FullMipmap], offset)
-                    offset += Math.floor(texture.dimensions.x * texture.dimensions.y)
+                    offset += Math.trunc(texture.dimensions.x * texture.dimensions.y)
                     bytes.set(texture.mipmaps[Texture.HalfMipmap], offset)
-                    offset += Math.floor(texture.dimensions.x * texture.dimensions.y / 4)
+                    offset += Math.trunc(texture.dimensions.x * texture.dimensions.y / 4)
                     bytes.set(texture.mipmaps[Texture.QuarterMipmap], offset)
-                    offset += Math.floor(texture.dimensions.x * texture.dimensions.y / 16)
+                    offset += Math.trunc(texture.dimensions.x * texture.dimensions.y / 16)
                     bytes.set(texture.mipmaps[Texture.EighthMipmap], offset)
                     if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.GoldSrc)) {
                         const view = new DataView(bytes.buffer)
-                        offset += Math.floor(texture.dimensions.x * texture.dimensions.y / 64)
+                        offset += Math.trunc(texture.dimensions.x * texture.dimensions.y / 64)
                         view.setInt16(texture.palette.length, offset)
                         offset += 2
                         bytes.set(texture.palette, offset)

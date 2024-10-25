@@ -30,7 +30,7 @@ export class BSPMap {
             throw new Error('Failed to download bsp ' + this.fileUrl)
         }
         const arrayBuffer = await response.arrayBuffer()
-        this.reader = new BinaryReader(arrayBuffer)
+        this.reader = new BinaryReader(new Uint8Array(arrayBuffer))
 
         // Read header and lumps
         this.header = new BSPHeader(this.reader)

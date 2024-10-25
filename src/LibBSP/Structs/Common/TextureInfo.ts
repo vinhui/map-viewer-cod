@@ -1,4 +1,4 @@
-import {ILumpObject} from './ILumpObject'
+import {ILumpObject, LumpObjDataCtor} from './ILumpObject'
 import {ILump} from './Lumps/ILump'
 import {BSP, LumpInfo, MapType} from '../BSP/BSP'
 import {Vector2, Vector3} from '../../Utils/Vector'
@@ -6,55 +6,31 @@ import {Vector3Extensions} from '../../Extensions/Vector3Extensions'
 import {Plane} from '../../Utils/Plane'
 import {PlaneExtensions} from '../../Extensions/PlaneExtensions'
 import {Lump} from './Lumps/Lump'
+import {float, int} from '../../../utils/number'
+import {TextureData} from '../BSP/TextureData'
 
-export class TextureInfo implements ILumpObject {
+export class TextureInfo extends ILumpObject<TextureInfo> {
     public scale: Vector2
     public rotation: float
 
-    private _parent: ILump
-
-    public get parent(): ILump {
-        return this._parent
-    }
-
-    private _data: Uint8Array
-
-    public get data(): Uint8Array {
-        return this._data
-    }
-
-    public get mapType(): MapType {
-        if (!this._parent?.bsp) {
-            return MapType.Undefined
-        }
-        return this._parent.bsp.mapType
-    }
-
-    public get lumpVersion(): int {
-        if (!this._parent) {
-            return 0
-        }
-        return this._parent.lumpInfo.version
-    }
-
     public get uAxis(): Vector3 {
-        return Vector3Extensions.ToVector3(this._data)
+        return Vector3Extensions.ToVector3(this.data)
     }
 
     public set uAxis(val: Vector3) {
-        val.getBytes(this._data, 0)
+        val.getBytes(this.data, 0)
     }
 
     public get vAxis(): Vector3 {
-        return Vector3Extensions.ToVector3(this._data, 16)
+        return Vector3Extensions.ToVector3(this.data, 16)
     }
 
     public set vAxis(val: Vector3) {
-        val.getBytes(this._data, 16)
+        val.getBytes(this.data, 16)
     }
 
     public get translation(): Vector2 {
-        const view = new DataView(this._data.buffer)
+        const view = new DataView(this.data.buffer)
         return new Vector2(
             view.getFloat32(12),
             view.getFloat32(28),
@@ -62,40 +38,40 @@ export class TextureInfo implements ILumpObject {
     }
 
     public set translation(val: Vector2) {
-        const view = new DataView(this._data.buffer)
+        const view = new DataView(this.data.buffer)
         view.setFloat32(12, val.x)
         view.setFloat32(28, val.y)
     }
 
     public get lightmapUAxis(): Vector3 {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            return Vector3Extensions.ToVector3(this._data, 32)
+            return Vector3Extensions.ToVector3(this.data, 32)
         }
         return new Vector3()
     }
 
     public set lightmapUAxis(val: Vector3) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            val.getBytes(this._data, 32)
+            val.getBytes(this.data, 32)
         }
     }
 
     public get lightmapVAxis(): Vector3 {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            return Vector3Extensions.ToVector3(this._data, 48)
+            return Vector3Extensions.ToVector3(this.data, 48)
         }
         return new Vector3()
     }
 
     public set lightmapVAxis(val: Vector3) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            val.getBytes(this._data, 48)
+            val.getBytes(this.data, 48)
         }
     }
 
     public get lightmapTranslation(): Vector2 {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return new Vector2(
                 view.getFloat32(44),
                 view.getFloat32(60),
@@ -106,7 +82,7 @@ export class TextureInfo implements ILumpObject {
 
     public set lightmapTranslation(val: Vector2) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setFloat32(44, val.x)
             view.setFloat32(60, val.y)
         }
@@ -114,14 +90,14 @@ export class TextureInfo implements ILumpObject {
 
     public get flags(): int {
         if (this.mapType == MapType.DMoMaM) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(88)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(64)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || this.mapType == MapType.Undefined) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(36)
         }
 
@@ -130,28 +106,28 @@ export class TextureInfo implements ILumpObject {
 
     public set flags(value: int) {
         if (this.mapType == MapType.DMoMaM) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(88, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(64, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || this.mapType == MapType.Undefined) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(36, value)
         }
     }
 
     public get textureIndex(): int {
         if (this.mapType == MapType.DMoMaM) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(92)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(68)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || this.mapType == MapType.Undefined) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             return view.getInt32(32)
         }
 
@@ -160,35 +136,20 @@ export class TextureInfo implements ILumpObject {
 
     public set textureIndex(value: int) {
         if (this.mapType == MapType.DMoMaM) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(92, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(68, value)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || this.mapType == MapType.Undefined) {
-            const view = new DataView(this._data.buffer)
+            const view = new DataView(this.data.buffer)
             view.setInt32(32, value)
         }
     }
 
-    public static CreateFromData(data: Uint8Array, parent?: ILump): TextureInfo {
-        if (!data) {
-            throw new Error('ArgumentNullException')
-        }
-
-        const c = new TextureInfo()
-        c._data = data
-        c._parent = parent
-        c.scale = new Vector2(1, 1)
-        c.rotation = 0
-        return c
-    }
-
     public static CreateFromProps(uAxis: Vector3, vAxis: Vector3, translation: Vector2, scale: Vector2, flags: int, texture: int, rotation: float): TextureInfo {
-        const c = new TextureInfo()
-        c._data = new Uint8Array(40)
-        c._parent = null
+        const c = new TextureInfo(new LumpObjDataCtor(new Uint8Array(40), null))
 
         c.scale = scale
         c.rotation = rotation
@@ -198,37 +159,6 @@ export class TextureInfo implements ILumpObject {
         c.flags = flags
         c.textureIndex = texture
         return c
-    }
-
-    public static CreateCopy(source: TextureInfo, parent?: ILump) {
-        const c = new TextureInfo()
-        c._parent = parent
-        c.scale = source.scale
-        c.rotation = source.rotation
-
-        if (parent?.bsp) {
-            if (source._parent?.bsp && source._parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
-                c._data = new Uint8Array(source.data.buffer)
-                return c
-            } else {
-                c._data = new Uint8Array(TextureInfo.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
-            }
-        } else {
-            if (source.parent?.bsp) {
-                c._data = new Uint8Array(TextureInfo.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
-            } else {
-                c._data = new Uint8Array(TextureInfo.GetStructLength(MapType.Undefined, 0))
-            }
-        }
-
-        c.uAxis = source.uAxis
-        c.vAxis = source.vAxis
-        c.translation = source.translation
-        c.lightmapUAxis = source.lightmapUAxis
-        c.lightmapVAxis = source.lightmapVAxis
-        c.lightmapTranslation = source.lightmapTranslation
-        c.flags = source.flags
-        c.textureIndex = source.textureIndex
     }
 
     public static TextureAxisFromPlane(p: Plane): Vector3[] {
@@ -273,5 +203,38 @@ export class TextureInfo implements ILumpObject {
             return 17
         }
         return -1
+    }
+
+    protected ctorData(data: Uint8Array, parent: ILump) {
+        super.ctorData(data, parent)
+        this.scale = new Vector2(1, 1)
+    }
+
+    protected ctorCopy(source: TextureInfo, parent: ILump) {
+        this._parent = parent
+
+        if (parent?.bsp) {
+            if (source.parent != null && source.parent.bsp != null && source.parent.bsp.mapType == parent.bsp.mapType && source.lumpVersion == parent.lumpInfo.version) {
+                this.data = new Uint8Array(source._data)
+                return
+            } else {
+                this.data = new Uint8Array(TextureData.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
+            }
+        } else {
+            if (source.parent != null && source.parent.bsp != null) {
+                this.data = new Uint8Array(TextureData.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
+            } else {
+                this.data = new Uint8Array(TextureData.GetStructLength(MapType.Undefined, 0))
+            }
+        }
+
+        this.uAxis = source.uAxis
+        this.vAxis = source.vAxis
+        this.translation = source.translation
+        this.lightmapUAxis = source.lightmapUAxis
+        this.lightmapVAxis = source.lightmapVAxis
+        this.lightmapTranslation = source.lightmapTranslation
+        this.flags = source.flags
+        this.textureIndex = source.textureIndex
     }
 }

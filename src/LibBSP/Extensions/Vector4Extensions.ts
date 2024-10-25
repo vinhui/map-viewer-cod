@@ -1,4 +1,5 @@
 import {Vector4} from '../Utils/Vector'
+import {int} from '../../utils/number'
 
 export class Vector4Extensions {
     public static ToVector4(data: Uint8Array, startIndex: int = 0): Vector4 {

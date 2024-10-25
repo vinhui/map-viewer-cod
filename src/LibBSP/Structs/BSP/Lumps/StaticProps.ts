@@ -1,17 +1,15 @@
 import {Lump} from '../../Common/Lumps/Lump'
 import {BSP, LumpInfo, MapType} from '../BSP'
 import {StringExtensions} from '../../../Extensions/StringExtensions'
-import {short} from '../../../../utils/number'
+import {int, short} from '../../../../utils/number'
+import {StaticProp} from '../StaticProp'
+import {LumpObjDataCtor} from '../../Common/ILumpObject'
 
 export class StaticProps extends Lump<StaticProp> {
     public static readonly ModelNameLength = 128
 
     public modelDictionary: string[] = []
     public leafIndices: short[]
-
-    constructor(items: StaticProps[], bsp: BSP, lumpInfo: LumpInfo) {
-        super(items, bsp, lumpInfo)
-    }
 
     public get length(): int {
         return 12
@@ -20,19 +18,18 @@ export class StaticProps extends Lump<StaticProp> {
             + this._backingArray.length * this._backingArray[0].data.length
     }
 
-    public static CreateFromProps(items: StaticProps[], dictionary: string[], bsp?: BSP, lumpInfo: LumpInfo = new LumpInfo()): StaticProps {
-        const c = new StaticProps(items, bsp, lumpInfo)
+    public static CreateFromProps(items: StaticProp[], dictionary: string[], bsp?: BSP, lumpInfo: LumpInfo = new LumpInfo()): StaticProps {
+        const c = new StaticProps(StaticProp, items, bsp, lumpInfo)
         c.modelDictionary = dictionary
         return c
     }
 
-    public static CreateFromData(data: Uint8Array, structLength: int, bsp: BSP, lumpInfo: LumpInfo = new LumpInfo()): StaticProps {
-        if (!data || !bsp) {
+    fromData(data: Uint8Array, structLength: number) {
+        if (!data || !this.bsp) {
             throw new Error('ArgumentNullException')
         }
 
         const view = new DataView(data.buffer)
-        const c = new StaticProps(null, bsp, lumpInfo)
 
         if (data.length > 0) {
             let offset = 0
@@ -40,22 +37,22 @@ export class StaticProps extends Lump<StaticProp> {
             const dictSize = view.getInt32(0)
             offset += 4
             for (let i = 0; i < dictSize; i++) {
-                c.modelDictionary.push(StringExtensions.ToNullTerminatedString(data, offset, this.ModelNameLength))
-                offset += this.ModelNameLength
+                this.modelDictionary.push(StringExtensions.ToNullTerminatedString(data, offset, StaticProps.ModelNameLength))
+                offset += StaticProps.ModelNameLength
             }
 
             const leafIndiciesCount = view.getInt32(offset)
             offset += 4
             for (let i = 0; i < leafIndiciesCount; i++) {
-                c.leafIndices.push(view.getInt16(offset))
+                this.leafIndices.push(view.getInt16(offset))
                 offset += 2
             }
-            if (bsp.mapType === MapType.Vindictus && lumpInfo.version >= 6) {
+            if (this.bsp.mapType === MapType.Vindictus && this.lumpInfo.version >= 6) {
                 const numPropsScales = view.getInt32(offset)
                 offset += 4 + numPropsScales * 16
             }
             const numProps = view.getInt32(offset)
-            if (lumpInfo.version === 12) {
+            if (this.lumpInfo.version === 12) {
                 offset += 12
             } else {
                 offset += 4
@@ -65,14 +62,14 @@ export class StaticProps extends Lump<StaticProp> {
                 structLength = (data.length - offset) / numProps
                 for (let i = 0; i < numProps; i++) {
                     const bytes = data.slice(offset, offset + structLength)
-                    c._backingArray.push(new StaticProp(bytes, this))
+                    this._backingArray.push(new StaticProp(new LumpObjDataCtor(bytes, this)))
                     offset += structLength
                 }
             }
         } else {
-            c.modelDictionary = []
+            this.modelDictionary = []
         }
-        return c
+        return this
     }
 
     public getBytes(lumpOffset = 0): Uint8Array {
@@ -107,7 +104,7 @@ export class StaticProps extends Lump<StaticProp> {
         view.setInt32(offset, this._backingArray.length)
         offset += 4
 
-        bytes.set(await super.getBytes(), offset)
+        bytes.set(super.getBytes(), offset)
 
         return bytes
     }

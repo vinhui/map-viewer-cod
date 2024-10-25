@@ -2,6 +2,7 @@ import {BSP, LumpInfo, MapType} from '../Structs/BSP/BSP'
 import {BSPHeader} from '../Structs/BSP/BSPHeader'
 import {BinaryReader} from '../../utils/BinaryReader'
 import {LibBSP} from '../LibBSP'
+import {int} from '../../utils/number'
 
 export class BSPReader {
     public bspFile: string

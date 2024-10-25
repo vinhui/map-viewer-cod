@@ -18,172 +18,67 @@ import {StaticProps} from './Lumps/StaticProps'
 import {TextureInfo} from '../Common/TextureInfo'
 import {Textures} from './Lumps/Textures'
 import {Lightmaps} from './Lumps/Lightmaps'
+import {Leaf} from './Leaf'
+import {Node} from './Node'
+import {int} from '../../../utils/number'
+import {Face} from './Face'
+import {Edge} from './Edge'
+import {Brush} from './Brush'
+import {BrushSide} from './BrushSide'
+import {TextureData} from './TextureData'
+import {Displacement} from './Displacement'
+import {DisplacementVertex} from './DisplacementVertex'
+import {Cubemap} from './Cubemap'
+import {Overlay} from './Overlay'
+import {StaticModel} from './StaticModel'
+import {LODTerrain} from './LODTerrain'
+import {Patch} from './Patch'
+import {Model} from './Model'
 
 export enum MapType {
-    /// <summary>
-    /// Unknown or unsupported map type
-    /// </summary>
     Undefined = 0x00000000,
 
-    /// <summary>
-    /// Quake or Quake Engine flags, including <see cref="GoldSrc"/> and <see cref="BlueShift"/>.
-    /// </summary>
     Quake = 0x01000000,
-    /// <summary>
-    /// GoldSrc engine, especially Half-Life. As flags includes <see cref="BlueShift"/>.
-    /// </summary>
     GoldSrc = 0x01010000,
-    /// <summary>
-    /// Half-Life Blue Shift
-    /// </summary>
     BlueShift = 0x01010001,
 
-    /// <summary>
-    /// Quake 2 or Quake 2 Engine flags, including <see cref="Daikatana"/> <see cref="SoF"/>
-    /// and <see cref="SiN"/>.
-    /// </summary>
     Quake2 = 0x02000000,
-    /// <summary>
-    /// Daikatana
-    /// </summary>
     Daikatana = 0x02000001,
-    /// <summary>
-    /// Soldier of Fortune
-    /// </summary>
     SoF = 0x02000002,
-    /// <summary>
-    /// SiN
-    /// </summary>
     SiN = 0x02000004,
 
-    /// <summary>
-    /// Quake 3 or Quake 3 Engine flags, including <see cref="ET"/> <see cref="Raven"/> <see cref="STEF2"/>
-    /// <see cref="STEF2Demo"/> <see cref="MOHAA"/> <see cref="MOHAABT"/> <see cref="FAKK2"/> <see cref="Alice"/>
-    /// <see cref="CoD"/> <see cref="CoD2"/> and <see cref="CoD4"/>.
-    /// </summary>
     Quake3 = 0x04000000,
-    /// <summary>
-    /// Wolfenstein: Enemy Territory or Return to Castle Wolfenstein
-    /// </summary>
     ET = 0x04000001,
-    /// <summary>
-    /// Raven Software (Jedi Outcast, Jedi Academy, Soldier of Fortune 2)
-    /// </summary>
     Raven = 0x04010000,
-    /// <summary>
-    /// Call of Duty or flags including <see cref="CoDDemo"/> <see cref="CoD2"/> and <see cref="CoD4"/>.
-    /// </summary>
     CoD = 0x04020000,
-    /// <summary>
-    /// Call of Duty demo
-    /// </summary>
     CoDDemo = 0x04020001,
-    /// <summary>
-    /// Call of Duty 2
-    /// </summary>
     CoD2 = 0x04020002,
-    /// <summary>
-    /// Call of Duty 4
-    /// </summary>
     CoD4 = 0x04020004,
-    /// <summary>
-    /// Quake 3 "Ubertools" including <see cref="STEF2"/> <see cref="STEF2Demo"/> <see cref="MOHAA"/>
-    /// <see cref="MOHAADemo"/> <see cref="MOHAABT"/> <see cref="FAKK2"/> and <see cref="Alice"/>.
-    /// </summary>
     UberTools = 0x04040000,
-    /// <summary>
-    /// Star Trek Elite Force 2. As flags includes <see cref="STEF2Demo"/>.
-    /// </summary>
     STEF2 = 0x04040100,
-    /// <summary>
-    /// Star Trek Elite Force 2 Demo version
-    /// </summary>
     STEF2Demo = 0x04040101,
-    /// <summary>
-    /// Medal of Honor Allied Assault. As flags includes <see cref="MOHAABT"/> and <see cref="MOHAADemo"/>.
-    /// </summary>
     MOHAA = 0x04040200,
-    /// <summary>
-    /// Medal of Honor Allied Assault free demo.
-    /// </summary>
     MOHAADemo = 0x04040201,
-    /// <summary>
-    /// Medal of Honor Allied Assault Spearhead and BreakThrough expansion packs.
-    /// </summary>
     MOHAABT = 0x04040202,
-    /// <summary>
-    /// Heavy Metal FAKK2. As flags includes <see cref="Alice"/>.
-    /// </summary>
     FAKK2 = 0x04040400,
-    /// <summary>
-    /// American McGee's Alice
-    /// </summary>
     Alice = 0x04040401,
 
-    /// <summary>
-    /// 007 Nightfire
-    /// </summary>
     Nightfire = 0x08000000,
 
-    /// <summary>
-    /// Source Engine, including <see cref="Source17" /> <see cref="Source18"/> <see cref="Source19"/>
-    /// <see cref="Source20"/> <see cref="DMoMaM"/> <see cref="Vindictus"/> <see cref="Source21"/>
-    /// <see cref="L4D2"/> <see cref="TacticalInterventionEncrypted"/> <see cref="Source22"/>
-    /// <see cref="Source23"/> and <see cref="Source27"/>.
-    /// </summary>
     Source = 0x10000000,
-    /// <summary>
-    /// Source Engine v17. Vampire the Masquerade: Bloodlines
-    /// </summary>
     Source17 = 0x10000100,
-    /// <summary>
-    /// Source Engine v18. Half-Life 2 Beta
-    /// </summary>
     Source18 = 0x10000200,
-    /// <summary>
-    /// Source Engine v19. Half-Life 2
-    /// </summary>
     Source19 = 0x10000400,
-    /// <summary>
-    /// Source Engine v20. As flags includes <see cref="DMoMaM"/> and <see cref="Vindictus"/>.
-    /// </summary>
     Source20 = 0x10000800,
-    /// <summary>
-    /// Dark Messiah of Might &amp; Magic
-    /// </summary>
     DMoMaM = 0x10000801,
-    /// <summary>
-    /// Vindictus
-    /// </summary>
     Vindictus = 0x10000802,
-    /// <summary>
-    /// Source Engine v21. As flags includes <see cref="L4D2"/> and <see cref="TacticalInterventionEncrypted"/>.
-    /// </summary>
     Source21 = 0x10001000,
-    /// <summary>
-    /// Left 4 Dead 2
-    /// </summary>
     L4D2 = 0x10001001,
-    /// <summary>
-    /// Tactical Intervention, original encrypted release. Steam version is <see cref="Source22"/>.
-    /// </summary>
     TacticalInterventionEncrypted = 0x10001002,
-    /// <summary>
-    /// Source Engine v22, Tactical Intervention
-    /// </summary>
     Source22 = 0x10002000,
-    /// <summary>
-    /// Source Engine v23. DotA 2
-    /// </summary>
     Source23 = 0x10004000,
-    /// <summary>
-    /// Source Engine v27. Contagion
-    /// </summary>
     Source27 = 0x10008000,
 
-    /// <summary>
-    /// rBSP v29. Titanfall
-    /// </summary>
     Titanfall = 0x20000000,
 }
 
@@ -194,29 +89,11 @@ export namespace MapType {
 }
 
 export class LumpInfo {
-    /// <summary>
-    /// ID of this lump.
-    /// </summary>
     public ident: int
-    /// <summary>
-    /// Lump flags.
-    /// </summary>
     public flags: int
-    /// <summary>
-    /// Lump version.
-    /// </summary>
     public version: int
-    /// <summary>
-    /// Lump offset.
-    /// </summary>
     public offset: int
-    /// <summary>
-    /// Lump length.
-    /// </summary>
     public length: int
-    /// <summary>
-    /// Lump file.
-    /// </summary>
     public lumpFile: string
 }
 
@@ -471,7 +348,7 @@ export class BSP {
         return this.gameLumpLoaded && this.gameLump.staticPropsLoaded
     }
 
-    public get leafBrushes(e): NumList {
+    public get leafBrushes(): NumList {
         const {index, type} = NumList.GetIndexForLeafFacesLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -480,6 +357,7 @@ export class BSP {
             }
             return this._lumps.get(index) as NumList
         }
+        return null
     }
 
     public set leafBrushes(val: NumList) {
@@ -490,7 +368,7 @@ export class BSP {
         }
     }
 
-    public get planes(e): Lump<Plane> {
+    public get planes(): Lump<Plane> {
         const index = PlaneExtensions.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -511,7 +389,7 @@ export class BSP {
         }
     }
 
-    public get leafFaces(e): NumList {
+    public get leafFaces(): NumList {
         const {index, type} = NumList.GetIndexForLeafFacesLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -530,7 +408,7 @@ export class BSP {
         }
     }
 
-    public get faceEdge(e): NumList {
+    public get faceEdges(): NumList {
         const {index, type} = NumList.GetIndexForFaceEdgesLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -542,7 +420,7 @@ export class BSP {
         }
     }
 
-    public set faceEdge(val: NumList) {
+    public set faceEdges(val: NumList) {
         const {index, type} = NumList.GetIndexForFaceEdgesLump(this.mapType)
         if (index >= 0) {
             this._lumps.set(index, val)
@@ -550,7 +428,7 @@ export class BSP {
         }
     }
 
-    public get entities(e): Entities {
+    public get entities(): Entities {
         const index = Entity.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -570,7 +448,7 @@ export class BSP {
         }
     }
 
-    public get textures(e): Textures {
+    public get textures(): Textures {
         const index = Texture.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -589,7 +467,7 @@ export class BSP {
         }
     }
 
-    public get vertices(e): Lump<Vertex> {
+    public get vertices(): Lump<Vertex> {
         const index = VertexExtensions.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -608,7 +486,7 @@ export class BSP {
         }
     }
 
-    public get normals(e): Lump<Vector3> {
+    public get normals(): Lump<Vector3> {
         const index = Vector3Extensions.GetIndexForNormalsLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -627,7 +505,7 @@ export class BSP {
         }
     }
 
-    public get nodes(e): Lump<Node> {
+    public get nodes(): Lump<Node> {
         const index = Node.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -638,7 +516,7 @@ export class BSP {
         }
     }
 
-    public set nodes(val: Node[]) {
+    public set nodes(val: Lump<Node>) {
         const index = Node.GetIndexForLump(this.mapType)
         if (index >= 0) {
             this._lumps.set(index, val)
@@ -646,7 +524,7 @@ export class BSP {
         }
     }
 
-    public get textureInfo(e): Lump<TextureInfo> {
+    public get textureInfo(): Lump<TextureInfo> {
         const index = TextureInfo.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -665,7 +543,7 @@ export class BSP {
         }
     }
 
-    public get faces(e): Lump<Face> {
+    public get faces(): Lump<Face> {
         const index = Face.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -684,7 +562,7 @@ export class BSP {
         }
     }
 
-    public get leaves(e): Lump<Leaf> {
+    public get leaves(): Lump<Leaf> {
         const index = Leaf.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -703,7 +581,7 @@ export class BSP {
         }
     }
 
-    public get edges(e): Lump<Edge> {
+    public get edges(): Lump<Edge> {
         const index = Edge.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -722,7 +600,7 @@ export class BSP {
         }
     }
 
-    public get models(e): Lump<Model> {
+    public get models(): Lump<Model> {
         const index = Model.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -741,7 +619,7 @@ export class BSP {
         }
     }
 
-    public get brushes(e): Lump<Brush> {
+    public get brushes(): Lump<Brush> {
         const index = Brush.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -760,7 +638,7 @@ export class BSP {
         }
     }
 
-    public get brushSides(e): Lump<BrushSide> {
+    public get brushSides(): Lump<BrushSide> {
         const index = BrushSide.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -779,15 +657,16 @@ export class BSP {
         }
     }
 
-    public get materials(e): Textures {
+    public get materials(): Textures {
         const index = Texture.GetIndexForMaterialLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
                 const info = this.get(index)
                 this._lumps.set(index, Texture.LumpFactory(this.reader.readLump(info), this, info))
             }
-            return this._lumps.get(index) as Texture
+            return this._lumps.get(index) as Textures
         }
+        return null
     }
 
     public set materials(val: Textures) {
@@ -798,7 +677,7 @@ export class BSP {
         }
     }
 
-    public get lightmaps(e): Lightmaps {
+    public get lightmaps(): Lightmaps {
         const index = Lightmaps.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -817,7 +696,7 @@ export class BSP {
         }
     }
 
-    public get originalFaces(e): Lump<Face> {
+    public get originalFaces(): Lump<Face> {
         const index = Face.GetIndexForOriginalFacesLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -836,7 +715,7 @@ export class BSP {
         }
     }
 
-    public get textureData(e): Lump<TextureData> {
+    public get textureData(): Lump<TextureData> {
         const index = TextureData.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -855,7 +734,7 @@ export class BSP {
         }
     }
 
-    public get displacements(e): Lump<Displacement> {
+    public get displacements(): Lump<Displacement> {
         const index = Displacement.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -874,7 +753,7 @@ export class BSP {
         }
     }
 
-    public get displacementVertices(e): Lump<DisplacementVertex> {
+    public get displacementVertices(): Lump<DisplacementVertex> {
         const index = DisplacementVertex.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -893,7 +772,7 @@ export class BSP {
         }
     }
 
-    public get cubemaps(e): Lump<Cubemap> {
+    public get cubemaps(): Lump<Cubemap> {
         const index = Cubemap.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -912,7 +791,7 @@ export class BSP {
         }
     }
 
-    public get overlays(e): Lump<Overlay> {
+    public get overlays(): Lump<Overlay> {
         const index = Overlay.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -931,7 +810,7 @@ export class BSP {
         }
     }
 
-    public get staticModels(e): Lump<StaticModel> {
+    public get staticModels(): Lump<StaticModel> {
         const index = StaticModel.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -950,7 +829,7 @@ export class BSP {
         }
     }
 
-    public get lodTerrains(e): Lump<LODTerrain> {
+    public get lodTerrains(): Lump<LODTerrain> {
         const index = LODTerrain.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -969,7 +848,7 @@ export class BSP {
         }
     }
 
-    public get leafStaticModels(e): NumList {
+    public get leafStaticModels(): NumList {
         const {index, type} = NumList.GetIndexForLeafStaticModelsLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -988,7 +867,7 @@ export class BSP {
         }
     }
 
-    public get patches(e): Lump<Patch> {
+    public get patches(): Lump<Patch> {
         const index = Patch.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -1007,7 +886,7 @@ export class BSP {
         }
     }
 
-    public get patchVertices(e): Lump<Vector3> {
+    public get patchVertices(): Lump<Vector3> {
         const index = Vector3Extensions.GetIndexForPatchVertsLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -1026,7 +905,7 @@ export class BSP {
         }
     }
 
-    public get patchIndices(e): NumList {
+    public get patchIndices(): NumList {
         const {index, type} = NumList.GetIndexForPatchIndicesLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -1045,7 +924,7 @@ export class BSP {
         }
     }
 
-    public get leafPatches(e): NumList {
+    public get leafPatches(): NumList {
         const {index, type} = NumList.GetIndexForLeafPatchesLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -1064,7 +943,7 @@ export class BSP {
         }
     }
 
-    public get indices(e): NumList {
+    public get indices(): NumList {
         const {index, type} = NumList.GetIndexForIndicesLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -1083,7 +962,7 @@ export class BSP {
         }
     }
 
-    public get textureTable(e): NumList {
+    public get textureTable(): NumList {
         const {index, type} = NumList.GetIndexForTexTableLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -1102,7 +981,7 @@ export class BSP {
         }
     }
 
-    public get displacementTriangles(e): NumList {
+    public get displacementTriangles(): NumList {
         const {index, type} = NumList.GetIndexForDisplacementTrianglesLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -1121,7 +1000,7 @@ export class BSP {
         }
     }
 
-    public get visibility(e): Visibility {
+    public get visibility(): Visibility {
         const index = Visibility.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {
@@ -1140,7 +1019,7 @@ export class BSP {
         }
     }
 
-    public get gameLump(e): GameLump {
+    public get gameLump(): GameLump {
         const index = GameLump.GetIndexForLump(this.mapType)
         if (index >= 0) {
             if (!this._lumps.has(index)) {

@@ -3,37 +3,13 @@ import {ILump} from '../Common/Lumps/ILump'
 import {int, Int32} from '../../../utils/number'
 
 export class BSPHeader {
-    /// <summary>
-    /// "IBSP" represented as 32.
-    /// </summary>
     public static readonly IBSPHeader = 1347633737
-    /// <summary>
-    /// "RBSP" represented as 32.
-    /// </summary>
     public static readonly RBSPHeader = 1347633746
-    /// <summary>
-    /// "VBSP" represented as 32.
-    /// </summary>
     public static readonly VBSPHeader = 1347633750
-    /// <summary>
-    /// "EALA" represented as 32.
-    /// </summary>
     public static readonly EALAHeader = 1095516485
-    /// <summary>
-    /// "2015" represented as 32.
-    /// </summary>
     public static readonly MOHAAHeader = 892416050
-    /// <summary>
-    /// "EF2!" represented as 32.
-    /// </summary>
     public static readonly EF2Header = 556942917
-    /// <summary>
-    /// "rBSP" represented as 32.
-    /// </summary>
     public static readonly rBSPHeader = 1347633778
-    /// <summary>
-    /// "FAKK" represented as 32.
-    /// </summary>
     public static readonly FAKKHeader = 1263223110
 
     public bsp: BSP

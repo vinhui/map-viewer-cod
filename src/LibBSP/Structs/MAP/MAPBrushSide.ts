@@ -2,9 +2,10 @@ import {Vector2, Vector3} from '../../Utils/Vector'
 import {Plane} from '../../Utils/Plane'
 import {TextureInfo} from '../Common/TextureInfo'
 import {StringExtensions} from '../../Extensions/StringExtensions'
-import {parseFloatUS} from '../../../utils/number'
+import {float, int, parseFloatUS} from '../../../utils/number'
 import {PlaneExtensions} from '../../Extensions/PlaneExtensions'
 import {MAPDisplacement} from './MAPDisplacement'
+import {LumpObjDataCtor} from '../Common/ILumpObject'
 
 export class MAPBrushSide {
     public vertices: Vector3[]
@@ -65,7 +66,7 @@ export class MAPBrushSide {
         } else {
             let inDispInfo = false
             let braceCount = 0
-            this.textureInfo = new TextureInfo()
+            this.textureInfo = new TextureInfo(new LumpObjDataCtor(null, null))
             let child = []
             for (let line of lines) {
                 if (line == '{') {

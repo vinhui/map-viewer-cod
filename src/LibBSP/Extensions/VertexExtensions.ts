@@ -7,6 +7,7 @@ import {Vector2Extensions} from './Vector2Extensions'
 import {Vector4Extensions} from './Vector4Extensions'
 import {Lump} from '../Structs/Common/Lumps/Lump'
 import {Color} from '../Utils/Color'
+import {int} from '../../utils/number'
 
 export class VertexExtensions {
     public static Scale(vertex: Vertex, scalar: int): Vertex {

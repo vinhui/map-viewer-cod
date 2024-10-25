@@ -1,3 +1,5 @@
+import {int} from '../../utils/number'
+
 export class StringExtensions {
     public static SplitUnlessInContainer(st: string, separator: string, container: string, removeEmptyItems: boolean = false): string[] {
         if (st.indexOf(separator) < 0) {

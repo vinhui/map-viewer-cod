@@ -9,7 +9,7 @@ export class LibBSP {
      * @param bspFile Should include maps/ folder
      * @constructor
      */
-    public static async LoadBSP(baseUrl: string, bspFile: string): BSP {
+    public static async LoadBSP(baseUrl: string, bspFile: string): Promise<BSP> {
         this.baseUrl = baseUrl
         this.fileData = new Map()
 

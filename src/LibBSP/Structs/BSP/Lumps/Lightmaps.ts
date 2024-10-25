@@ -1,5 +1,6 @@
 import {BSP, LumpInfo, MapType} from '../BSP'
 import {ILump} from '../../Common/Lumps/ILump'
+import {int} from '../../../../utils/number'
 
 export class Lightmaps implements ILump {
     public bsp: BSP

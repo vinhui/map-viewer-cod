@@ -1,5 +1,6 @@
 import {ILump} from './Lumps/ILump'
 import {MapType} from '../BSP/BSP'
+import {int} from '../../../utils/number'
 
 export abstract class ILumpObject<T> {
     public constructor(obj: LumpObjDataCtor | LumpObjCopyCtor<T>) {
@@ -20,6 +21,10 @@ export abstract class ILumpObject<T> {
 
     public get data(): Uint8Array {
         return this._data
+    }
+
+    public set data(value: Uint8Array) {
+        this._data = value
     }
 
     public get mapType(): MapType {
@@ -43,7 +48,7 @@ export abstract class ILumpObject<T> {
             throw new Error('ArgumentNullException')
         }
 
-        this._data = data
+        this.data = data
         this._parent = parent
     }
 }

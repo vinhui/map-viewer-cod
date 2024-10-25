@@ -1,12 +1,9 @@
 import {Lump} from './Lump'
 import {Entity} from '../Entity'
-import {BSP, LumpInfo} from '../../BSP/BSP'
+import {int} from '../../../../utils/number'
+import {LumpObjDataCtor} from '../ILumpObject'
 
 export class Entities extends Lump<Entity> {
-    constructor(items: Entity[], bsp: BSP, lumpInfo: LumpInfo) {
-        super(items, bsp, lumpInfo)
-    }
-
     public get length(): int {
         let length = 1
 
@@ -70,13 +67,9 @@ export class Entities extends Lump<Entity> {
         return new TextEncoder().encode(sb)
     }
 
-    protected fromData(data: Uint8Array, structLength: int) {
+    public fromData(data: Uint8Array, _structLength?: int) {
         if (data === null) {
             throw new Error('ArgumentNullException')
-        }
-
-        if (structLength <= 0) {
-            throw new Error('Cannot use the base Lump constructor for variable length lumps (structLength was negative). Create a derived class with a new constructor instead.')
         }
 
         let inQuotes = false
@@ -131,7 +124,7 @@ export class Entities extends Lump<Entity> {
                     ) {
                         braceCount--
                         if (braceCount === 0) {
-                            let entity = Entity.CreateWithParent(this)
+                            let entity = new Entity(new LumpObjDataCtor(new Uint8Array(0), this))
                             entity.parseString(current)
                             entities.push(entity)
                             current = ''

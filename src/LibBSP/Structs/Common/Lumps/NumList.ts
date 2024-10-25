@@ -1,6 +1,6 @@
 import {ILump} from './ILump'
 import {BSP, LumpInfo, MapType} from '../../BSP/BSP'
-import {long} from '../../../../utils/number'
+import {int, long} from '../../../../utils/number'
 
 export enum DataType {
     Invalid = 0,
@@ -337,7 +337,7 @@ export class NumList implements ILump {
         return this.data
     }
 
-    public get(index: int): int {
+    public get(index: int): bigint {
         return this._backingArray[index]
     }
 
