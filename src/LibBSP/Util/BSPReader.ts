@@ -297,29 +297,27 @@ export class BSPReader {
         }
 
         const baseName = this.bspFile.substring(0, this.bspFile.length - 4)
-        for (let i = 0; i < 50; i++) {
-            let match = false
-            for (const c of ['l', 'h', 's']) {
-                const name = `${baseName}_${c}_${i}.lmp`
-                if (!FakeFileSystem.FileExists(name)) {
-                    continue
-                }
 
-                match = true
-                const bytes = FakeFileSystem.ReadFile(name)
-                const br = new BinaryReader(bytes)
-                const l = new LumpInfo()
-                l.offset = br.readInt32()
-                const lumpIndex = br.readInt32()
-                l.version = br.readInt32()
-                l.length = br.readInt32()
-                l.lumpFile = name
-                this.lumpFiles.set(lumpIndex, l)
-            }
+        const files = FakeFileSystem.GetFilesInDirectory(baseName, /_._.*\.lmp/)
+        files.sort((f1, f2) => {
+            const startIndex = this.bspFile.split('/').pop().length - 1
+            const f1EndIndex = f1.lastIndexOf('.')
+            const f2EndIndex = f2.lastIndexOf('.')
+            const f1Position = parseInt(f1.split('/').pop().substring(startIndex, f1EndIndex - startIndex), 10)
+            const f2Position = parseInt(f2.split('/').pop().substring(startIndex, f2EndIndex - startIndex), 10)
+            return f1Position - f2Position
+        })
 
-            if (!match) {
-                break
-            }
+        for (let file of files) {
+            const bytes = FakeFileSystem.ReadFile(file)
+            const br = new BinaryReader(bytes)
+            const l = new LumpInfo()
+            l.offset = br.readInt32()
+            const lumpIndex = br.readInt32()
+            l.version = br.readInt32()
+            l.length = br.readInt32()
+            l.lumpFile = file
+            this.lumpFiles.set(lumpIndex, l)
         }
     }
 
