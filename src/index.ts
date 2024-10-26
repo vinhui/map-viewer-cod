@@ -1,6 +1,7 @@
 import './styles/main.css'
 import {Engine, FlyCamera, HemisphericLight, Scene, Vector3} from '@babylonjs/core'
 import '@babylonjs/inspector'
+import {BSPLoader, MeshCombineOptions} from './LibBSP-bjs/Util/BSPLoader'
 
 console.log('Hello World!')
 
@@ -25,9 +26,21 @@ engine.runRenderLoop(() => {
     scene.render()
 })
 
-// const loader = new BSPLoader('quake/', 'maps/anodm4.bsp')
-// loader.load().then(
-//     () => {
-//         console.log('Map loaded!')
-//     },
-// )
+const loader = new BSPLoader()
+loader.settings = {
+    scene: scene,
+    baseUrl: 'cod/',
+    path: 'maps/mp/amusement_park.bsp',
+    // baseUrl: 'quake/',
+    // path: 'maps/anodm4.bsp',
+    meshCombineOptions: MeshCombineOptions.PerMaterial,
+    scaleFactor: 1,
+    curveTesselationLevel: 3,
+}
+loader.loadBSP()
+    .then(() => {
+        console.log('BSP loaded!')
+    })
+    .catch(e => {
+        console.error('Failed to load:', e)
+    })
