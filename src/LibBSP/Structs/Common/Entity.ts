@@ -154,7 +154,7 @@ export class Entity extends ILumpObject<Entity> {
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Entities {
         if (!data) {
-            throw new Error('ArgumentNullExcept ion')
+            throw new Error('ArgumentNullException')
         }
 
         const l = new Entities(Entity, null, bsp, lumpInfo)
