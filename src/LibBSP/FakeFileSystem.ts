@@ -6,6 +6,10 @@ export class FakeFileSystem {
     private static fileData = new Map<string, Uint8Array>()
 
     public static FileExists(path: string): boolean {
+        if (!path) {
+            return false
+        }
+
         if (this.caseInsensitive) {
             path = path.toLowerCase()
         }
