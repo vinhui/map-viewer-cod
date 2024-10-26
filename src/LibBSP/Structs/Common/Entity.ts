@@ -383,7 +383,7 @@ export class Entity extends ILumpObject<Entity> {
         try {
             return parseFloatUS(this.get(key))
         } catch (e) {
-            if (failDefault !== null) {
+            if (failDefault) {
                 return failDefault
             } else {
                 throw e
@@ -395,14 +395,14 @@ export class Entity extends ILumpObject<Entity> {
         try {
             const val = Number.parseInt(this.get(key), 10)
             if (isNaN(val)) {
-                if (failDefault !== null) {
+                if (failDefault) {
                     return failDefault
                 } else {
                     throw new Error('Invalid format')
                 }
             }
         } catch (e) {
-            if (failDefault !== null) {
+            if (failDefault) {
                 return failDefault
             } else {
                 throw e
@@ -427,7 +427,7 @@ export class Entity extends ILumpObject<Entity> {
     }
 
     public compareTo(obj: unknown) {
-        if (obj === null || obj === undefined) {
+        if (!obj) {
             return 1
         }
         if (!(obj instanceof Entity)) {

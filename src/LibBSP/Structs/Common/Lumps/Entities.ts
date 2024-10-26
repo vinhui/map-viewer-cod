@@ -68,7 +68,7 @@ export class Entities extends Lump<Entity> {
     }
 
     public fromData(data: Uint8Array, _structLength?: int) {
-        if (data === null) {
+        if (!data) {
             throw new Error('ArgumentNullException')
         }
 

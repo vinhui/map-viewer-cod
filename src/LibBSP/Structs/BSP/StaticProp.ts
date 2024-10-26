@@ -935,7 +935,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                         for (let i = 0; i < 128; ++i) {
                             this.data[this.data.length - i - 1] = 0
                         }
-                        if (value !== null) {
+                        if (value) {
                             for (let i = 0; i < 127; i++) {
                                 this.data[this.data.length - 128 + i] = value.charCodeAt(i)
                             }
@@ -948,7 +948,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): StaticProps {
-        if (data === null) {
+        if (!data) {
             throw new Error('ArgumentNullException')
         }
 
@@ -967,14 +967,14 @@ export class StaticProp extends ILumpObject<StaticProp> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
+            if (source.parent?.bsp && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source.data)
                 return
             } else {
                 //Data = new byte[GetStructLength(parent.bsp.version, parent.LumpInfo.version)];
             }
         } else {
-            //if (source.parent?.bsp !== null)
+            //if (source.parent?.bsp)
             //{
             //    Data = new byte[GetStructLength(source.parent.bsp.version, source.Parent.LumpInfo.version)];
             //}

@@ -18,7 +18,7 @@ export class BSPReader {
     }
 
     public getHeader(mapType: MapType): Uint8Array {
-        if (this.bspFile === null) {
+        if (!this.bspFile) {
             return null
         }
         if (mapType === MapType.CoD4) {
@@ -57,7 +57,7 @@ export class BSPReader {
             return new Uint8Array(0)
         }
         let output: Uint8Array
-        if (info.lumpFile !== null) {
+        if (info.lumpFile) {
             output = this.readLumpFile(info.offset, info.length, info.lumpFile)
         } else {
             output = this.readLumpFile(info.offset, info.length)
@@ -70,8 +70,8 @@ export class BSPReader {
     }
 
     public readLumpFile(offset: int, length: int, filename?: string): Uint8Array {
-        if (filename === null || filename === '') {
-            if (this.bspFile === null) {
+        if (!filename || filename === '') {
+            if (!this.bspFile) {
                 return null
             }
             filename = this.bspFile
@@ -86,7 +86,7 @@ export class BSPReader {
     }
 
     public getLumpFileLumpInfo(index: int): LumpInfo {
-        if (this.lumpFiles === null) {
+        if (!this.lumpFiles) {
             this.loadLumpFiles()
         }
 
@@ -98,7 +98,7 @@ export class BSPReader {
 
     public getVersion(bigEndian: boolean = false): MapType {
         let current = MapType.Undefined
-        if (this.bspFile !== null) {
+        if (this.bspFile) {
             const bytes = FakeFileSystem.ReadFile(this.bspFile)
 
             if (bytes.length < 4) {
@@ -292,7 +292,7 @@ export class BSPReader {
 
     private loadLumpFiles() {
         this.lumpFiles = new Map()
-        if (this.bspFile === null) {
+        if (!this.bspFile) {
             return
         }
 
@@ -322,7 +322,7 @@ export class BSPReader {
     }
 
     private XorWithKeyStartingAtIndex(data: Uint8Array, index: int = 0): Uint8Array {
-        if (data === null) {
+        if (!data) {
             throw new Error('ArgumentNullException')
         }
 

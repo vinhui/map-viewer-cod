@@ -54,7 +54,7 @@ export class DisplacementVertex extends ILumpObject<DisplacementVertex> {
     }
 
     public static LumpFactory(data: Uint8Array, bsp: BSP, lumpInfo: LumpInfo): Lump<DisplacementVertex> {
-        if (data === null) {
+        if (!data) {
             throw new Error('ArgumentNullException')
         }
 
@@ -87,14 +87,14 @@ export class DisplacementVertex extends ILumpObject<DisplacementVertex> {
         this._parent = parent
 
         if (parent?.bsp) {
-            if (source.parent !== null && source.parent.bsp !== null && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
+            if (source.parent?.bsp && source.parent.bsp.mapType === parent.bsp.mapType && source.lumpVersion === parent.lumpInfo.version) {
                 this.data = new Uint8Array(source.data)
                 return
             } else {
                 this.data = new Uint8Array(DisplacementVertex.GetStructLength(parent.bsp.mapType, parent.lumpInfo.version))
             }
         } else {
-            if (source.parent !== null && source.parent.bsp !== null) {
+            if (source.parent?.bsp) {
                 this.data = new Uint8Array(DisplacementVertex.GetStructLength(source.parent.bsp.mapType, source.parent.lumpInfo.version))
             } else {
                 this.data = new Uint8Array(DisplacementVertex.GetStructLength(MapType.Undefined, 0))

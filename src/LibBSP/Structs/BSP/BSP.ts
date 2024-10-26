@@ -144,7 +144,7 @@ export class BSP {
     private _reader: BSPReader
 
     public get reader(): BSPReader {
-        if (this._reader === null) {
+        if (!this._reader) {
             this._reader = new BSPReader()
         }
         return this._reader
@@ -342,7 +342,7 @@ export class BSP {
     }
 
     public get staticProps(): StaticProps {
-        if (this.gameLump !== null) {
+        if (this.gameLump) {
             return this.gameLump.staticProps
         }
     }

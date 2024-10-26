@@ -183,7 +183,7 @@ export class BSPHeader {
 
                     let lumpLength: int
                     const lump = this.bsp.getLoadedLump(lumpInfo.ident)
-                    if (lump !== null) {
+                    if (lump) {
                         lumpLength = lump.length
                     } else {
                         lumpLength = lumpInfo.length
@@ -232,7 +232,7 @@ export class BSPHeader {
                     let lumpIdent: int
 
                     let lump: ILump = this.bsp.getLoadedLump(i)
-                    if (lump !== null) {
+                    if (lump) {
                         lumpLength = lump.length
                         lumpVersion = this.bsp[i].version
                         lumpIdent = this.bsp[i].ident
@@ -293,7 +293,7 @@ export class BSPHeader {
             return this.getLumpInfoAtOffset(12 + lumpInfoLength * index)
         } else if (this.bsp.mapType === MapType.Titanfall) {
             const lumpFileInfo: LumpInfo = this.bsp.reader.getLumpFileLumpInfo(index)
-            if (lumpFileInfo.lumpFile !== null) {
+            if (lumpFileInfo.lumpFile) {
                 return lumpFileInfo
             }
             return this.getLumpInfoAtOffset(lumpInfoLength * (index + 1))
@@ -323,7 +323,7 @@ export class BSPHeader {
             return new LumpInfo()
         } else if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
             const lumpFileInfo: LumpInfo = this.bsp.reader.getLumpFileLumpInfo(index)
-            if (lumpFileInfo.lumpFile !== null) {
+            if (lumpFileInfo.lumpFile) {
                 return lumpFileInfo
             }
 
