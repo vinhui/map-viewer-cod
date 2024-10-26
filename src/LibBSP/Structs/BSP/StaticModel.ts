@@ -58,7 +58,7 @@ export class StaticModel extends ILumpObject<StaticModel> {
     public get scale(): float {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
-            return view.getFloat32(152)
+            return view.getFloat32(152, true)
         }
 
         return Number.NaN

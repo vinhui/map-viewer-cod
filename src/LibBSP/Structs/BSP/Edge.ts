@@ -13,12 +13,12 @@ export class Edge extends ILumpObject<Edge> {
     public get firstVertexIndex(): int {
         if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(0)
+            return view.getInt32(0, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(0)
+            return view.getUint16(0, true)
         }
 
         return -1
@@ -43,12 +43,12 @@ export class Edge extends ILumpObject<Edge> {
     public get secondVertexIndex(): int {
         if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(4)
+            return view.getInt32(4, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(2)
+            return view.getUint16(2, true)
         }
 
         return -1

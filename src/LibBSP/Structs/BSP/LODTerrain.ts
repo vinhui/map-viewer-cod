@@ -104,7 +104,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
     public get y(): sbyte {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
-            view.getInt8(37)
+            return view.getInt8(37)
         }
 
         return 0
@@ -119,7 +119,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
     public get baseZ(): short {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt16(38)
+            return view.getInt16(38, true)
         }
 
         return 0
@@ -139,7 +139,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
     public get textureIndex(): short {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt16(40)
+            return view.getInt16(40, true)
         }
 
         return -1
@@ -155,7 +155,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
     public get lightmap(): short {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt16(42)
+            return view.getInt16(42, true)
         }
 
         return -1

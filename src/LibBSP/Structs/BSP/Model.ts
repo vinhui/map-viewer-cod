@@ -22,15 +22,15 @@ export class Model extends ILumpObject<Model> {
     public get headNodeIndex(): int {
         if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(40)
+            return view.getInt32(40, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(24)
+            return view.getInt32(24, true)
         }
 
         return -1
@@ -54,10 +54,10 @@ export class Model extends ILumpObject<Model> {
     public get headClipNode1Index(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(40)
+            return view.getInt32(40, true)
         } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(28)
+            return view.getInt32(28, true)
         }
 
         return -1
@@ -76,10 +76,10 @@ export class Model extends ILumpObject<Model> {
     public get headClipNode2Index(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(44)
+            return view.getInt32(44, true)
         } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(32)
+            return view.getInt32(32, true)
         }
 
         return -1
@@ -98,10 +98,10 @@ export class Model extends ILumpObject<Model> {
     public get headClipNode3Index(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(48)
+            return view.getInt32(48, true)
         } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         }
 
         return -1
@@ -132,7 +132,7 @@ export class Model extends ILumpObject<Model> {
     public get firstLeafIndex(): int {
         if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(40)
+            return view.getInt32(40, true)
         }
 
         return -1
@@ -152,10 +152,10 @@ export class Model extends ILumpObject<Model> {
     public get numLeaves(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(52)
+            return view.getInt32(52, true)
         } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(44)
+            return view.getInt32(44, true)
         }
 
         return -1
@@ -186,10 +186,10 @@ export class Model extends ILumpObject<Model> {
     public get firstBrushIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(40)
+            return view.getInt32(40, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(32)
+            return view.getInt32(32, true)
         }
 
         return -1
@@ -212,10 +212,10 @@ export class Model extends ILumpObject<Model> {
     public get numBrushes(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(44)
+            return view.getInt32(44, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         }
 
         return -1
@@ -246,24 +246,24 @@ export class Model extends ILumpObject<Model> {
     public get firstFaceIndex(): int {
         if (this.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
-            return view.getInt16(24)
+            return view.getInt16(24, true)
         } else if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(44)
+            return view.getInt32(44, true)
         } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(48)
+            return view.getInt32(48, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(56)
+            return view.getInt32(56, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(40)
+            return view.getInt32(40, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || this.mapType === MapType.Titanfall) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(24)
+            return view.getInt32(24, true)
         }
 
         return -1
@@ -300,24 +300,24 @@ export class Model extends ILumpObject<Model> {
     public get numFaces(): int {
         if (this.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
-            return view.getInt16(28)
+            return view.getInt16(28, true)
         } else if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(48)
+            return view.getInt32(48, true)
         } else if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(52)
+            return view.getInt32(52, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(60)
+            return view.getInt32(60, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(44)
+            return view.getInt32(44, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || this.mapType === MapType.Titanfall) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(28)
+            return view.getInt32(28, true)
         }
 
         return -1
@@ -363,7 +363,7 @@ export class Model extends ILumpObject<Model> {
         if (this.mapType === MapType.CoD
             || this.mapType === MapType.CoDDemo) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(32)
+            return view.getInt32(32, true)
         }
 
         return -1
@@ -385,7 +385,7 @@ export class Model extends ILumpObject<Model> {
         if (this.mapType === MapType.CoD
             || this.mapType === MapType.CoDDemo) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         }
 
         return -1

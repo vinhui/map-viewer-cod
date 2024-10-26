@@ -109,7 +109,7 @@ export class GameLump implements ILump {
             if (this._lumps.has(type)) {
                 length += this._lumps.get(type).length
             } else {
-                length += this[type].length
+                length += this._backingMap.get(type).length
             }
         }
 

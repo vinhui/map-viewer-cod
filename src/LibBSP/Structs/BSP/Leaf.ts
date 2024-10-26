@@ -13,7 +13,7 @@ export class Leaf extends ILumpObject<Leaf> {
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)
             || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(0)
+            return view.getInt32(0, true)
         }
 
         return -1
@@ -35,14 +35,14 @@ export class Leaf extends ILumpObject<Leaf> {
             || this.mapType === MapType.Nightfire
             || this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(4)
+            return view.getInt32(4, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt16(4)
+            return view.getInt16(4, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(0)
+            return view.getInt32(0, true)
         }
 
         return -1
@@ -68,10 +68,10 @@ export class Leaf extends ILumpObject<Leaf> {
     public get area(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt16(6)
+            return view.getInt16(6, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3) && this.mapType !== MapType.CoD4) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(4)
+            return view.getInt32(4, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source) && this.mapType !== MapType.Vindictus) {
             return this.data[6]
         }
@@ -95,7 +95,7 @@ export class Leaf extends ILumpObject<Leaf> {
     public get flags(): int {
         if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(8)
+            return view.getInt32(8, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             return this.data[7]
         }
@@ -116,20 +116,20 @@ export class Leaf extends ILumpObject<Leaf> {
     public get minimums(): Vector3 {
         if (this.mapType === MapType.SoF) {
             const view = new DataView(this.data.buffer)
-            return new Vector3(view.getInt16(10), view.getInt16(12), view.getInt16(14))
+            return new Vector3(view.getInt16(10, true), view.getInt16(12, true), view.getInt16(14, true))
         } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return new Vector3(view.getInt32(12), view.getInt32(16), view.getInt32(20))
+            return new Vector3(view.getInt32(12, true), view.getInt32(16, true), view.getInt32(20, true))
         } else if (this.mapType === MapType.Nightfire) {
             return Vector3Extensions.ToVector3(this.data, 8)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return new Vector3(view.getInt16(8), view.getInt16(10), view.getInt16(12))
+            return new Vector3(view.getInt16(8, true), view.getInt16(10, true), view.getInt16(12, true))
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3) && !MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)
-            return new Vector3(view.getInt32(8), view.getInt32(12), view.getInt32(16))
+            return new Vector3(view.getInt32(8, true), view.getInt32(12, true), view.getInt32(16, true))
         }
 
         return new Vector3(0, 0, 0)
@@ -166,20 +166,20 @@ export class Leaf extends ILumpObject<Leaf> {
     public get maximums(): Vector3 {
         if (this.mapType === MapType.SoF) {
             const view = new DataView(this.data.buffer)
-            return new Vector3(view.getInt16(16), view.getInt16(18), view.getInt16(20))
+            return new Vector3(view.getInt16(16, true), view.getInt16(18, true), view.getInt16(20, true))
         } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return new Vector3(view.getInt32(24), view.getInt32(28), view.getInt32(32))
+            return new Vector3(view.getInt32(24, true), view.getInt32(28, true), view.getInt32(32, true))
         } else if (this.mapType === MapType.Nightfire) {
             return Vector3Extensions.ToVector3(this.data, 20)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return new Vector3(view.getInt16(14), view.getInt16(16), view.getInt16(18))
+            return new Vector3(view.getInt16(14, true), view.getInt16(16, true), view.getInt16(18, true))
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3) && !MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)
-            return new Vector3(view.getInt32(20), view.getInt32(24), view.getInt32(28))
+            return new Vector3(view.getInt32(20, true), view.getInt32(24, true), view.getInt32(28, true))
         }
 
         return new Vector3(0, 0, 0)
@@ -230,24 +230,24 @@ export class Leaf extends ILumpObject<Leaf> {
     public get firstMarkBrushIndex(): int {
         if (this.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(12)
+            return view.getInt32(12, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(16)
+            return view.getInt32(16, true)
         } else if (this.mapType === MapType.SoF) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(26)
+            return view.getUint16(26, true)
         } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(44)
+            return view.getInt32(44, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(24)
+            return view.getUint16(24, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(40)
+            return view.getInt32(40, true)
         }
 
         return -1
@@ -284,24 +284,24 @@ export class Leaf extends ILumpObject<Leaf> {
     public get numMarkBrushIndices(): int {
         if (this.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(16)
+            return view.getInt32(16, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(20)
+            return view.getInt32(20, true)
         } else if (this.mapType === MapType.SoF) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(28)
+            return view.getUint16(28, true)
         } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(48)
+            return view.getInt32(48, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(44)
+            return view.getInt32(44, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(26)
+            return view.getUint16(26, true)
         }
 
         return -1
@@ -347,19 +347,19 @@ export class Leaf extends ILumpObject<Leaf> {
     public get firstMarkFaceIndex(): int {
         if (this.mapType === MapType.SoF) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(22)
+            return view.getUint16(22, true)
         } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3) && !MapType.IsSubtypeOf(this.mapType, MapType.CoD)
             || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(32)
+            return view.getInt32(32, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(20)
+            return view.getUint16(20, true)
         }
 
         return -1
@@ -391,19 +391,19 @@ export class Leaf extends ILumpObject<Leaf> {
     public get numMarkFaceIndices(): int {
         if (this.mapType === MapType.SoF) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(24)
+            return view.getUint16(24, true)
         } else if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(40)
+            return view.getInt32(40, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3) && !MapType.IsSubtypeOf(this.mapType, MapType.CoD)
             || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(22)
+            return view.getUint16(22, true)
         }
 
         return -1
@@ -505,7 +505,7 @@ export class Leaf extends ILumpObject<Leaf> {
     public get firstLeafStaticModelIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(56)
+            return view.getInt32(56, true)
         }
 
         return -1
@@ -525,7 +525,7 @@ export class Leaf extends ILumpObject<Leaf> {
     public get numLeafStaticModelIndices(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(60)
+            return view.getInt32(60, true)
         }
 
         return -1
@@ -557,7 +557,7 @@ export class Leaf extends ILumpObject<Leaf> {
             || this.mapType === MapType.CoDDemo
             || this.mapType === MapType.CoD2) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(8)
+            return view.getInt32(8, true)
         }
 
         return -1
@@ -582,7 +582,7 @@ export class Leaf extends ILumpObject<Leaf> {
             || this.mapType === MapType.CoDDemo
             || this.mapType === MapType.CoD2) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(12)
+            return view.getInt32(12, true)
         }
 
         return -1

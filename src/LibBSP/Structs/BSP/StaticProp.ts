@@ -110,7 +110,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                 case 11:
                 case 12: {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt16(24)
+                    return view.getInt16(24, true)
                 }
             }
         }
@@ -159,7 +159,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                 case 10:
                 case 11: {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt16(26)
+                    return view.getInt16(26, true)
                 }
             }
         }
@@ -198,7 +198,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                 case 10:
                 case 11: {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt16(28)
+                    return view.getInt16(28, true)
                 }
             }
         }
@@ -320,15 +320,15 @@ export class StaticProp extends ILumpObject<StaticProp> {
                 case 11:
                 case 12: {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt32(32)
+                    return view.getInt32(32, true)
                 }
                 case 9: {
                     if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
-                        return view.getInt32(36)
+                        return view.getInt32(36, true)
                     } else {
                         const view = new DataView(this.data.buffer)
-                        return view.getInt32(32)
+                        return view.getInt32(32, true)
                     }
                 }
             }
@@ -379,15 +379,15 @@ export class StaticProp extends ILumpObject<StaticProp> {
                 case 11:
                 case 12: {
                     const view = new DataView(this.data.buffer)
-                    return view.getFloat32(36)
+                    return view.getFloat32(36, true)
                 }
                 case 9: {
                     if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
-                        return view.getFloat32(40)
+                        return view.getFloat32(40, true)
                     } else {
                         const view = new DataView(this.data.buffer)
-                        return view.getFloat32(36)
+                        return view.getFloat32(36, true)
                     }
                 }
             }
@@ -439,15 +439,15 @@ export class StaticProp extends ILumpObject<StaticProp> {
                 case 11:
                 case 12: {
                     const view = new DataView(this.data.buffer)
-                    return view.getFloat32(40)
+                    return view.getFloat32(40, true)
                 }
                 case 9: {
                     if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
-                        return view.getInt32(44)
+                        return view.getInt32(44, true)
                     } else {
                         const view = new DataView(this.data.buffer)
-                        return view.getInt32(40)
+                        return view.getInt32(40, true)
                     }
                 }
             }
@@ -552,15 +552,15 @@ export class StaticProp extends ILumpObject<StaticProp> {
                 case 11:
                 case 12: {
                     const view = new DataView(this.data.buffer)
-                    return view.getFloat32(56)
+                    return view.getFloat32(56, true)
                 }
                 case 9: {
                     if (this.data.length === 76) {
                         const view = new DataView(this.data.buffer)
-                        return view.getFloat32(60)
+                        return view.getFloat32(60, true)
                     } else {
                         const view = new DataView(this.data.buffer)
-                        return view.getFloat32(56)
+                        return view.getFloat32(56, true)
                     }
                 }
             }
@@ -604,7 +604,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                 case 6:
                 case 7: {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt16(60)
+                    return view.getInt16(60, true)
                 }
             }
         }
@@ -631,7 +631,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
                 case 6:
                 case 7: {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt16(62)
+                    return view.getInt16(62, true)
                 }
             }
         }
@@ -889,7 +889,7 @@ export class StaticProp extends ILumpObject<StaticProp> {
             switch (this.lumpVersion) {
                 case 11: {
                     const view = new DataView(this.data.buffer)
-                    return view.getFloat32(76)
+                    return view.getFloat32(76, true)
                 }
             }
         }

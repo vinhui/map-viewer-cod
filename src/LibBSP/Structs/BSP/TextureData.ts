@@ -62,8 +62,8 @@ export class TextureData extends ILumpObject<TextureData> {
     get viewSize(): Vector2 {
         const view = new DataView(this.data.buffer)
         return new Vector2(
-            view.getInt32(24),
-            view.getInt32(28),
+            view.getInt32(24, true),
+            view.getInt32(28, true),
         )
 
     }

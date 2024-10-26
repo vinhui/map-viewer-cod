@@ -15,7 +15,7 @@ export class Patch extends ILumpObject<Patch> {
         switch (this.mapType) {
             case MapType.CoD: {
                 const view = new DataView(this.data.buffer)
-                return view.getInt16(0)
+                return view.getInt16(0, true)
             }
             default: {
                 return -1
@@ -38,7 +38,7 @@ export class Patch extends ILumpObject<Patch> {
         switch (this.mapType) {
             case MapType.CoD: {
                 const view = new DataView(this.data.buffer)
-                return view.getInt16(2)
+                return view.getInt16(2, true)
             }
             default: {
                 return -1
@@ -62,7 +62,7 @@ export class Patch extends ILumpObject<Patch> {
             case MapType.CoD: {
                 if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
-                    return new Vector2(view.getInt16(4), view.getInt16(6))
+                    return new Vector2(view.getInt16(4, true), view.getInt16(6, true))
                 } else {
                     return new Vector2(0, 0)
                 }
@@ -92,7 +92,7 @@ export class Patch extends ILumpObject<Patch> {
             case MapType.CoD: {
                 if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt32(8)
+                    return view.getInt32(8, true)
                 } else {
                     return -1
                 }
@@ -134,10 +134,10 @@ export class Patch extends ILumpObject<Patch> {
             case MapType.CoD: {
                 if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt32(12)
+                    return view.getInt32(12, true)
                 } else if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt32(8)
+                    return view.getInt32(8, true)
                 } else {
                     return -1
                 }
@@ -172,10 +172,10 @@ export class Patch extends ILumpObject<Patch> {
             case MapType.CoD: {
                 if (this.type === 0) {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt16(4) * view.getInt16(6)
+                    return view.getInt16(4, true) * view.getInt16(6, true)
                 } else if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt16(4)
+                    return view.getInt16(4, true)
                 } else {
                     return -1
                 }
@@ -217,7 +217,7 @@ export class Patch extends ILumpObject<Patch> {
             case MapType.CoD: {
                 if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt16(6)
+                    return view.getInt16(6, true)
                 } else {
                     return -1
                 }
@@ -249,7 +249,7 @@ export class Patch extends ILumpObject<Patch> {
             case MapType.CoD: {
                 if (this.type === 1) {
                     const view = new DataView(this.data.buffer)
-                    return view.getInt32(12)
+                    return view.getInt32(12, true)
                 } else {
                     return -1
                 }

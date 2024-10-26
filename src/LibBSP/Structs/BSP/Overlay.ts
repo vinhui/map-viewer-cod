@@ -14,7 +14,7 @@ export class Overlay extends ILumpObject<Overlay> {
     public get id(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(0)
+            return view.getInt32(0, true)
         }
 
         return -1
@@ -34,10 +34,10 @@ export class Overlay extends ILumpObject<Overlay> {
     public get textureInfoIndex(): int {
         if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(4)
+            return view.getInt32(4, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt16(4)
+            return view.getInt16(4, true)
         }
 
         return -1
@@ -56,10 +56,10 @@ export class Overlay extends ILumpObject<Overlay> {
     public get faceCountAndRenderOrder(): uint {
         if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getUint32(8)
+            return view.getUint32(8, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(6)
+            return view.getUint16(6, true)
         }
 
         return 0
@@ -102,7 +102,7 @@ export class Overlay extends ILumpObject<Overlay> {
         const result = []
         for (let i = 0; i < Overlay.NumOverlayFaces; i++) {
             const view = new DataView(this.data.buffer)
-            result[i] = view.getInt32(offset)
+            result[i] = view.getInt32(offset, true)
             offset += 4
         }
 

@@ -24,7 +24,7 @@ export class DisplacementVertex extends ILumpObject<DisplacementVertex> {
     public get magnitude(): float {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getFloat32(12)
+            return view.getFloat32(12, true)
         }
 
         return -1
@@ -40,7 +40,7 @@ export class DisplacementVertex extends ILumpObject<DisplacementVertex> {
     public get alpha(): float {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getFloat32(16)
+            return view.getFloat32(16, true)
         }
 
         return -1

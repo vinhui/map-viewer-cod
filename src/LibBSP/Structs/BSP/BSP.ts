@@ -462,8 +462,9 @@ export class BSP {
                 const info = this.get(index)
                 this._lumps.set(index, Texture.LumpFactory(this.reader.readLump(info), this, info))
             }
-            return this._lumps[index] as Textures
+            return this._lumps.get(index) as Textures
         }
+        return null
     }
 
     public set textures(val: Textures) {
