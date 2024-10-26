@@ -202,7 +202,7 @@ export class BSPHeader {
                 const newData = new Uint8Array(lumpOffset + lumpInfoLength * numActualLumps)
                 const newDataView = new DataView(newData.buffer)
                 newData.set(magic, 0)
-                newDataView.setInt32(numActualLumps, 8)
+                newDataView.setInt32(8, numActualLumps)
                 let offset = magic.length + 4
                 for (let [key, value] of lumpInfos.entries()) {
                     newDataView.setInt32(offset, key)
@@ -244,27 +244,27 @@ export class BSPHeader {
                     }
 
                     if (this.bsp.mapType === MapType.L4D2 || this.bsp.mapType === MapType.Source27) {
-                        newDataView.setInt32(lumpVersion, offset)
+                        newDataView.setInt32(offset, lumpVersion)
                         if (lumpLength > 0) {
-                            newDataView.setInt32(lumpOffset, offset + 4)
+                            newDataView.setInt32(offset + 4, lumpOffset)
                         }
-                        newDataView.setInt32(lumpLength, offset + 8)
-                        newDataView.setInt32(lumpIdent, offset + 12)
+                        newDataView.setInt32(offset + 8, lumpLength)
+                        newDataView.setInt32(offset + 12, lumpIdent)
                     } else if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
                         if (lumpLength > 0) {
-                            newDataView.setInt32(lumpOffset, offset)
+                            newDataView.setInt32(offset, lumpOffset)
                         }
-                        newDataView.setInt32(lumpLength, offset + 4)
-                        newDataView.setInt32(lumpVersion, offset + 8)
-                        newDataView.setInt32(lumpIdent, offset + 12)
+                        newDataView.setInt32(offset + 4, lumpLength)
+                        newDataView.setInt32(offset + 8, lumpVersion)
+                        newDataView.setInt32(offset + 12, lumpIdent)
                     } else if (this.bsp.mapType === MapType.CoD || this.bsp.mapType === MapType.CoD2) {
-                        newDataView.setInt32(lumpLength, offset)
-                        newDataView.setInt32(lumpOffset, offset + 4)
+                        newDataView.setInt32(offset, lumpLength)
+                        newDataView.setInt32(offset + 4, lumpOffset)
                     } else {
                         if (lumpLength > 0) {
-                            newDataView.setInt32(lumpOffset, offset)
+                            newDataView.setInt32(offset, lumpOffset)
                         }
-                        newDataView.setInt32(lumpLength, offset + 4)
+                        newDataView.setInt32(offset + 4, lumpLength)
                     }
 
                     offset += BSPHeader.GetLumpInfoLength(this.bsp.mapType)
@@ -378,6 +378,6 @@ function numberToUint8Arr(num: Int32, arr?: Uint8Array, offset?: int): Uint8Arra
         arr = new Uint8Array(4)
     }
     const dv = new DataView(arr.buffer)
-    dv.setInt32(num, offset ?? 0)
+    dv.setInt32(offset ?? 0, num)
     return arr
 }

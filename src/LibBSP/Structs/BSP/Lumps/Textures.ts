@@ -226,7 +226,7 @@ export class Textures extends Lump<Texture> {
                     if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.GoldSrc)) {
                         const view = new DataView(bytes.buffer)
                         offset += Math.trunc(texture.dimensions.x * texture.dimensions.y / 64)
-                        view.setInt16(texture.palette.length, offset)
+                        view.setInt16(offset, texture.palette.length)
                         offset += 2
                         bytes.set(texture.palette, offset)
                     }
