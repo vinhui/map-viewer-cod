@@ -53,7 +53,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
         }
     }
 
-    public get uVs(): float[] {
+    public get uvs(): float[] {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
             return [
@@ -71,7 +71,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
         return null
     }
 
-    public set uVs(value: float[]) {
+    public set uvs(value: float[]) {
         if (value.length !== 8) {
             throw new Error('UVs array must have 8 elements.')
         }
@@ -280,7 +280,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
         this.flags = source.flags
         this.scale = source.scale
         this.lightmapCoordinates = source.lightmapCoordinates
-        this.uVs = source.uVs
+        this.uvs = source.uvs
         this.x = source.x
         this.y = source.y
         this.baseZ = source.baseZ
