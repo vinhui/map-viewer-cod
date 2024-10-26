@@ -16,6 +16,7 @@ export class StringExtensions {
             if (c === container) {
                 inContainer = !inContainer
                 current += c
+                continue
             }
 
             if (!inContainer) {

@@ -240,7 +240,7 @@ export class Entity extends ILumpObject<Entity> {
                     }
                 }
 
-                if (!inQuotes && (current[i] === '/' && i !== 0 && current[i - 1] === '/')) {
+                if (!inQuotes && current[i] === '/' && i !== 0 && current[i - 1] === '/') {
                     current = current.substring(0, i - 1)
                 }
             }
@@ -250,7 +250,12 @@ export class Entity extends ILumpObject<Entity> {
             }
 
             if (current[0] === '{') {
-                braceCount--
+                if (braceCount === 1 && !inBrush && !inConnections) {
+                    inBrush = true
+                }
+                ++braceCount
+            } else if (current[0] === '}') {
+                --braceCount
                 if (braceCount === 1) {
                     if (inBrush) {
                         brushLines.push(current)
@@ -295,9 +300,9 @@ export class Entity extends ILumpObject<Entity> {
         let isVal = false
         let numCommas = 0
 
-        st = st.replace(/^[ \t\r]+|[ \t\r]+$/g, '')
+//         st = st.replace(/^[\r\n\t]+|[\r\n\t]+$/g, '');
         for (let i = 0; i < st.length; i++) {
-            if (st[i] === '\"' && (i === 0 || i === st.length - 1 || st[i - 1] !== '\\')) {
+            if (st[i] === '"' && (i === 0 || i === st.length - 1 || st[i - 1] !== '\\')) {
                 if (inQuotes) {
                     if (isVal) {
                         break
@@ -312,14 +317,14 @@ export class Entity extends ILumpObject<Entity> {
                     } else {
                         val += st[i]
                         if (st[i] === ',' || st[i] === Entity.ConnectionMemberSeparater) {
-                            numCommas++
+                            ++numCommas
                         }
                     }
                 }
             }
         }
-        val = val.replace('\\"', '"')
-        if (key && isVal) {
+        // val = val.replace(/\\"/g, '"')
+        if (key !== null && key !== undefined && isVal) {
             if (numCommas === 4 || numCommas === 6) {
                 st = st.replace(',', Entity.ConnectionMemberSeparater)
                 let connection = val.split(',')
