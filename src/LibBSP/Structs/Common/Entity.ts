@@ -34,9 +34,10 @@ export class EntityConnection {
 
 export class Entity extends ILumpObject<Entity> {
     public static readonly ConnectionMemberSeparater = String.fromCharCode(0x1B)
-    public connections: EntityConnection[] = []
-    public brushes: MAPBrush[] = []
-    private _map: Map<string, string> = new Map()
+    public connections: EntityConnection[]
+    public brushes: MAPBrush[]
+    private _map: Map<string, string>
+
     public get map(): Map<string, string> {
         return this._map
     }
@@ -208,6 +209,9 @@ export class Entity extends ILumpObject<Entity> {
     }
 
     public parseString(st: string) {
+        if (!this._map) {
+            this._map = new Map()
+        }
         this._map.clear()
         this.brushes = []
         this.connections = []
