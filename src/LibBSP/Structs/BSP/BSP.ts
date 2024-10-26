@@ -1082,6 +1082,38 @@ export class BSP {
         this._dict.set(index, val)
     }
 
+    public getReferencedObjects<T>(o: unknown, lumpName: string): T[] {
+        if (!o) {
+            throw new Error('ArgumentNullException')
+        }
+
+        if (!lumpName) {
+            throw new Error('ArgumentNullException')
+        }
+
+        if (!(lumpName in this)) {
+            throw new Error(`The lump ${lumpName} does not exist in the BSP class.`)
+        }
+        const targetLump = this[lumpName] as Lump<T>
+
+        const countPropName = `${lumpName}_Count`
+        const indexPropName = `${lumpName}_Index`
+        if (countPropName in targetLump && indexPropName in targetLump) {
+            const count = targetLump[countPropName]
+            const index = targetLump[indexPropName]
+            if (typeof count !== 'number' || typeof index !== 'number') {
+                throw new Error(`Invalid count or index on ${targetLump.constructor.name} for lump ${lumpName}.`)
+            }
+            const result: T[] = []
+            for (let i = 0; i < count; i++) {
+                result.push(targetLump.get(index + i))
+            }
+            return result
+        } else {
+            throw new Error(`An object of type ${targetLump.constructor.name} does not implement both an Index and Count for lump ${lumpName}.`)
+        }
+    }
+
     public lumpLoaded(index: int): boolean {
         return this._lumps && this._lumps.has(index)
     }

@@ -15,6 +15,10 @@ export class Model extends ILumpObject<Model> {
         return this._parent.bsp.nodes.get(this.headNodeIndex)
     }
 
+    public get 'nodes_Index'(): int {
+        return this.headNodeIndex
+    }
+
     public get headNodeIndex(): int {
         if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
@@ -121,6 +125,10 @@ export class Model extends ILumpObject<Model> {
         return arr
     }
 
+    public get 'leaves_Index'(): int {
+        return this.firstFaceIndex
+    }
+
     public get firstLeafIndex(): int {
         if (this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
@@ -135,6 +143,10 @@ export class Model extends ILumpObject<Model> {
             const view = new DataView(this.data.buffer)
             view.setInt32(40, value)
         }
+    }
+
+    public get 'leaves_Count'(): int {
+        return this.numLeaves
     }
 
     public get numLeaves(): int {
@@ -167,6 +179,10 @@ export class Model extends ILumpObject<Model> {
         return arr
     }
 
+    public get 'brushes_Index'(): int {
+        return this.firstBrushIndex
+    }
+
     public get firstBrushIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)
@@ -187,6 +203,10 @@ export class Model extends ILumpObject<Model> {
             const view = new DataView(this.data.buffer)
             view.setInt32(32, value)
         }
+    }
+
+    public get 'brushes_Count'(): int {
+        return this.numBrushes
     }
 
     public get numBrushes(): int {
@@ -217,6 +237,10 @@ export class Model extends ILumpObject<Model> {
             arr.push(this._parent.bsp.faces.get(this.firstFaceIndex + i))
         }
         return arr
+    }
+
+    public get 'faces_Index'(): int {
+        return this.firstFaceIndex
     }
 
     public get firstFaceIndex(): int {
@@ -267,6 +291,10 @@ export class Model extends ILumpObject<Model> {
             const view = new DataView(this.data.buffer)
             view.setInt32(24, value)
         }
+    }
+
+    public get 'faces_Count'(): int {
+        return this.numFaces
     }
 
     public get numFaces(): int {
@@ -327,6 +355,10 @@ export class Model extends ILumpObject<Model> {
         return arr
     }
 
+    public get 'patchIndices_Index'(): int {
+        return this.firstPatchIndicesIndex
+    }
+
     public get firstPatchIndicesIndex(): int {
         if (this.mapType === MapType.CoD
             || this.mapType === MapType.CoDDemo) {
@@ -343,6 +375,10 @@ export class Model extends ILumpObject<Model> {
             const view = new DataView(this.data.buffer)
             view.setInt32(32, value)
         }
+    }
+
+    public get 'patchIndices_Count'(): int {
+        return this.numPatchIndices
     }
 
     public get numPatchIndices(): int {

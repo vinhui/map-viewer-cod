@@ -223,6 +223,10 @@ export class Leaf extends ILumpObject<Leaf> {
         return arr
     }
 
+    public get 'leafBrushes_Index'(): int {
+        return this.firstMarkBrushIndex
+    }
+
     public get firstMarkBrushIndex(): int {
         if (this.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
@@ -273,6 +277,9 @@ export class Leaf extends ILumpObject<Leaf> {
         }
     }
 
+    public get 'leafBrushes_Count'(): int {
+        return this.numMarkBrushIndices
+    }
 
     public get numMarkBrushIndices(): int {
         if (this.mapType === MapType.CoD4) {
@@ -333,6 +340,9 @@ export class Leaf extends ILumpObject<Leaf> {
         return arr
     }
 
+    public get 'leafFaces_Index'(): int {
+        return this.firstMarkFaceIndex
+    }
 
     public get firstMarkFaceIndex(): int {
         if (this.mapType === MapType.SoF) {
@@ -374,6 +384,9 @@ export class Leaf extends ILumpObject<Leaf> {
         }
     }
 
+    public get 'leafFaces_Count'(): int {
+        return this.numMarkFaceIndices
+    }
 
     public get numMarkFaceIndices(): int {
         if (this.mapType === MapType.SoF) {
@@ -485,6 +498,10 @@ export class Leaf extends ILumpObject<Leaf> {
         return arr
     }
 
+    public get 'leafStaticModels_Index'(): int {
+        return this.firstLeafStaticModelIndex
+    }
+
     public get firstLeafStaticModelIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
@@ -501,6 +518,9 @@ export class Leaf extends ILumpObject<Leaf> {
         }
     }
 
+    public get 'leafStaticModels_Count'(): int {
+        return this.numLeafStaticModelIndices
+    }
 
     public get numLeafStaticModelIndices(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
@@ -528,6 +548,10 @@ export class Leaf extends ILumpObject<Leaf> {
         return arr
     }
 
+    public get 'patchIndices_Index'(): int {
+        return this.firstPatchIndicesIndex
+    }
+
     public get firstPatchIndicesIndex(): int {
         if (this.mapType === MapType.CoD
             || this.mapType === MapType.CoDDemo
@@ -547,6 +571,10 @@ export class Leaf extends ILumpObject<Leaf> {
             const view = new DataView(this.data.buffer)
             view.setInt32(8, value)
         }
+    }
+
+    public get 'patchIndices_Count'(): int {
+        return this.numPatchIndices
     }
 
     public get numPatchIndices(): int {

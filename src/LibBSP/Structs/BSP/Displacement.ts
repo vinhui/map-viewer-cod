@@ -33,6 +33,10 @@ export class Displacement extends ILumpObject<Displacement> {
         return arr
     }
 
+    public get 'displacementVertices_Index'(): int {
+        return this.firstVertexIndex
+    }
+
     public get firstVertexIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
@@ -58,6 +62,9 @@ export class Displacement extends ILumpObject<Displacement> {
         return arr
     }
 
+    public get 'displacementTriangles_Index'(): int {
+        return this.firstTriangleIndex
+    }
 
     public get firstTriangleIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
@@ -92,11 +99,18 @@ export class Displacement extends ILumpObject<Displacement> {
         }
     }
 
+    public get 'displacementVertices_Count'(): int {
+        return this.numVertices
+    }
+
     public get numVertices(): int {
         const numSideVerts = Math.trunc(Math.pow(2, this.power)) + 1
         return numSideVerts * numSideVerts
     }
 
+    public get 'displacementTriangles_Count'(): int {
+        return this.numTriangles
+    }
 
     public get numTriangles(): int {
         const side = this.power * this.power
@@ -543,7 +557,7 @@ export class DisplacementCornerNeighbor {
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
             const view = new DataView(this.parent.data.buffer)
             for (let i = 0; i < value.length; ++i) {
-                view.setInt16(this.offset + i*2, value[i])
+                view.setInt16(this.offset + i * 2, value[i])
             }
         }
     }

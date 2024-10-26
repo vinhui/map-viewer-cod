@@ -123,6 +123,10 @@ export class Face extends ILumpObject<Face> {
         return arr
     }
 
+    public get 'edges_Index'(): int {
+        return this.firstEdgeIndexIndex
+    }
+
     public get firstEdgeIndexIndex(): int {
         if (this.mapType === MapType.Source17) {
             const view = new DataView(this.data.buffer)
@@ -159,6 +163,10 @@ export class Face extends ILumpObject<Face> {
             const view = new DataView(this.data.buffer)
             view.setInt32(4, value)
         }
+    }
+
+    public get 'edges_Count'(): int {
+        return this.numEdgeIndices
     }
 
     public get numEdgeIndices(): int {
@@ -245,6 +253,10 @@ export class Face extends ILumpObject<Face> {
         return arr
     }
 
+    public get 'vertices_Index'(): int {
+        return this.firstVertexIndex
+    }
+
     public get firstVertexIndex(): int {
         if (this.mapType === MapType.Nightfire
             || this.mapType === MapType.CoD
@@ -271,6 +283,10 @@ export class Face extends ILumpObject<Face> {
             const view = new DataView(this.data.buffer)
             view.setInt32(12, value)
         }
+    }
+
+    public get 'vertices_Count'(): int {
+        return this.numVertices
     }
 
     public get numVertices(): int {
@@ -555,6 +571,10 @@ export class Face extends ILumpObject<Face> {
         return arr
     }
 
+    public get 'indices_Index'(): int {
+        return this.firstIndexIndex
+    }
+
     public get firstIndexIndex(): int {
         if (this.mapType === MapType.Nightfire
             || this.mapType === MapType.CoD
@@ -581,6 +601,10 @@ export class Face extends ILumpObject<Face> {
             const view = new DataView(this.data.buffer)
             view.setInt32(20, value)
         }
+    }
+
+    public get 'indices_Count'(): int {
+        return this.numIndices
     }
 
     public get numIndices(): int {

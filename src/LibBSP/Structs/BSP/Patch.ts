@@ -125,6 +125,10 @@ export class Patch extends ILumpObject<Patch> {
         return arr
     }
 
+    public get 'patchVertices_Index'(): int {
+        return this.firstVertex
+    }
+
     public get firstVertex(): int {
         switch (this.mapType) {
             case MapType.CoD: {
@@ -157,6 +161,10 @@ export class Patch extends ILumpObject<Patch> {
                 break
             }
         }
+    }
+
+    public get 'patchVertices_Count'(): int {
+        return this.numVertices
     }
 
     public get numVertices(): int {
@@ -200,6 +208,10 @@ export class Patch extends ILumpObject<Patch> {
         return arr
     }
 
+    public get 'patchIndices_Count'(): int {
+        return this.numVertexIndices
+    }
+
     public get numVertexIndices(): int {
         switch (this.mapType) {
             case MapType.CoD: {
@@ -226,6 +238,10 @@ export class Patch extends ILumpObject<Patch> {
                 break
             }
         }
+    }
+
+    public get 'patchIndices_Index'(): int {
+        return this.firstVertexIndex
     }
 
     public get firstVertexIndex(): int {

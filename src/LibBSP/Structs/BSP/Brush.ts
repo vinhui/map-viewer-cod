@@ -41,6 +41,10 @@ export class Brush extends ILumpObject<Brush> {
         }
     }
 
+    public get 'brushSides_Count'(): int {
+        return this.numSides
+    }
+
     public get numSides(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)

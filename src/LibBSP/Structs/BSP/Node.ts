@@ -185,6 +185,10 @@ export class Node extends ILumpObject<Node> {
         return arr
     }
 
+    public get 'faces_Index'(): int {
+        return this.firstFaceIndex
+    }
+
     public get firstFaceIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
@@ -213,6 +217,10 @@ export class Node extends ILumpObject<Node> {
             const view = new DataView(this.data.buffer)
             view.setInt16(24, value)
         }
+    }
+
+    public get 'faces_Count'(): int {
+        return this.numFaceIndices
     }
 
     public get numFaceIndices(): int {
