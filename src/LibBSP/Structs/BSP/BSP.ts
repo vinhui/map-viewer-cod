@@ -101,11 +101,18 @@ export class BSP {
     public mapName: string
     private _dict: Map<int, LumpInfo> = new Map()
 
-    constructor(name: string, mapType: MapType = MapType.Undefined) {
-        this.mapName = name
-        this.mapType = mapType
-        const data = new Uint8Array(0)
-        this._header = new BSPHeader(this, data)
+    constructor(nameOrFile?: string | { path: string, data: Uint8Array }, mapType: MapType = MapType.Undefined) {
+        if (typeof nameOrFile === 'string') {
+            this.mapName = nameOrFile
+            this.mapType = mapType
+            const data = new Uint8Array(0)
+            this._header = new BSPHeader(this, data)
+        } else {
+            this._reader = new BSPReader(nameOrFile.path)
+            this.mapName = nameOrFile.path.substring(0, nameOrFile.path.lastIndexOf('.')).split('/').pop()
+            this.mapType = mapType
+            this._header = new BSPHeader(this, this.reader.getHeader(this.mapType))
+        }
 
         this._lumps = new Map()
     }

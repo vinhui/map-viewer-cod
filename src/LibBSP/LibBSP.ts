@@ -8,7 +8,9 @@ export class LibBSP {
      * @constructor
      */
     public static async LoadBSP(baseUrl: string, bspFile: string): Promise<BSP> {
-        await FakeFileSystem.DownloadFile(baseUrl, bspFile)
+        if (!await FakeFileSystem.DownloadFile(baseUrl, bspFile)) {
+            throw new Error(`Failed to download bsp file: ${baseUrl}/${bspFile}`)
+        }
 
         // Load lumps
         const baseName = bspFile.substring(0, bspFile.length - 4)
@@ -26,6 +28,9 @@ export class LibBSP {
             }
         }
 
-        return new BSP(bspFile)
+        return new BSP({
+            path: bspFile,
+            data: FakeFileSystem.ReadFile(bspFile),
+        })
     }
 }

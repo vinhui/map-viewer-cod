@@ -27,7 +27,7 @@ export enum MeshCombineOptions {
 
 type Settings = {
     baseUrl: string
-    path: string
+    path?: string
     scene?: Scene
     meshCombineOptions: MeshCombineOptions
     curveTesselationLevel: number
@@ -48,12 +48,11 @@ export class BSPLoader {
     private namedEntities: Map<string, EntityInstance[]> = new Map()
     private materialDirectory: Map<string, StandardMaterial> = new Map()
 
-    public async loadBSP(bsp: BSP) {
+    public async loadBSP(bsp?: BSP) {
         this.settings.baseUrl = this.settings.baseUrl ?? './'
         if (!bsp) {
             if (!this.settings?.path) {
                 throw new Error(`Cannot import ${this.settings.path}: The path is invalid`)
-                return
             }
             this.bsp = await LibBSP.LoadBSP(this.settings.baseUrl, this.settings.path)
             await this.loadBSP(this.bsp)
