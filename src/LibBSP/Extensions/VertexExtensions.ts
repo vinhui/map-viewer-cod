@@ -78,7 +78,7 @@ export class VertexExtensions {
             uv0 = Vector2Extensions.ToVector2(data, 12)
             uv1 = Vector2Extensions.ToVector2(data, 20)
             const view = new DataView(data.buffer)
-            uv2 = new Vector2(view.getFloat32(28), 0)
+            uv2 = new Vector2(view.getFloat32(28, true), 0)
             color = ColorExtensions.FromArgb(data[35], data[32], data[33], data[34])
             normal = Vector3Extensions.ToVector3(data, 36)
         } else if (type === MapType.Raven) {
@@ -189,12 +189,12 @@ export class VertexExtensions {
             vertex.uv1.getBytes(bytes, 20 + offset)
             vertex.uv2.getBytes(bytes, 28 + offset)
             vertex.uv3.getBytes(bytes, 36 + offset)
-            view.setFloat32(44 + offset, vertex.tangent.x)
-            view.setFloat32(48 + offset, vertex.tangent.y)
+            view.setFloat32(44 + offset, vertex.tangent.x, true)
+            view.setFloat32(48 + offset, vertex.tangent.y, true)
             vertex.normal.getBytes(bytes, 52 + offset)
             vertex.color.getBytes(bytes, 64 + offset)
-            view.setFloat32(68 + offset, vertex.tangent.z)
-            view.setFloat32(72 + offset, vertex.tangent.w)
+            view.setFloat32(68 + offset, vertex.tangent.z, true)
+            view.setFloat32(72 + offset, vertex.tangent.w, true)
             // There's actually another field that I've only ever seen it be FFFFFFFF.
             bytes[76 + offset] = 255
             bytes[77 + offset] = 255
@@ -203,7 +203,7 @@ export class VertexExtensions {
         } else if (MapType.IsSubtypeOf(type, MapType.STEF2)) {
             vertex.uv0.getBytes(bytes, 12 + offset)
             vertex.uv1.getBytes(bytes, 20 + offset)
-            view.setFloat32(28 + offset, vertex.uv2.x)
+            view.setFloat32(28 + offset, vertex.uv2.x, true)
             vertex.color.getBytes(bytes, 32 + offset)
             vertex.normal.getBytes(bytes, 36 + offset)
         } else if (MapType.IsSubtypeOf(type, MapType.Quake3)) {

@@ -32,7 +32,7 @@ export class Visibility implements ILump {
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake3)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(0)
+            return view.getInt32(0, true)
         }
 
         return -1
@@ -43,14 +43,14 @@ export class Visibility implements ILump {
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake3)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(0, value)
+            view.setInt32(0, value, true)
         }
     }
 
     public get clusterSize(): int {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake3)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(4)
+            return view.getInt32(4, true)
         }
         return -1
     }
@@ -58,7 +58,7 @@ export class Visibility implements ILump {
     public set clusterSize(value: int) {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake3)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(4, value)
+            view.setInt32(4, value, true)
         }
     }
 
@@ -117,7 +117,7 @@ export class Visibility implements ILump {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(4 + cluster * 8)
+            return view.getInt32(4 + cluster * 8, true)
         }
     }
 
@@ -125,7 +125,7 @@ export class Visibility implements ILump {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(8 + cluster * 8)
+            return view.getInt32(8 + cluster * 8, true)
         }
     }
 

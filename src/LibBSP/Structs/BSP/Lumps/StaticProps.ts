@@ -34,24 +34,24 @@ export class StaticProps extends Lump<StaticProp> {
         if (data.length > 0) {
             let offset = 0
 
-            const dictSize = view.getInt32(0)
+            const dictSize = view.getInt32(0, true)
             offset += 4
             for (let i = 0; i < dictSize; i++) {
                 this.modelDictionary.push(StringExtensions.ToNullTerminatedString(data, offset, StaticProps.ModelNameLength))
                 offset += StaticProps.ModelNameLength
             }
 
-            const leafIndiciesCount = view.getInt32(offset)
+            const leafIndiciesCount = view.getInt32(offset, true)
             offset += 4
             for (let i = 0; i < leafIndiciesCount; i++) {
-                this.leafIndices.push(view.getInt16(offset))
+                this.leafIndices.push(view.getInt16(offset, true))
                 offset += 2
             }
             if (this.bsp.mapType === MapType.Vindictus && this.lumpInfo.version >= 6) {
-                const numPropsScales = view.getInt32(offset)
+                const numPropsScales = view.getInt32(offset, true)
                 offset += 4 + numPropsScales * 16
             }
-            const numProps = view.getInt32(offset)
+            const numProps = view.getInt32(offset, true)
             if (this.lumpInfo.version === 12) {
                 offset += 12
             } else {
@@ -81,7 +81,7 @@ export class StaticProps extends Lump<StaticProp> {
         const bytes = new Uint8Array(length)
         const view = new DataView(bytes.buffer)
         let offset = 0
-        view.setInt32(offset, this.modelDictionary.length)
+        view.setInt32(offset, this.modelDictionary.length, true)
         offset += 4
 
         for (let i = 0; i < this.modelDictionary.length; i++) {
@@ -93,15 +93,15 @@ export class StaticProps extends Lump<StaticProp> {
             offset += StaticProps.ModelNameLength
         }
 
-        view.setInt32(offset, this.leafIndices.length)
+        view.setInt32(offset, this.leafIndices.length, true)
         offset += 4
 
         for (let i = 0; i < this.leafIndices.length; i++) {
-            view.setInt16(offset, this.leafIndices[i])
+            view.setInt16(offset, this.leafIndices[i], true)
             offset += 2
         }
 
-        view.setInt32(offset, this._backingArray.length)
+        view.setInt32(offset, this._backingArray.length, true)
         offset += 4
 
         bytes.set(super.getBytes(), offset)

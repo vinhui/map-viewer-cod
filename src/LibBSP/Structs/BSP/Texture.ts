@@ -149,7 +149,7 @@ export class Texture extends ILumpObject<Texture> {
             return TextureInfo.CreateFromProps(
                 Vector3Extensions.ToVector3(this.data),
                 Vector3Extensions.ToVector3(this.data, 16),
-                new Vector2(view.getFloat32(12), view.getFloat32(28)),
+                new Vector2(view.getFloat32(12, true), view.getFloat32(28, true)),
                 new Vector2(1, 1),
                 -1, -1, 0,
             )
@@ -163,8 +163,8 @@ export class Texture extends ILumpObject<Texture> {
             const view = new DataView(this.data.buffer)
             val.uAxis.getBytes(view, 0)
             val.vAxis.getBytes(view, 16)
-            view.setFloat32(12, val.translation.x)
-            view.setFloat32(28, val.translation.y)
+            view.setFloat32(12, val.translation.x, true)
+            view.setFloat32(28, val.translation.y, true)
         }
     }
 
@@ -172,8 +172,8 @@ export class Texture extends ILumpObject<Texture> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
             return new Vector2(
-                view.getInt32(16),
-                view.getInt32(20),
+                view.getInt32(16, true),
+                view.getInt32(20, true),
             )
         }
         return new Vector2()
@@ -182,15 +182,15 @@ export class Texture extends ILumpObject<Texture> {
     public set dimensions(val: Vector2) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(16, val.x)
-            view.setInt32(20, val.y)
+            view.setInt32(16, val.x, true)
+            view.setInt32(20, val.y, true)
         }
     }
 
     public get mipmapFullOffset(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(24)
+            return view.getInt32(24, true)
         }
         return -1
     }
@@ -198,14 +198,14 @@ export class Texture extends ILumpObject<Texture> {
     public set mipmapFullOffset(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(24, val)
+            view.setInt32(24, val, true)
         }
     }
 
     public get mipmapHalfOffset(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(28)
+            return view.getInt32(28, true)
         }
         return -1
     }
@@ -213,14 +213,14 @@ export class Texture extends ILumpObject<Texture> {
     public set mipmapHalfOffset(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(28, val)
+            view.setInt32(28, val, true)
         }
     }
 
     public get mipmapQuarterOffset(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(32)
+            return view.getInt32(32, true)
         }
         return -1
     }
@@ -228,7 +228,7 @@ export class Texture extends ILumpObject<Texture> {
     public set mipmapQuarterOffset(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(32, val)
+            view.setInt32(32, val, true)
         }
     }
 
@@ -239,7 +239,7 @@ export class Texture extends ILumpObject<Texture> {
     public get mipmapEighthOffset(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         }
         return -1
     }
@@ -247,14 +247,14 @@ export class Texture extends ILumpObject<Texture> {
     public set mipmapEighthOffset(val: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(36, val)
+            view.setInt32(36, val, true)
         }
     }
 
     public get value(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2) && this.mapType !== MapType.SiN) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         }
         return 0
     }
@@ -262,17 +262,17 @@ export class Texture extends ILumpObject<Texture> {
     public set value(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2) && this.mapType !== MapType.SiN) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(36, value)
+            view.setInt32(36, value, true)
         }
     }
 
     public get next(): int {
         if (this.mapType === MapType.SiN) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(100)
+            return view.getInt32(100, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(72)
+            return view.getInt32(72, true)
         }
         return 0
     }
@@ -280,7 +280,7 @@ export class Texture extends ILumpObject<Texture> {
     public set next(value: int) {
         if (this.mapType === MapType.SiN) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(100, value)
+            view.setInt32(100, value, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)) {
             const view = new DataView(this.data.buffer)
             view.setInt32(72, value)
@@ -290,7 +290,7 @@ export class Texture extends ILumpObject<Texture> {
     public get subdivisions(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.UberTools)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(72)
+            return view.getInt32(72, true)
         }
         return 16
     }

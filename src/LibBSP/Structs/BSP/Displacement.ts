@@ -40,7 +40,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public get firstVertexIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(12)
+            return view.getInt32(12, true)
         }
 
         return -1
@@ -50,7 +50,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public set firstVertexIndex(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(12, value)
+            view.setInt32(12, value, true)
         }
     }
 
@@ -69,7 +69,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public get firstTriangleIndex(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(16)
+            return view.getInt32(16, true)
         }
 
         return -1
@@ -78,7 +78,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public set firstTriangleIndex(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(16, value)
+            view.setInt32(16, value, true)
         }
     }
 
@@ -86,7 +86,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public get power(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(20)
+            return view.getInt32(20, true)
         }
 
         return -1
@@ -95,7 +95,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public set power(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(20, value)
+            view.setInt32(20, value, true)
         }
     }
 
@@ -124,7 +124,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public get minimumTesselation(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(24)
+            return view.getInt32(24, true)
         }
 
         return -1
@@ -133,14 +133,14 @@ export class Displacement extends ILumpObject<Displacement> {
     public set minimumTesselation(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(24, value)
+            view.setInt32(24, value, true)
         }
     }
 
     public get smoothingAngle(): float {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getFloat32(28)
+            return view.getFloat32(28, true)
         }
 
         return 0
@@ -156,7 +156,7 @@ export class Displacement extends ILumpObject<Displacement> {
     public get contents(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(32)
+            return view.getInt32(32, true)
         }
 
         return -1
@@ -176,10 +176,10 @@ export class Displacement extends ILumpObject<Displacement> {
     public get faceIndex(): int {
         if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(36)
+            return view.getUint16(36, true)
         }
 
         return -1
@@ -199,7 +199,7 @@ export class Displacement extends ILumpObject<Displacement> {
 
     public get lightmapAlphaStart(): int {
         const view = new DataView(this.data.buffer)
-        return view.getInt32(40)
+        return view.getInt32(40, true)
     }
 
     public set lightmapAlphaStart(value: int) {
@@ -209,7 +209,7 @@ export class Displacement extends ILumpObject<Displacement> {
 
     public get lightmapSamplePositionStart(): int {
         const view = new DataView(this.data.buffer)
-        return view.getInt32(44)
+        return view.getInt32(44, true)
     }
 
     public set lightmapSamplePositionStart(value: int) {
@@ -244,7 +244,7 @@ export class Displacement extends ILumpObject<Displacement> {
         if (offset >= 0) {
             const view = new DataView(this.data.buffer)
             for (let i = 0; i < 10; i++) {
-                allowedVertices[i] = view.getUint32(offset + i * 4)
+                allowedVertices[i] = view.getUint32(offset + i * 4, true)
             }
         }
         return allowedVertices
@@ -420,7 +420,7 @@ export class DisplacementSubNeighbor {
     public get neighborIndex(): int {
         if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
             const view = new DataView(this.parent.data.buffer)
-            return view.getInt16(this.offset)
+            return view.getInt16(this.offset, true)
         }
 
         return -1
@@ -437,7 +437,7 @@ export class DisplacementSubNeighbor {
     public get orientation(): int {
         if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
-            return view.getInt16(this.offset + 2)
+            return view.getInt16(this.offset + 2, true)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
             return this.parent.data[this.offset + 2]
         }
@@ -458,7 +458,7 @@ export class DisplacementSubNeighbor {
     public get span(): int {
         if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
-            return view.getInt16(this.offset + 4)
+            return view.getInt16(this.offset + 4, true)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
             return this.parent.data[this.offset + 3]
         }
@@ -479,7 +479,7 @@ export class DisplacementSubNeighbor {
     public get neighborSpan(): int {
         if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
-            return view.getInt16(this.offset + 6)
+            return view.getInt16(this.offset + 6, true)
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
             return this.parent.data[this.offset + 4]
         }
@@ -534,12 +534,12 @@ export class DisplacementCornerNeighbor {
         if (this.parent.mapType === MapType.Vindictus) {
             const view = new DataView(this.parent.data.buffer)
             for (let i = 0; i < 4; ++i) {
-                neighborIndices[i] = view.getInt32(this.offset + i * 4)
+                neighborIndices[i] = view.getInt32(this.offset + i * 4, true)
             }
         } else if (MapType.IsSubtypeOf(this.parent.mapType, MapType.Source)) {
             const view = new DataView(this.parent.data.buffer)
             for (let i = 0; i < 4; ++i) {
-                neighborIndices[i] = view.getInt16(this.offset + i * 2)
+                neighborIndices[i] = view.getInt16(this.offset + i * 2, true)
             }
         }
 

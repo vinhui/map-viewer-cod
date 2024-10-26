@@ -278,7 +278,7 @@ export class BSPReader {
                     binaryReader.seek(0)
                     const arr = this.XorWithKeyStartingAtIndex(binaryReader.readBytes(4))
                     const view = new DataView(arr.buffer)
-                    const num7 = view.getInt32(0)
+                    const num7 = view.getInt32(0, true)
                     if (num7 === BSPHeader.VBSPHeader) {
                         current = MapType.TacticalInterventionEncrypted
                     } else {

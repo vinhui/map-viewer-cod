@@ -18,8 +18,8 @@ export class Vector2 {
         } else {
             view = d
         }
-        view.setFloat32(startIndex, this.x)
-        view.setFloat32(startIndex + 4, this.y)
+        view.setFloat32(startIndex, this.x, true)
+        view.setFloat32(startIndex + 4, this.y, true)
         return view
     }
 
@@ -90,9 +90,9 @@ export class Vector3 {
         } else {
             view = d
         }
-        view.setFloat32(startIndex, this.x)
-        view.setFloat32(startIndex + 4, this.y)
-        view.setFloat32(startIndex + 8, this.z)
+        view.setFloat32(startIndex, this.x, true)
+        view.setFloat32(startIndex + 4, this.y, true)
+        view.setFloat32(startIndex + 8, this.z, true)
         return view
     }
 
@@ -156,10 +156,10 @@ export class Vector4 {
         } else {
             view = d
         }
-        view.setFloat32(startIndex, this.x)
-        view.setFloat32(startIndex + 4, this.y)
-        view.setFloat32(startIndex + 8, this.z)
-        view.setFloat32(startIndex + 12, this.w)
+        view.setFloat32(startIndex, this.x, true)
+        view.setFloat32(startIndex + 4, this.y, true)
+        view.setFloat32(startIndex + 8, this.z, true)
+        view.setFloat32(startIndex + 12, this.w, true)
         return view
     }
 

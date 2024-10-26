@@ -14,9 +14,9 @@ export class Vector3Extensions {
             view = bytes
         }
         return new Vector3(
-            view.getFloat32(startIndex),
-            view.getFloat32(startIndex + 4),
-            view.getFloat32(startIndex + 8),
+            view.getFloat32(startIndex, true),
+            view.getFloat32(startIndex + 4, true),
+            view.getFloat32(startIndex + 8, true),
         )
     }
 

@@ -17,15 +17,15 @@ export class BrushSide extends ILumpObject<BrushSide> {
         if (this.mapType === MapType.STEF2
             || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(4)
+            return view.getInt32(4, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(0)
+            return view.getInt32(0, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getUint16(0)
+            return view.getUint16(0, true)
         }
 
         return -1
@@ -35,22 +35,22 @@ export class BrushSide extends ILumpObject<BrushSide> {
         if (this.mapType === MapType.STEF2
             || this.mapType === MapType.Nightfire) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(4, value)
+            view.setInt32(4, value, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(0, value)
+            view.setInt32(0, value, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt16(0, value)
+            view.setInt16(0, value, true)
         }
     }
 
     public get distance(): float {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)
-            return view.getFloat32(0)
+            return view.getFloat32(0, true)
         }
 
         return 0
@@ -59,7 +59,7 @@ export class BrushSide extends ILumpObject<BrushSide> {
     public set distance(value: float) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.CoD)) {
             const view = new DataView(this.data.buffer)
-            view.setFloat32(0, value)
+            view.setFloat32(0, value, true)
         }
     }
 
@@ -70,15 +70,15 @@ export class BrushSide extends ILumpObject<BrushSide> {
     public get textureIndex(): int {
         if (this.mapType === MapType.STEF2) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(0)
+            return view.getInt32(0, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(4)
+            return view.getInt32(4, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake2)
             || MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.getInt16(2)
+            return view.getInt16(2, true)
         }
 
         return -1
@@ -87,7 +87,7 @@ export class BrushSide extends ILumpObject<BrushSide> {
     public set textureIndex(value: int) {
         if (this.mapType === MapType.STEF2) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(0, value)
+            view.setInt32(0, value, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake3)
             || this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
@@ -107,11 +107,11 @@ export class BrushSide extends ILumpObject<BrushSide> {
         switch (this.mapType) {
             case MapType.Nightfire: {
                 const view = new DataView(this.data.buffer)
-                return view.getInt32(0)
+                return view.getInt32(0, true)
             }
             case MapType.Raven: {
                 const view = new DataView(this.data.buffer)
-                return view.getInt32(8)
+                return view.getInt32(8, true)
             }
             default: {
                 return -1
@@ -141,10 +141,10 @@ export class BrushSide extends ILumpObject<BrushSide> {
     public get displacementIndex(): int {
         if (this.mapType === MapType.Vindictus) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(8)
+            return view.getInt32(8, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.getInt16(4)
+            return view.getInt16(4, true)
         }
 
         return -1

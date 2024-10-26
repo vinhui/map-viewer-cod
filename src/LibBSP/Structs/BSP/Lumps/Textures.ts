@@ -61,7 +61,7 @@ export class Textures extends Lump<Texture> {
         const view = new DataView(data.buffer)
 
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Quake)) {
-            let numElements = view.getInt32(0)
+            let numElements = view.getInt32(0, true)
             structLength = 40
             let currentOffset: int
             let width: int
@@ -74,16 +74,16 @@ export class Textures extends Lump<Texture> {
                 let myBytes: Uint8Array
                 let mipmaps: Uint8Array[] = []
                 let palette = new Uint8Array(0)
-                currentOffset = view.getInt32((i + 1) * 4)
+                currentOffset = view.getInt32((i + 1) * 4, true)
                 if (currentOffset >= 0) {
                     myBytes = data.slice(currentOffset, currentOffset + structLength)
                     const myView = new DataView(myBytes.buffer)
-                    width = myView.getInt32(16)
-                    height = myView.getInt32(20)
+                    width = myView.getInt32(16, true)
+                    height = myView.getInt32(20, true)
                     power = 1
 
                     for (let j = 0; j < mipmaps.length; ++j) {
-                        mipmapOffset = myView.getInt32(24 + (4 * j))
+                        mipmapOffset = myView.getInt32(24 + (4 * j), true)
                         if (mipmapOffset > 0) {
                             const offset = currentOffset + mipmapOffset
                             mipmaps[j] = data.slice(offset, offset + (width / power) * (height / power))
@@ -94,7 +94,7 @@ export class Textures extends Lump<Texture> {
                     if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.GoldSrc) && mipmapOffset > 0) {
                         paletteOffset = mipmapOffset + (width * height / 64)
                         const offset = currentOffset + paletteOffset
-                        const numPixels = view.getInt16(offset)
+                        const numPixels = view.getInt16(offset, true)
                         palette = data.slice(offset, offset + numPixels * 3)
                     }
                 }
@@ -226,7 +226,7 @@ export class Textures extends Lump<Texture> {
                     if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.GoldSrc)) {
                         const view = new DataView(bytes.buffer)
                         offset += Math.trunc(texture.dimensions.x * texture.dimensions.y / 64)
-                        view.setInt16(offset, texture.palette.length)
+                        view.setInt16(offset, texture.palette.length, true)
                         offset += 2
                         bytes.set(texture.palette, offset)
                     }
@@ -239,13 +239,13 @@ export class Textures extends Lump<Texture> {
 
             let lumpBytes = new Uint8Array((this._backingArray.length + 1) * 4)
             const view = new DataView(lumpBytes.buffer)
-            view.setInt32(0, this._backingArray.length)
+            view.setInt32(0, this._backingArray.length, true)
             offset = lumpBytes.length
             for (let i = 0; i < this._backingArray.length; ++i) {
                 if (this._backingArray[i].name.length === 0 && this._backingArray[i].mipmapFullOffset === 0) {
-                    view.setInt32((i + 1) * 4, -1)
+                    view.setInt32((i + 1) * 4, -1, true)
                 } else {
-                    view.setInt32((i + 1) * 4, offset)
+                    view.setInt32((i + 1) * 4, offset, true)
                     let newLumpBytes = new Uint8Array(offset + textureBytes[i].length)
                     newLumpBytes.set(lumpBytes, 0)
                     newLumpBytes.set(textureBytes[i], offset)

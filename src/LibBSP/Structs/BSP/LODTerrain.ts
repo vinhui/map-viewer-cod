@@ -57,14 +57,14 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.MOHAA)) {
             const view = new DataView(this.data.buffer)
             return [
-                view.getFloat32(4),
-                view.getFloat32(8),
-                view.getFloat32(12),
-                view.getFloat32(16),
-                view.getFloat32(20),
-                view.getFloat32(24),
-                view.getFloat32(28),
-                view.getFloat32(32),
+                view.getFloat32(4, true),
+                view.getFloat32(8, true),
+                view.getFloat32(12, true),
+                view.getFloat32(16, true),
+                view.getFloat32(20, true),
+                view.getFloat32(24, true),
+                view.getFloat32(28, true),
+                view.getFloat32(32, true),
             ]
         }
 
@@ -80,7 +80,7 @@ export class LODTerrain extends ILumpObject<LODTerrain> {
             let offset = 4
             for (let i = 0; i < value.length; ++i) {
                 const view = new DataView(this.data.buffer)
-                view.setFloat32(offset + (i * 4), value[i])
+                view.setFloat32(offset + (i * 4), value[i], true)
             }
         }
     }

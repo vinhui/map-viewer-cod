@@ -32,15 +32,15 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
     public get translation(): Vector2 {
         const view = new DataView(this.data.buffer)
         return new Vector2(
-            view.getFloat32(12),
-            view.getFloat32(28),
+            view.getFloat32(12, true),
+            view.getFloat32(28, true),
         )
     }
 
     public set translation(val: Vector2) {
         const view = new DataView(this.data.buffer)
-        view.setFloat32(12, val.x)
-        view.setFloat32(28, val.y)
+        view.setFloat32(12, val.x, true)
+        view.setFloat32(28, val.y, true)
     }
 
     public get lightmapUAxis(): Vector3 {
@@ -73,8 +73,8 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
             return new Vector2(
-                view.getFloat32(44),
-                view.getFloat32(60),
+                view.getFloat32(44, true),
+                view.getFloat32(60, true),
             )
         }
         return new Vector2()
@@ -83,22 +83,22 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
     public set lightmapTranslation(val: Vector2) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setFloat32(44, val.x)
-            view.setFloat32(60, val.y)
+            view.setFloat32(44, val.x, true)
+            view.setFloat32(60, val.y, true)
         }
     }
 
     public get flags(): int {
         if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(88)
+            return view.getInt32(88, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(64)
+            return view.getInt32(64, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || this.mapType === MapType.Undefined) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(36)
+            return view.getInt32(36, true)
         }
 
         return -1
@@ -107,28 +107,28 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
     public set flags(value: int) {
         if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(88, value)
+            view.setInt32(88, value, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(64, value)
+            view.setInt32(64, value, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || this.mapType === MapType.Undefined) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(36, value)
+            view.setInt32(36, value, true)
         }
     }
 
     public get textureIndex(): int {
         if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(92)
+            return view.getInt32(92, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(68)
+            return view.getInt32(68, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || this.mapType === MapType.Undefined) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(32)
+            return view.getInt32(32, true)
         }
 
         return -1
@@ -137,14 +137,14 @@ export class TextureInfo extends ILumpObject<TextureInfo> {
     public set textureIndex(value: int) {
         if (this.mapType === MapType.DMoMaM) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(92, value)
+            view.setInt32(92, value, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(68, value)
+            view.setInt32(68, value, true)
         } else if (MapType.IsSubtypeOf(this.mapType, MapType.Quake)
             || this.mapType === MapType.Undefined) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(32, value)
+            view.setInt32(32, value, true)
         }
     }
 

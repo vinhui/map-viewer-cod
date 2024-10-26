@@ -12,9 +12,9 @@ export class TextureData extends ILumpObject<TextureData> {
     get reflectivity(): Color {
         const view = new DataView(this.data.buffer)
         return ColorExtensions.FromArgb(
-            view.getFloat32(0) * 255,
-            view.getFloat32(4) * 255,
-            view.getFloat32(8) * 255,
+            view.getFloat32(0, true) * 255,
+            view.getFloat32(4, true) * 255,
+            view.getFloat32(8, true) * 255,
             255)
 
     }
@@ -34,19 +34,19 @@ export class TextureData extends ILumpObject<TextureData> {
 
     get textureStringOffsetIndex(): int {
         const view = new DataView(this.data.buffer)
-        return view.getInt32(12)
+        return view.getInt32(12, true)
 
     }
 
     set textureStringOffsetIndex(value: int) {
         const view = new DataView(this.data.buffer)
-        view.setInt32(12, value)
+        view.setInt32(12, value, true)
 
     }
 
     get size(): Vector2 {
         const view = new DataView(this.data.buffer)
-        return new Vector2(view.getInt32(16), view.getInt32(20))
+        return new Vector2(view.getInt32(16, true), view.getInt32(20, true))
 
     }
 
@@ -54,8 +54,8 @@ export class TextureData extends ILumpObject<TextureData> {
         const view = new DataView(this.data.buffer)
         const width = Math.trunc(value.x)
         const height = Math.trunc(value.y)
-        view.setInt32(16, width)
-        view.setInt32(20, height)
+        view.setInt32(16, width, true)
+        view.setInt32(20, height, true)
 
     }
 
@@ -72,8 +72,8 @@ export class TextureData extends ILumpObject<TextureData> {
         const view = new DataView(this.data.buffer)
         const width = Math.trunc(value.x)
         const height = Math.trunc(value.y)
-        view.setInt32(24, width)
-        view.setInt32(28, height)
+        view.setInt32(24, width, true)
+        view.setInt32(28, height, true)
 
     }
 

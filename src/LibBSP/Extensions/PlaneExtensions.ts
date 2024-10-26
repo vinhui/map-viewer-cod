@@ -38,7 +38,7 @@ export class PlaneExtensions {
         const arr: Plane[] = []
         for (let i = 0; i < numObjects; i++) {
             const normal = Vector3Extensions.ToVector3(data, structLength * i)
-            const d = view.getFloat32(structLength * i)
+            const d = view.getFloat32(structLength * i, true)
             arr.push(new Plane(normal, d))
         }
 
@@ -58,11 +58,11 @@ export class PlaneExtensions {
             || MapType.IsSubtypeOf(type, MapType.Quake2)
             || MapType.IsSubtypeOf(type, MapType.Source)
             || type === MapType.Nightfire) {
-            view.setInt32(16 + offset, this.Type(p))
+            view.setInt32(16 + offset, this.Type(p), true)
         }
 
         p.normal.getBytes(bytes, offset)
-        view.setFloat32(12 + offset, p.d)
+        view.setFloat32(12 + offset, p.d, true)
         return bytes
     }
 

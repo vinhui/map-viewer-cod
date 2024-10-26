@@ -9,7 +9,7 @@ export class Cubemap extends ILumpObject<Cubemap> {
     public get origin(): Vector3 {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return new Vector3(view.getInt32(0), view.getInt32(4), view.getInt32(8))
+            return new Vector3(view.getInt32(0, true), view.getInt32(4, true), view.getInt32(8, true))
         }
 
         return new Vector3(0, 0, 0)
@@ -18,16 +18,16 @@ export class Cubemap extends ILumpObject<Cubemap> {
     public set origin(value: Vector3) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(0, value.x)
-            view.setInt32(4, value.y)
-            view.setInt32(8, value.z)
+            view.setInt32(0, value.x, true)
+            view.setInt32(4, value.y, true)
+            view.setInt32(8, value.z, true)
         }
     }
 
     public get size(): int {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(12)
+            return view.getInt32(12, true)
         }
 
         return -1
@@ -36,7 +36,7 @@ export class Cubemap extends ILumpObject<Cubemap> {
     public set size(value: int) {
         if (MapType.IsSubtypeOf(this.mapType, MapType.Source)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(12, value)
+            view.setInt32(12, value, true)
         }
     }
 

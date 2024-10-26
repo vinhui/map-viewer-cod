@@ -38,7 +38,7 @@ export class GameLump implements ILump {
         }
         const view = new DataView(data.buffer)
 
-        const numGameLumps = view.getInt32(0)
+        const numGameLumps = view.getInt32(0, true)
         this._lumps = new Map()
 
         if (numGameLumps > 0) {
@@ -46,7 +46,7 @@ export class GameLump implements ILump {
             let lowestLumpOffset = Number.POSITIVE_INFINITY
 
             for (let i = 0; i < numGameLumps; i++) {
-                const lumpIdent = view.getInt32(i * structLength + lumpDictionaryOffset)
+                const lumpIdent = view.getInt32(i * structLength + lumpDictionaryOffset, true)
                 let lumpFlags: int
                 let lumpVersion: int
                 let lumpOffset: int
@@ -54,15 +54,15 @@ export class GameLump implements ILump {
 
                 if (bsp.mapType === MapType.Vindictus) {
 
-                    lumpFlags = view.getInt32(i * structLength + lumpDictionaryOffset + 4)
-                    lumpVersion = view.getInt32(i * structLength + lumpDictionaryOffset + 8)
-                    lumpOffset = view.getInt32(i * structLength + lumpDictionaryOffset + 12)
-                    lumpLength = view.getInt32(i * structLength + lumpDictionaryOffset + 16)
+                    lumpFlags = view.getInt32(i * structLength + lumpDictionaryOffset + 4, true)
+                    lumpVersion = view.getInt32(i * structLength + lumpDictionaryOffset + 8, true)
+                    lumpOffset = view.getInt32(i * structLength + lumpDictionaryOffset + 12, true)
+                    lumpLength = view.getInt32(i * structLength + lumpDictionaryOffset + 16, true)
                 } else {
-                    lumpFlags = view.getUint16(i * structLength + lumpDictionaryOffset + 4)
-                    lumpVersion = view.getUint16(i * structLength + lumpDictionaryOffset + 6)
-                    lumpOffset = view.getInt32(i * structLength + lumpDictionaryOffset + 8)
-                    lumpLength = view.getInt32(i * structLength + lumpDictionaryOffset + 12)
+                    lumpFlags = view.getUint16(i * structLength + lumpDictionaryOffset + 4, true)
+                    lumpVersion = view.getUint16(i * structLength + lumpDictionaryOffset + 6, true)
+                    lumpOffset = view.getInt32(i * structLength + lumpDictionaryOffset + 8, true)
+                    lumpLength = view.getInt32(i * structLength + lumpDictionaryOffset + 12, true)
                 }
 
                 const info = new LumpInfo()
@@ -218,7 +218,7 @@ export class GameLump implements ILump {
 
         const bytes = new Uint8Array(lumpLength)
         const view = new DataView(bytes.buffer)
-        view.setInt32(0, lumpBytes.size)
+        view.setInt32(0, lumpBytes.size, true)
         let lumpNumber = 0
         let internalOffset = lumpDictionaryOffset + lumpBytes.size * lumpInfoLength
 
@@ -231,18 +231,18 @@ export class GameLump implements ILump {
             }
             this._backingMap.set(type, info)
 
-            view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset, info.ident)
+            view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset, info.ident, true)
 
             if (this.bsp.mapType === MapType.Vindictus) {
-                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 4, info.flags)
-                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 8, info.version)
-                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 12, info.offset)
-                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 16, info.length)
+                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 4, info.flags, true)
+                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 8, info.version, true)
+                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 12, info.offset, true)
+                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 16, info.length, true)
             } else {
-                view.setInt16(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 4, info.flags)
-                view.setInt16(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 6, info.version)
-                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 8, info.offset)
-                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 12, info.length)
+                view.setInt16(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 4, info.flags, true)
+                view.setInt16(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 6, info.version, true)
+                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 8, info.offset, true)
+                view.setInt32(lumpNumber * lumpInfoLength + lumpDictionaryOffset + 12, info.length, true)
             }
 
             bytes.set(lumpBytes.get(type), internalOffset)

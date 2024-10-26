@@ -27,7 +27,7 @@ export class BSPHeader {
     public get revision(): int {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.UberTools)) {
             const view = new DataView(this.data.buffer)
-            return view.getInt32(8)
+            return view.getInt32(8, true)
         }
         return 0
     }
@@ -35,7 +35,7 @@ export class BSPHeader {
     public set revision(value: int) {
         if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.UberTools)) {
             const view = new DataView(this.data.buffer)
-            view.setInt32(8, value)
+            view.setInt32(8, value, true)
         }
     }
 
@@ -202,11 +202,11 @@ export class BSPHeader {
                 const newData = new Uint8Array(lumpOffset + lumpInfoLength * numActualLumps)
                 const newDataView = new DataView(newData.buffer)
                 newData.set(magic, 0)
-                newDataView.setInt32(8, numActualLumps)
+                newDataView.setInt32(8, numActualLumps, true)
                 let offset = magic.length + 4
                 for (let [key, value] of lumpInfos.entries()) {
-                    newDataView.setInt32(offset, key)
-                    newDataView.setInt32(offset + 4, offset)
+                    newDataView.setInt32(offset, key, true)
+                    newDataView.setInt32(offset + 4, offset, true)
                     offset += 8
                 }
 
@@ -244,27 +244,27 @@ export class BSPHeader {
                     }
 
                     if (this.bsp.mapType === MapType.L4D2 || this.bsp.mapType === MapType.Source27) {
-                        newDataView.setInt32(offset, lumpVersion)
+                        newDataView.setInt32(offset, lumpVersion, true)
                         if (lumpLength > 0) {
-                            newDataView.setInt32(offset + 4, lumpOffset)
+                            newDataView.setInt32(offset + 4, lumpOffset, true)
                         }
-                        newDataView.setInt32(offset + 8, lumpLength)
-                        newDataView.setInt32(offset + 12, lumpIdent)
+                        newDataView.setInt32(offset + 8, lumpLength, true)
+                        newDataView.setInt32(offset + 12, lumpIdent, true)
                     } else if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source)) {
                         if (lumpLength > 0) {
-                            newDataView.setInt32(offset, lumpOffset)
+                            newDataView.setInt32(offset, lumpOffset, true)
                         }
-                        newDataView.setInt32(offset + 4, lumpLength)
-                        newDataView.setInt32(offset + 8, lumpVersion)
-                        newDataView.setInt32(offset + 12, lumpIdent)
+                        newDataView.setInt32(offset + 4, lumpLength, true)
+                        newDataView.setInt32(offset + 8, lumpVersion, true)
+                        newDataView.setInt32(offset + 12, lumpIdent, true)
                     } else if (this.bsp.mapType === MapType.CoD || this.bsp.mapType === MapType.CoD2) {
-                        newDataView.setInt32(offset, lumpLength)
-                        newDataView.setInt32(offset + 4, lumpOffset)
+                        newDataView.setInt32(offset, lumpLength, true)
+                        newDataView.setInt32(offset + 4, lumpOffset, true)
                     } else {
                         if (lumpLength > 0) {
-                            newDataView.setInt32(offset, lumpOffset)
+                            newDataView.setInt32(offset, lumpOffset, true)
                         }
-                        newDataView.setInt32(offset + 4, lumpLength)
+                        newDataView.setInt32(offset + 4, lumpLength, true)
                     }
 
                     offset += BSPHeader.GetLumpInfoLength(this.bsp.mapType)
@@ -299,12 +299,12 @@ export class BSPHeader {
             return this.getLumpInfoAtOffset(lumpInfoLength * (index + 1))
         } else if (this.bsp.mapType === MapType.CoD4) {
             const view = new DataView(this.data.buffer)
-            const numlumps = view.getInt32(8)
+            const numlumps = view.getInt32(8, true)
             let offset = 12
             let lumpOffset = offset + numlumps * 8
             for (let i = 0; i < numlumps; i++) {
-                const id = view.getInt32(offset)
-                const length = view.getInt32(offset + 4)
+                const id = view.getInt32(offset, true)
+                const length = view.getInt32(offset + 4, true)
                 if (id === index) {
                     const l = new LumpInfo()
                     l.ident = id
@@ -347,21 +347,21 @@ export class BSPHeader {
         let lumpIdent = 0
         const view = new DataView(this.data.buffer)
         if (this.bsp.mapType === MapType.L4D2 || this.bsp.mapType === MapType.Source27) {
-            lumpVersion = view.getInt32(offset)
-            lumpOffset = view.getInt32(offset + 4)
-            lumpLength = view.getInt32(offset + 8)
-            lumpIdent = view.getInt32(offset + 12)
+            lumpVersion = view.getInt32(offset, true)
+            lumpOffset = view.getInt32(offset + 4, true)
+            lumpLength = view.getInt32(offset + 8, true)
+            lumpIdent = view.getInt32(offset + 12, true)
         } else if (MapType.IsSubtypeOf(this.bsp.mapType, MapType.Source27)) {
-            lumpOffset = view.getInt32(offset)
-            lumpLength = view.getInt32(offset + 4)
-            lumpVersion = view.getInt32(offset + 8)
-            lumpIdent = view.getInt32(offset + 12)
+            lumpOffset = view.getInt32(offset, true)
+            lumpLength = view.getInt32(offset + 4, true)
+            lumpVersion = view.getInt32(offset + 8, true)
+            lumpIdent = view.getInt32(offset + 12, true)
         } else if (this.bsp.mapType === MapType.CoD || this.bsp.mapType === MapType.CoD2) {
-            lumpLength = view.getInt32(offset)
-            lumpOffset = view.getInt32(offset + 4)
+            lumpLength = view.getInt32(offset, true)
+            lumpOffset = view.getInt32(offset + 4, true)
         } else {
-            lumpOffset = view.getInt32(offset)
-            lumpLength = view.getInt32(offset + 4)
+            lumpOffset = view.getInt32(offset, true)
+            lumpLength = view.getInt32(offset + 4, true)
         }
 
         const l = new LumpInfo()
