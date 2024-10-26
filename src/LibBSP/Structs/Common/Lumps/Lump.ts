@@ -134,4 +134,8 @@ export class Lump<T> implements ILump {
     public get(index: int): T {
         return this._backingArray[index]
     }
+
+    public [Symbol.iterator]() {
+        return this._backingArray[Symbol.iterator]()
+    }
 }

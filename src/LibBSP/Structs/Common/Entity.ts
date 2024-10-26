@@ -203,6 +203,10 @@ export class Entity extends ILumpObject<Entity> {
         this._map.set(key, value)
     }
 
+    public has(key: string) {
+        return this._map.has(key)
+    }
+
     public parseString(st: string) {
         this._map.clear()
         this.brushes = []
