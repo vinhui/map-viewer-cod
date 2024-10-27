@@ -20,7 +20,7 @@ const scene = new Scene(engine)
 
 const camera: FlyCamera = new FlyCamera('Camera', new Vector3(0, 0, -10), scene)
 camera.attachControl()
-camera.minZ = .01
+camera.minZ = .1
 camera.maxZ = 1000
 const light1: HemisphericLight = new HemisphericLight('light1', new Vector3(1, 1, 0), scene)
 light1.intensity = .5
