@@ -17,7 +17,6 @@ export class NumList implements ILump {
     public bsp: BSP
     public lumpInfo: LumpInfo
     public data: Uint8Array
-    private _backingArray: long[] = []
 
     constructor(type: DataType, bsp?: BSP, lumpInfo: LumpInfo = new LumpInfo()) {
         this.bsp = bsp
@@ -60,10 +59,13 @@ export class NumList implements ILump {
         }
     }
 
+    public get count(): int {
+        return this.data.length + this.structLength
+    }
+
     public static CreateCopy(original: NumList, type: DataType, bsp?: BSP, lumpInfo: LumpInfo = new LumpInfo()) {
         const c = new NumList(type, bsp, lumpInfo)
         c.data = new Uint8Array(original.data)
-        c._backingArray = original._backingArray.slice()
         return c
     }
 
@@ -337,11 +339,98 @@ export class NumList implements ILump {
         return this.data
     }
 
-    public get(index: int): bigint {
-        return this._backingArray[index]
+    public get(index: int): long {
+        if (index >= this.count) {
+            throw new Error('IndexOutOfRangeException')
+        }
+        const view = new DataView(this.data.buffer)
+        switch (this._type) {
+            case DataType.SByte:
+                return BigInt(view.getUint8(index))
+            case DataType.Byte:
+                return BigInt(view.getUint8(index))
+            case DataType.Int16:
+                return BigInt(view.getInt16(index * 2, true))
+            case DataType.UInt16:
+                return BigInt(view.getUint16(index * 2, true))
+            case DataType.Int32:
+                return BigInt(view.getInt32(index * 4, true))
+            case DataType.UInt32:
+                return BigInt(view.getUint32(index * 4, true))
+            case DataType.Int64:
+                return view.getBigInt64(index * 8, true)
+            default:
+                return BigInt(0)
+        }
+    }
+
+    public set(index: int, value: long) {
+        const arr = new Uint8Array(8)
+        const view = new DataView(arr.buffer)
+        view.setBigInt64(0, value, true)
+        this.data.set(arr.slice(0, this.structLength), index)
+    }
+
+    public add(value: long) {
+        const temp = new Uint8Array(this.data.length + this.structLength)
+        temp.set(this.data, 0)
+        const bytes = new Uint8Array(8)
+        const view = new DataView(bytes.buffer)
+        view.setBigInt64(0, value, true)
+        temp.set(bytes.slice(this.structLength), this.data.length)
+        this.data = temp
+    }
+
+    public contains(value: long): boolean {
+        for (const x of this) {
+            if (value === x) {
+                return true
+            }
+        }
+        return false
+    }
+
+    public copyTo(other: long[], startIndex: int) {
+        for (let i = 0; i < this.count; i++) {
+            other[i + startIndex] = this.get(i)
+        }
+    }
+
+    public remove(value: long): boolean {
+        for (let i = 0; i < this.count; i++) {
+            if (this.get(i) === value) {
+                this.removeAt(i)
+                return true
+            }
+        }
+        return false
+    }
+
+    public removeAt(index: int) {
+        const temp = new Uint8Array(this.data.length - this.structLength)
+        temp.set(this.data.slice(0, this.structLength * index), 0)
+        temp.set(this.data.slice(this.structLength * (index + 1)), this.structLength * index)
+        this.data = temp
+    }
+
+    public [Symbol.iterator]() {
+        let index = -1
+
+        return {
+            next: () => {
+                return {
+                    value: this.get(++index),
+                    done: index >= this.count,
+                }
+            },
+        }
+    }
+
+    public clear() {
+        this.data = new Uint8Array(0)
     }
 
     public removeAll() {
-        this.data = new Uint8Array(0)
+        this.clear()
     }
 }

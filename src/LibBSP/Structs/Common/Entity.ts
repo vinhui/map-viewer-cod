@@ -420,7 +420,7 @@ export class Entity extends ILumpObject<Entity> {
     }
 
     public getVector(key: string): Vector4 {
-        const results: float[] = []
+        const results: float[] = new Array(4)
         const val = this._map.get(key)
         if (this._map.has(key) && val && val.length > 0) {
             const nums = val.split(' ')

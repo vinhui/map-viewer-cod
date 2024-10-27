@@ -132,6 +132,9 @@ export class Lump<T> implements ILump {
     }
 
     public get(index: int): T {
+        if (index >= this._backingArray.length) {
+            throw new Error('IndexOutOfRangeException')
+        }
         return this._backingArray[index]
     }
 
