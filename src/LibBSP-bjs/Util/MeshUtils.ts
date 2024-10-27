@@ -175,7 +175,7 @@ export class MeshUtils {
     }
 
     public static CombineAllMeshes(meshes: VertexData[]): VertexData {
-        const result = new VertexData()
+        const result = meshes.pop()
         result.merge(meshes)
         return result
     }

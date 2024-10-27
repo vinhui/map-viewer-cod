@@ -113,6 +113,6 @@ export class BSPExtension {
         if (face.textureInfoIndex >= 0) {
             return bsp.textureInfo.get(face.textureInfoIndex)
         }
-        return new TextureInfo(new LumpObjDataCtor(null, null))
+        return new TextureInfo(new LumpObjDataCtor(new Uint8Array(), null))
     }
 }

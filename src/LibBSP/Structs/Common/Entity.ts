@@ -103,8 +103,8 @@ export class Entity extends ILumpObject<Entity> {
     }
 
     public get className(): string {
-        if (this._map.has('className')) {
-            return this.get('className')
+        if (this._map.has('classname')) {
+            return this.get('classname')
         } else {
             return ''
         }

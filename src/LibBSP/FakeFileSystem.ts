@@ -77,6 +77,9 @@ export class FakeFileSystem {
         if (!response.ok) {
             return false
         }
+        if (this.caseInsensitive) {
+            path = path.toLowerCase()
+        }
         const bytes = new Uint8Array(await response.arrayBuffer())
         this.fileData.set(path, bytes)
         return true

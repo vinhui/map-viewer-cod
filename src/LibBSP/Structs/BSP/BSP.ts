@@ -1090,7 +1090,7 @@ export class BSP {
         this._dict.set(index, val)
     }
 
-    public getReferencedObjects<T>(o: unknown, lumpName: string): T[] {
+    public getReferencedObjects<T>(o: object, lumpName: string): T[] {
         if (!o) {
             throw new Error('ArgumentNullException')
         }
@@ -1106,11 +1106,11 @@ export class BSP {
 
         const countPropName = `${lumpName}_Count`
         const indexPropName = `${lumpName}_Index`
-        if (countPropName in targetLump && indexPropName in targetLump) {
-            const count = targetLump[countPropName]
-            const index = targetLump[indexPropName]
+        if (countPropName in o && indexPropName in o) {
+            const count = o[countPropName]
+            const index = o[indexPropName]
             if (typeof count !== 'number' || typeof index !== 'number') {
-                throw new Error(`Invalid count or index on ${targetLump.constructor.name} for lump ${lumpName}.`)
+                throw new Error(`Invalid count or index on ${o.constructor.name} for lump ${lumpName}.`)
             }
             const result: T[] = []
             for (let i = 0; i < count; i++) {

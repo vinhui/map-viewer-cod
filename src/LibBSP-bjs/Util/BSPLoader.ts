@@ -35,29 +35,45 @@ type Settings = {
     scaleFactor: number
 }
 
-type EntityInstance = {
+export type EntityInstance = {
     entity: Entity
     bjsNode: Mesh
 }
 
 export class BSPLoader {
+    private static index: string[]
     public settings: Settings
-    private bsp: BSP
     private root: TransformNode
     private entityInstances: EntityInstance[] = []
     private namedEntities: Map<string, EntityInstance[]> = new Map()
     private materialDirectory: Map<string, StandardMaterial> = new Map()
 
-    public async loadBSP(bsp?: BSP) {
+    private _bsp: BSP
+
+    public get bsp(): BSP {
+        return this._bsp
+    }
+
+    public async loadBSP(bsp?: BSP): Promise<TransformNode> {
         this.settings.baseUrl = this.settings.baseUrl ?? './'
+
+        if (!BSPLoader.index) {
+            const response = await fetch(`${this.settings.baseUrl}index`)
+            if (response.ok) {
+                console.log('Found index file')
+                const text = await response.text()
+                BSPLoader.index = text.split(/\r?\n/)
+            }
+        }
+
         if (!bsp) {
             if (!this.settings?.path) {
                 throw new Error(`Cannot import ${this.settings.path}: The path is invalid`)
             }
-            this.bsp = await LibBSP.LoadBSP(this.settings.baseUrl, this.settings.path)
-            await this.loadBSP(this.bsp)
+            this._bsp = await LibBSP.LoadBSP(this.settings.baseUrl, this.settings.path)
+            await this.loadBSP(this._bsp)
         } else {
-            this.bsp = bsp
+            this._bsp = bsp
             for (let i = 0; i < bsp.entities.count; i++) {
                 const entity = bsp.entities.get(i)
                 const instance: EntityInstance = this.createEntityInstance(entity)
@@ -75,6 +91,7 @@ export class BSPLoader {
             }
 
             this.root = new TransformNode(bsp.mapName)
+            this.root.rotation.x = -Math.PI / 2
             for (let value of this.namedEntities.values()) {
                 this.SetUpEntityHierarchy(value)
             }
@@ -90,6 +107,8 @@ export class BSPLoader {
                 }
             }
         }
+
+        return this.root
     }
 
     protected createFaceMesh(face: Face, textureName: string): VertexData {
@@ -111,9 +130,9 @@ export class BSPLoader {
 
         let mesh: VertexData
         if (face.displacementIndex >= 0) {
-            mesh = MeshUtils.CreateDisplacementMesh(this.bsp, face, dims)
+            mesh = MeshUtils.CreateDisplacementMesh(this._bsp, face, dims)
         } else {
-            mesh = MeshUtils.CreateFaceMesh(this.bsp, face, dims, this.settings.curveTesselationLevel)
+            mesh = MeshUtils.CreateFaceMesh(this._bsp, face, dims, this.settings.curveTesselationLevel)
         }
 
         return mesh
@@ -123,10 +142,17 @@ export class BSPLoader {
         if (!this.materialDirectory.has(textureName)) {
             this.loadMaterial(textureName)
         }
-        return MeshUtils.CreateMoHAATerrainMesh(this.bsp, lodTerrain)
+        return MeshUtils.CreateMoHAATerrainMesh(this._bsp, lodTerrain)
     }
 
     private loadTextureAtPath(path: string) {
+        let baseUrl = this.settings.baseUrl
+        if (!baseUrl.endsWith('/')) {
+            baseUrl = baseUrl + '/'
+        }
+        if (path.startsWith('/')) {
+            path = path.substring(1)
+        }
         if (FakeFileSystem.FileExists(path)) {
             const fileBytes = FakeFileSystem.ReadFile(path)
             if (path.endsWith('.ftx')) {
@@ -162,15 +188,35 @@ export class BSPLoader {
                     path.split('.').pop(), // forced extension
                 )
             }
+        } else if (BSPLoader.index) {
+            const p = path.toLowerCase()
+            for (let file of BSPLoader.index) {
+                if (file.startsWith(p)) {
+                    if (file.substring(0, file.lastIndexOf('.')).toLowerCase() === p) {
+                        return new BjsTex(`${baseUrl}${file}`, this.settings.scene, false, false)
+                    }
+                }
+            }
         } else {
-            let baseUrl = this.settings.baseUrl
-            if (!baseUrl.endsWith('/')) {
-                baseUrl = baseUrl + '/'
+            const tex = new BjsTex(null, this.settings.scene)
+            let responseCount = 0
+            let foundMatch = false
+            const extensions = ['dds', 'jpg', 'tga', 'gif', 'jpeg', 'png'].flatMap(x => [x, x.toUpperCase()])
+            for (const extension of extensions) {
+                const url = `${baseUrl}${path}.${extension}`
+                fetch(url, {method: 'HEAD'})
+                    .then((res) => {
+                        responseCount++
+                        if (res.ok) {
+                            foundMatch = true
+                            tex.updateURL(url)
+                        }
+                        if (responseCount === extensions.length && !foundMatch) {
+                            console.error(`Failed to find texture ${path}`)
+                        }
+                    })
             }
-            if (path.startsWith('/')) {
-                path = path.substring(1)
-            }
-            return new BjsTex(baseUrl + path, this.settings.scene)
+            return tex
         }
     }
 
@@ -208,7 +254,7 @@ export class BSPLoader {
             }
         } else {
             if (!instance.entity.has('parentname')) {
-                instance.bjsNode.setParent(this.root, true)
+                instance.bjsNode.parent = this.root
                 return
             }
 
@@ -219,7 +265,7 @@ export class BSPLoader {
                     console.warn(`Entity "${instance.bjsNode.name}" claims to have parent "${instance.entity.get('parentname')}" but more than one matching entity exists.`, instance.bjsNode)
                 }
 
-                instance.bjsNode.setParent(e[0].bjsNode, true)
+                instance.bjsNode.parent = e[0].bjsNode
             } else {
                 console.warn(`Entity "${instance.bjsNode.name}" claims to have parent "${parentName}" but no such entity exists.`, instance.bjsNode)
             }
@@ -228,11 +274,11 @@ export class BSPLoader {
 
     private buildMesh(instance: EntityInstance) {
         const modelNumber = instance.entity.modelNumber
-        const model = this.bsp.models.get(modelNumber)
+        const model = this._bsp.models.get(modelNumber)
         const textureMeshMap: Map<string, VertexData[]> = new Map()
         const bjsNode = instance.bjsNode
 
-        const faces: Face[] = BSPExtension.GetFacesInModel(this.bsp, model)
+        const faces: Face[] = BSPExtension.GetFacesInModel(this._bsp, model)
         let i = 0
         for (i = 0; i < faces.length; i++) {
             const face = faces[i]
@@ -240,11 +286,11 @@ export class BSPLoader {
                 continue
             }
 
-            const textureIndex = BSPExtension.GetTextureIndex(this.bsp, face)
+            const textureIndex = BSPExtension.GetTextureIndex(this._bsp, face)
             let textureName = ''
             if (textureIndex >= 0) {
-                const texture = this.bsp.textures.get(textureIndex)
-                textureName = BspTex.SanitizeName(texture.name, this.bsp.mapType)
+                const texture = this._bsp.textures.get(textureIndex)
+                textureName = BspTex.SanitizeName(texture.name, this._bsp.mapType)
                 if (!textureName.startsWith('tools/')) {
                     if (!textureMeshMap.has(textureName) || !textureMeshMap.get(textureName)) {
                         textureMeshMap.set(textureName, [])
@@ -256,10 +302,10 @@ export class BSPLoader {
         }
 
         if (modelNumber === 0) {
-            if (this.bsp.lodTerrains) {
-                for (const lodTerrain of this.bsp.lodTerrains) {
+            if (this._bsp.lodTerrains) {
+                for (const lodTerrain of this._bsp.lodTerrains) {
                     if (lodTerrain.textureIndex >= 0) {
-                        const texture = this.bsp.textures.get(lodTerrain.textureIndex)
+                        const texture = this._bsp.textures.get(lodTerrain.textureIndex)
                         const textureName = texture.name
 
                         if (!textureMeshMap.has(textureName) || !textureMeshMap.get(textureName)) {
@@ -285,8 +331,7 @@ export class BSPLoader {
                     }
                     if (this.settings.meshCombineOptions === MeshCombineOptions.PerMaterial) {
                         const textureNode = new Mesh(key, this.settings.scene)
-                        textureNode.setParent(bjsNode, true)
-                        textureNode.position.setAll(0)
+                        textureNode.parent = bjsNode
                         for (let j = 0; j < textureMeshes[i].positions.length; j++) {
                             textureMeshes[i].positions[j] *= this.settings.scaleFactor
                         }
@@ -305,14 +350,12 @@ export class BSPLoader {
             i = 0
             for (let [key, value] of textureMeshMap.entries()) {
                 const textureNode = new Mesh(key, this.settings.scene)
-                textureNode.setParent(bjsNode, true)
-                textureNode.position.setAll(0)
+                textureNode.parent = bjsNode
                 const material = this.materialDirectory.get(key)
                 for (let mesh of value) {
                     if (mesh.positions.length > 3) {
                         const faceNode = new Mesh('Face')
-                        faceNode.setParent(textureNode, true)
-                        faceNode.position.setAll(0)
+                        faceNode.parent = textureNode
                         for (let j = 0; j < mesh.positions.length; j++) {
                             mesh.positions[j] *= this.settings.scaleFactor
                         }

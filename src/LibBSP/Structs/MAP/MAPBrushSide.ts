@@ -66,7 +66,7 @@ export class MAPBrushSide {
         } else {
             let inDispInfo = false
             let braceCount = 0
-            this.textureInfo = new TextureInfo(new LumpObjDataCtor(null, null))
+            this.textureInfo = new TextureInfo(new LumpObjDataCtor(new Uint8Array(), null))
             let child = []
             for (let line of lines) {
                 if (line === '{') {

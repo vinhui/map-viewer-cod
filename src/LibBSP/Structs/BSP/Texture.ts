@@ -155,7 +155,7 @@ export class Texture extends ILumpObject<Texture> {
             )
         }
 
-        return new TextureInfo(new LumpObjDataCtor(null, null))
+        return new TextureInfo(new LumpObjDataCtor(new Uint8Array(), null))
     }
 
     public set textureInfo(val: TextureInfo) {
