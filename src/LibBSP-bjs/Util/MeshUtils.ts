@@ -29,7 +29,6 @@ export class MeshUtils {
             if (textureInfo.data && textureInfo.data.length > 0) {
                 this.CalculateUVs(mesh, textureInfo, dims)
             }
-            MeshUtils.NegateVs(mesh)
         }
         return mesh
     }
@@ -47,12 +46,12 @@ export class MeshUtils {
 
     public static LoadVerticesFromFace(bsp: BSP, face: Face): VertexData {
         const mesh = this.LoadVertices(bsp.getReferencedObjects<Vertex>(face, 'vertices'))
-        const indices = bsp.getReferencedObjects<number>(face, 'indices')
+        const indices = bsp.getReferencedObjects<bigint>(face, 'indices')
         const triangles = new Int32Array(indices.length)
         for (let i = 0; i < indices.length; i++) {
-            triangles[i] = indices[i]
+            triangles[i] = Number(indices[i])
         }
-        mesh.indices = indices
+        mesh.indices = triangles
         return mesh
     }
 
@@ -166,14 +165,6 @@ export class MeshUtils {
         mesh.normals = normals
     }
 
-    public static NegateVs(mesh: VertexData) {
-        const uv = mesh.uvs
-        for (let i = 0; i < uv.length; i += 2) {
-            uv[i + 1] = -uv[i + 1]
-        }
-        mesh.uvs = uv
-    }
-
     public static CombineAllMeshes(meshes: VertexData[]): VertexData {
         const result = meshes.pop()
         result.merge(meshes)
@@ -246,7 +237,6 @@ Corners: ${faceCorners[faceTriangles[0]]} ${faceCorners[faceTriangles[1]]} ${fac
         mesh.uvs2 = uv2
         this.CalculateUVs(mesh, BSPExtension.GetTextureInfo(bsp, face), dims)
         this.CalculateTerrainVertices(mesh, offsets, numSideTriangles)
-        this.NegateVs(mesh)
         VertexData.ComputeNormals(mesh.positions, mesh.indices, mesh.normals)
 
         return mesh
@@ -280,7 +270,6 @@ Corners: ${faceCorners[faceTriangles[0]]} ${faceCorners[faceTriangles[1]]} ${fac
         mesh.uvs2 = uv2
         this.CalculateTerrainVertices(mesh, offsets, 8)
         mesh.indices = this.BuildDisplacementTrianges(8)
-        this.NegateVs(mesh)
         VertexData.ComputeNormals(mesh.positions, mesh.indices, mesh.normals)
 
         return mesh
@@ -288,6 +277,7 @@ Corners: ${faceCorners[faceTriangles[0]]} ${faceCorners[faceTriangles[1]]} ${fac
 
     public static GetCornersForTerrain(origin: BjsVec3, side: number, inverted: boolean): BjsVec3[] {
         const corners = [
+            origin,
             new BjsVec3(origin.x, origin.y + side, origin.z),
             new BjsVec3(origin.x + side, origin.y, origin.z),
             new BjsVec3(origin.x + side, origin.y + side, origin.z),

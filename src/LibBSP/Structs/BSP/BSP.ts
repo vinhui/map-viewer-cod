@@ -34,6 +34,7 @@ import {StaticModel} from './StaticModel'
 import {LODTerrain} from './LODTerrain'
 import {Patch} from './Patch'
 import {Model} from './Model'
+import {File} from '../../FakeFileSystem'
 
 export enum MapType {
     Undefined = 0x00000000,
@@ -94,22 +95,22 @@ export class LumpInfo {
     public version: int
     public offset: int
     public length: int
-    public lumpFile: string
+    public lumpFile: File
 }
 
 export class BSP {
     public mapName: string
     private _dict: Map<int, LumpInfo> = new Map()
 
-    constructor(nameOrFile?: string | { path: string, data: Uint8Array }, mapType: MapType = MapType.Undefined) {
+    constructor(nameOrFile?: string | File, mapType: MapType = MapType.Undefined) {
         if (typeof nameOrFile === 'string') {
             this.mapName = nameOrFile
             this.mapType = mapType
             const data = new Uint8Array(0)
             this._header = new BSPHeader(this, data)
         } else {
-            this._reader = new BSPReader(nameOrFile.path)
-            this.mapName = nameOrFile.path.substring(0, nameOrFile.path.lastIndexOf('.')).split('/').pop()
+            this._reader = new BSPReader(nameOrFile)
+            this.mapName = nameOrFile.nameWithoutExtension
             this.mapType = mapType
             this._header = new BSPHeader(this, this.reader.getHeader(this.mapType))
         }

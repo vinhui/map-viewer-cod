@@ -12,8 +12,7 @@ import {
     VertexData,
 } from '@babylonjs/core'
 import {BSP} from '../../LibBSP/Structs/BSP/BSP'
-import {LibBSP} from '../../LibBSP/LibBSP'
-import {FakeFileSystem} from '../../LibBSP/FakeFileSystem'
+import {FakeFileSystem, File} from '../../LibBSP/FakeFileSystem'
 import {Face} from '../../LibBSP/Structs/BSP/Face'
 import {Texture as BspTex} from '../../LibBSP/Structs/BSP/Texture'
 import {LODTerrain} from '../../LibBSP/Structs/BSP/LODTerrain'
@@ -26,7 +25,6 @@ export enum MeshCombineOptions {
 }
 
 type Settings = {
-    baseUrl: string
     path?: string
     scene?: Scene
     meshCombineOptions: MeshCombineOptions
@@ -41,12 +39,16 @@ export type EntityInstance = {
 }
 
 export class BSPLoader {
-    private static index: string[]
     public settings: Settings
-    private root: TransformNode
     private entityInstances: EntityInstance[] = []
     private namedEntities: Map<string, EntityInstance[]> = new Map()
     private materialDirectory: Map<string, StandardMaterial> = new Map()
+
+    private _root: TransformNode
+
+    public get root(): TransformNode {
+        return this._root
+    }
 
     private _bsp: BSP
 
@@ -55,22 +57,18 @@ export class BSPLoader {
     }
 
     public async loadBSP(bsp?: BSP): Promise<TransformNode> {
-        this.settings.baseUrl = this.settings.baseUrl ?? './'
-
-        if (!BSPLoader.index) {
-            const response = await fetch(`${this.settings.baseUrl}index`)
-            if (response.ok) {
-                console.log('Found index file')
-                const text = await response.text()
-                BSPLoader.index = text.split(/\r?\n/)
-            }
-        }
-
         if (!bsp) {
             if (!this.settings?.path) {
                 throw new Error(`Cannot import ${this.settings.path}: The path is invalid`)
             }
-            this._bsp = await LibBSP.LoadBSP(this.settings.baseUrl, this.settings.path)
+
+            if (!await FakeFileSystem.DownloadFile(this.settings.path)) {
+                throw new Error(`Failed to download bsp file: ${this.settings.path}`)
+            }
+
+            const lumpFiles = FakeFileSystem.FindFiles(this.settings.path.substring(0, this.settings.path.lastIndexOf('.')), /\.lmp$/, false)
+            await FakeFileSystem.DownloadFiles(lumpFiles)
+            this._bsp = new BSP(FakeFileSystem.GetFile(this.settings.path))
             await this.loadBSP(this._bsp)
         } else {
             this._bsp = bsp
@@ -90,8 +88,9 @@ export class BSPLoader {
                 instance.bjsNode.position = new BjsVec3(entity.origin.x, entity.origin.y, entity.origin.z).scaleInPlace(this.settings.scaleFactor)
             }
 
-            this.root = new TransformNode(bsp.mapName)
-            this.root.rotation.x = -Math.PI / 2
+            this._root = new TransformNode(bsp.mapName)
+            this._root.rotation.x = -Math.PI / 2
+            this._root.scaling.x = -1
             for (let value of this.namedEntities.values()) {
                 this.SetUpEntityHierarchy(value)
             }
@@ -108,7 +107,7 @@ export class BSPLoader {
             }
         }
 
-        return this.root
+        return this._root
     }
 
     protected createFaceMesh(face: Face, textureName: string): VertexData {
@@ -146,64 +145,68 @@ export class BSPLoader {
     }
 
     private loadTextureAtPath(path: string) {
-        let baseUrl = this.settings.baseUrl
-        if (!baseUrl.endsWith('/')) {
-            baseUrl = baseUrl + '/'
-        }
-        if (path.startsWith('/')) {
-            path = path.substring(1)
-        }
-        if (FakeFileSystem.FileExists(path)) {
-            const fileBytes = FakeFileSystem.ReadFile(path)
-            if (path.endsWith('.ftx')) {
-                if (fileBytes.byteLength < 12) {
-                    console.warn(`Invalid FTX texture file at path "${path}": File too small`)
-                    return null
-                }
-                const view = new DataView(fileBytes.buffer)
-                const width = view.getInt32(0)
-                const height = view.getInt32(4)
-
-                if (fileBytes.byteLength < (width * height * 4) + 12) {
-                    console.warn(`Invalid FTX texture file at path "${path}": Not enough pixels`)
-                    return null
-                }
-
-                return RawTexture.CreateRGBATexture(fileBytes.slice(12), width, height, this.settings.scene, true, true)
-            } else {
-                return new BjsTex(
-                    null, // url
-                    this.settings.scene, // scene
-                    null, // no mipmap or options
-                    null, // inverty
-                    null, // samplingmode
-                    null, // onload
-                    null, // onerror
-                    fileBytes.buffer, // buffer
-                    false, // delete buffer
-                    null, // format
-                    null, // mimetype
-                    null, // loaderoptions
-                    null, // creationflags
-                    path.split('.').pop(), // forced extension
-                )
+        if (FakeFileSystem.hasLoadedIndex) {
+            const matches = FakeFileSystem.FindFiles(path, null, false)
+            if (matches.length === 0) {
+                return null
             }
-        } else if (BSPLoader.index) {
-            const p = path.toLowerCase()
-            for (let file of BSPLoader.index) {
-                if (file.startsWith(p)) {
-                    if (file.substring(0, file.lastIndexOf('.')).toLowerCase() === p) {
-                        return new BjsTex(`${baseUrl}${file}`, this.settings.scene, false, false)
+
+            for (let match of matches) {
+                if (match.directory + match.nameWithoutExtension === path) {
+                    if (match.isLoaded) {
+                        if (match.extension === '.ftx') {
+                            return this.getFtxTexture(match)
+                        } else {
+                            return new BjsTex(
+                                'data:' + match.originalPath, // url
+                                this.settings.scene, // scene
+                                null, // no mipmap or options
+                                null, // inverty
+                                null, // samplingmode
+                                null, // onload
+                                null, // onerror
+                                match.bytes.buffer, // buffer
+                                false, // delete buffer
+                                null, // format
+                                null, // mimetype
+                                null, // loaderoptions
+                                null, // creationflags
+                                null, // forced extension
+                            )
+                        }
+                    } else {
+                        if (match.extension === '.ftx') {
+                            console.error(`Using FTX textures that aren't preloaded is currently not supported.\nYou need to pre-download them through the FakeFileSystem beforehand.`)
+                            return null
+                        }
+                        let tex = new BjsTex(null, this.settings.scene)
+                        tex.name = match.originalPath
+                        match.download()
+                            .then(x => {
+                                if (x) {
+                                    tex.updateURL(
+                                        'data:' + match.originalPath, // url
+                                        match.bytes.buffer, // buffer
+                                        null, // onload
+                                        null, // forced extension
+                                    )
+                                } else {
+                                    console.error(`Downloading ${match.originalPath} failed while index indicated it should exist. Maybe index file is out of date?`)
+                                }
+                            })
+                        return tex
                     }
                 }
             }
+            return null
         } else {
+            // Fallback to trying to download the file
             const tex = new BjsTex(null, this.settings.scene)
             let responseCount = 0
             let foundMatch = false
             const extensions = ['dds', 'jpg', 'tga', 'gif', 'jpeg', 'png'].flatMap(x => [x, x.toUpperCase()])
             for (const extension of extensions) {
-                const url = `${baseUrl}${path}.${extension}`
+                const url = `${FakeFileSystem.baseUrl}${path}.${extension}`
                 fetch(url, {method: 'HEAD'})
                     .then((res) => {
                         responseCount++
@@ -220,6 +223,26 @@ export class BSPLoader {
         }
     }
 
+    private getFtxTexture(file: File) {
+        const bytes = file.bytes
+        if (bytes.byteLength < 12) {
+            console.warn(`Invalid FTX texture file "${file.originalPath}": File too small`)
+            return null
+        }
+        const view = new DataView(bytes.buffer)
+        const width = view.getInt32(0)
+        const height = view.getInt32(4)
+
+        if (bytes.byteLength < (width * height * 4) + 12) {
+            console.warn(`Invalid FTX texture file "${file.originalPath}": Not enough pixels`)
+            return null
+        }
+
+        const tex = RawTexture.CreateRGBATexture(bytes.slice(12), width, height, this.settings.scene, true, false)
+        tex.name = file.originalPath
+        return tex
+    }
+
     private loadMaterial(textureName: string) {
         const tex = this.loadTextureAtPath(textureName)
         if (!tex) {
@@ -227,10 +250,11 @@ export class BSPLoader {
         }
 
         const material = new StandardMaterial(textureName)
+        material.roughness = 1
+        material.specularPower = 5
         if (tex) {
             material.diffuseTexture = tex
-            material.roughness = 1
-            material.specularPower = 0
+            material.useAlphaFromDiffuseTexture = true
         }
 
         this.materialDirectory.set(textureName, material)
@@ -254,7 +278,7 @@ export class BSPLoader {
             }
         } else {
             if (!instance.entity.has('parentname')) {
-                instance.bjsNode.parent = this.root
+                instance.bjsNode.parent = this._root
                 return
             }
 
@@ -279,7 +303,7 @@ export class BSPLoader {
         const bjsNode = instance.bjsNode
 
         const faces: Face[] = BSPExtension.GetFacesInModel(this._bsp, model)
-        let i = 0
+        let i: number
         for (i = 0; i < faces.length; i++) {
             const face = faces[i]
             if (face.numEdgeIndices <= 0 && face.numVertices <= 0) {
@@ -327,22 +351,20 @@ export class BSPLoader {
                 textureMeshes[i] = MeshUtils.CombineAllMeshes(value)
                 if (textureMeshes[i].positions.length > 0) {
                     if (this.materialDirectory.has(key)) {
-                        materials[i] = this.materialDirectory[key]
+                        materials[i] = this.materialDirectory.get(key)
                     }
-                    if (this.settings.meshCombineOptions === MeshCombineOptions.PerMaterial) {
-                        const textureNode = new Mesh(key, this.settings.scene)
-                        textureNode.parent = bjsNode
-                        for (let j = 0; j < textureMeshes[i].positions.length; j++) {
-                            textureMeshes[i].positions[j] *= this.settings.scaleFactor
-                        }
-                        if (textureMeshes[i].normals.length < 3
-                            || (!textureMeshes[i].normals[0] || !textureMeshes[i].normals[1] || !textureMeshes[i].normals[2])) {
-                            VertexData.ComputeNormals(textureMeshes[i].positions, textureMeshes[i].indices, textureMeshes[i].normals)
-                        }
+                    const textureNode = new Mesh(key, this.settings.scene)
+                    textureNode.parent = bjsNode
+                    for (let j = 0; j < textureMeshes[i].positions.length; j++) {
+                        textureMeshes[i].positions[j] *= this.settings.scaleFactor
+                    }
+                    if (textureMeshes[i].normals.length < 3
+                        || (!textureMeshes[i].normals[0] || !textureMeshes[i].normals[1] || !textureMeshes[i].normals[2])) {
+                        VertexData.ComputeNormals(textureMeshes[i].positions, textureMeshes[i].indices, textureMeshes[i].normals)
+                    }
 
-                        textureMeshes[i].applyToMesh(textureNode, false)
-                        textureNode.material = materials[i]
-                    }
+                    textureMeshes[i].applyToMesh(textureNode, false)
+                    textureNode.material = materials[i]
                     ++i
                 }
             }

@@ -1,55 +1,134 @@
-export class FakeFileSystem {
-    /**
-     * Set this before calling the Download functions
-     */
-    public static caseInsensitive = true
-    private static fileData = new Map<string, Uint8Array>()
+const textDecoder = new TextDecoder()
 
-    public static FileExists(path: string): boolean {
-        if (!path) {
-            return false
-        }
+export class File {
+    public readonly originalPath: string
+    public readonly caseInsensitivePath: string
+    public readonly nameWithExtension: string
+    public readonly nameWithoutExtension: string
+    public readonly extension: string
+    public readonly directory: string
+    public bytes: Uint8Array
 
-        if (this.caseInsensitive) {
-            path = path.toLowerCase()
-        }
-        return this.fileData.has(path)
-    }
+    public failedToDownload: boolean
 
-    public static ReadFile(path: string): Uint8Array {
-        if (this.caseInsensitive) {
-            path = path.toLowerCase()
-        }
-        return this.fileData.get(path)
-    }
-
-    public static GetFilesInDirectory(path: string, regex?: RegExp): string[] {
+    constructor(path: string) {
         if (path.startsWith('/')) {
             path = path.substring(1)
         }
 
-        if (this.caseInsensitive) {
-            path = path.toLowerCase()
+        this.originalPath = path
+        this.caseInsensitivePath = path.toLowerCase()
+
+        this.nameWithExtension = path.split('/').pop()
+        const dotSplit = this.nameWithExtension.split('.')
+        this.nameWithoutExtension = dotSplit.shift()
+        this.extension = '.' + dotSplit.pop()
+        this.directory = this.originalPath.substring(0, this.originalPath.lastIndexOf('/') + 1)
+    }
+
+    public get isLoaded(): boolean {
+        return this.bytes?.length > 0
+    }
+
+    public get text(): string {
+        if (!this.isLoaded) {
+            return null
+        }
+        return textDecoder.decode(this.bytes)
+    }
+
+    public async download(): Promise<boolean> {
+        if (this.failedToDownload) {
+            return false
+        }
+        if (this.isLoaded) {
+            return true
         }
 
-        const items: string[] = []
-        for (let filePath of this.fileData.keys()) {
-            if (filePath.startsWith(path)) {
+        const response = await fetch(FakeFileSystem.baseUrl + this.originalPath)
+        if (!response.ok) {
+            this.failedToDownload = true
+            return false
+        }
+        this.bytes = new Uint8Array(await response.arrayBuffer())
+        this.failedToDownload = false
+        return true
+    }
+}
+
+export class FakeFileSystem {
+    public static baseUrl = './'
+    private static fileData = new Map<string, File>()
+    private static _hasLoadedIndex = false
+
+    public static get hasLoadedIndex(): boolean {
+        return this._hasLoadedIndex
+    }
+
+    public static async Init() {
+        if (!this.baseUrl.endsWith('/')) {
+            this.baseUrl += '/'
+        }
+
+        const response = await fetch(`${this.baseUrl}index`)
+        if (response.ok) {
+            console.log('Found index file')
+            const text = await response.text()
+            const items = text.split(/\r?\n/)
+            for (let item of items) {
+                this.fileData.set(item.toLowerCase(), new File(item))
+            }
+            this._hasLoadedIndex = true
+        }
+    }
+
+    public static FileExists(path: string, loadedOnly: boolean = true): boolean {
+        if (!path) {
+            return false
+        }
+
+        path = path.toLowerCase()
+        if (!this.fileData.has(path)) {
+            return false
+        }
+        if (!loadedOnly) {
+            return true
+        }
+        const item = this.fileData.get(path)
+        return item.isLoaded
+    }
+
+    public static GetFile(path: string): File {
+        path = path.toLowerCase()
+        return this.fileData.get(path)
+    }
+
+    public static FindFiles(startsWithPath: string, regex?: RegExp, loadedOnly: boolean = true): File[] {
+        if (startsWithPath.startsWith('/')) {
+            startsWithPath = startsWithPath.substring(1)
+        }
+
+        startsWithPath = startsWithPath.toLowerCase()
+
+        let items: File[] = []
+        for (let [path, file] of this.fileData.entries()) {
+            if (path.startsWith(startsWithPath)) {
                 if (!regex) {
-                    items.push(filePath)
-                } else if (regex.test(filePath)) {
-                    items.push(filePath)
+                    items.push(file)
+                } else if (regex.test(path)) {
+                    items.push(file)
                 }
             }
+        }
+        if (loadedOnly) {
+            items = items.filter(x => x.isLoaded)
         }
 
         return items
     }
 
     public static Unload(path: string): void {
-        if (this.caseInsensitive) {
-            path = path.toLowerCase()
-        }
+        path = path.toLowerCase()
 
         if (this.fileData.has(path)) {
             this.fileData.delete(path)
@@ -60,35 +139,40 @@ export class FakeFileSystem {
         this.fileData.clear()
     }
 
-    public static async DownloadFile(baseUrl: string, path: string): Promise<boolean> {
-        if (path.startsWith('/')) {
-            path = path.substring(1)
+    public static async DownloadFile(file: string | File): Promise<boolean> {
+        if (!file) {
+            throw new Error('ArgumentNullException')
         }
 
-        if (this.FileExists(path)) {
+        let item: File
+        if (typeof file === 'string') {
+            if (file.startsWith('/')) {
+                file = file.substring(1)
+            }
+
+            file = file.toLowerCase()
+
+            if (!this.fileData.has(file)) {
+                return false
+            }
+
+            item = this.fileData.get(file)
+        } else {
+            item = file
+        }
+
+        if (item.isLoaded) {
             return true
         }
 
-        if (!baseUrl.endsWith('/')) {
-            baseUrl += '/'
-        }
-
-        const response = await fetch(baseUrl + path)
-        if (!response.ok) {
-            return false
-        }
-        if (this.caseInsensitive) {
-            path = path.toLowerCase()
-        }
-        const bytes = new Uint8Array(await response.arrayBuffer())
-        this.fileData.set(path, bytes)
-        return true
+        await item.download()
+        return !item.failedToDownload
     }
 
-    public static async DownloadFiles(baseUrl: string, paths: string[]): Promise<void> {
+    public static async DownloadFiles(paths: (string | File)[]): Promise<void> {
         const promises: Promise<boolean>[] = []
         for (let path of paths) {
-            promises.push(this.DownloadFile(baseUrl, path))
+            promises.push(this.DownloadFile(path))
         }
         await Promise.all(promises)
     }

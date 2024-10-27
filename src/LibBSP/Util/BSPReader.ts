@@ -2,17 +2,17 @@ import {BSP, LumpInfo, MapType} from '../Structs/BSP/BSP'
 import {BSPHeader} from '../Structs/BSP/BSPHeader'
 import {BinaryReader} from '../../utils/BinaryReader'
 import {int} from '../../utils/number'
-import {FakeFileSystem} from '../FakeFileSystem'
+import {FakeFileSystem, File} from '../FakeFileSystem'
 
 export class BSPReader {
-    public bspFile: string
+    public bspFile: File
     private entityPattern = '"classname"'
     private lumpFiles: Map<int, LumpInfo>
     private key: Uint8Array = new Uint8Array(0)
 
-    constructor(file?: string) {
-        if (!FakeFileSystem.FileExists(file)) {
-            throw new Error(`Unable to open BSP file: File ${file} was not found.`)
+    constructor(file?: File) {
+        if (!file.isLoaded) {
+            throw new Error('BSP file has to be loaded')
         }
         this.bspFile = file
     }
@@ -25,7 +25,7 @@ export class BSPReader {
             const lumpInfoLength = BSPHeader.GetLumpInfoLength(mapType)
             const magicLength = BSPHeader.GetMagic(mapType).length
 
-            const bytes = FakeFileSystem.ReadFile(this.bspFile)
+            const bytes = this.bspFile.bytes
             const binaryReader = new BinaryReader(bytes)
             binaryReader.seek(magicLength)
             const numLumps = binaryReader.readInt32()
@@ -42,7 +42,7 @@ export class BSPReader {
                 length += 4
             }
 
-            let bytes = FakeFileSystem.ReadFile(this.bspFile)
+            let bytes = this.bspFile.bytes
             bytes = bytes.slice(0, length)
 
             if (mapType === MapType.TacticalInterventionEncrypted) {
@@ -69,19 +69,19 @@ export class BSPReader {
         return output
     }
 
-    public readLumpFile(offset: int, length: int, filename?: string): Uint8Array {
-        if (!filename || filename === '') {
+    public readLumpFile(offset: int, length: int, file?: File): Uint8Array {
+        if (!file) {
             if (!this.bspFile) {
                 return null
             }
-            filename = this.bspFile
+            file = this.bspFile
         }
 
-        if (!FakeFileSystem.FileExists(filename)) {
-            throw new Error(`Lump file ${filename} doesn't exist`)
+        if (!file.isLoaded) {
+            throw new Error(`Lump file ${file.originalPath} has not been loaded yet`)
         }
 
-        const bytes = FakeFileSystem.ReadFile(filename)
+        const bytes = file.bytes
         return bytes.slice(offset, offset + length)
     }
 
@@ -99,7 +99,7 @@ export class BSPReader {
     public getVersion(bigEndian: boolean = false): MapType {
         let current = MapType.Undefined
         if (this.bspFile) {
-            const bytes = FakeFileSystem.ReadFile(this.bspFile)
+            const bytes = this.bspFile.bytes
 
             if (bytes.length < 4) {
                 return current
@@ -296,20 +296,20 @@ export class BSPReader {
             return
         }
 
-        const baseName = this.bspFile.substring(0, this.bspFile.length - 4)
+        const baseName = this.bspFile.directory + this.bspFile.nameWithoutExtension
 
-        const files = FakeFileSystem.GetFilesInDirectory(baseName, /_._.*\.lmp/)
+        const files = FakeFileSystem.FindFiles(baseName, /_._.*\.lmp/)
         files.sort((f1, f2) => {
-            const startIndex = this.bspFile.split('/').pop().length - 1
-            const f1EndIndex = f1.lastIndexOf('.')
-            const f2EndIndex = f2.lastIndexOf('.')
-            const f1Position = parseInt(f1.split('/').pop().substring(startIndex, f1EndIndex - startIndex), 10)
-            const f2Position = parseInt(f2.split('/').pop().substring(startIndex, f2EndIndex - startIndex), 10)
+            const startIndex = this.bspFile.nameWithExtension.length - 1
+            const f1EndIndex = f1.nameWithExtension.lastIndexOf('.')
+            const f2EndIndex = f2.nameWithExtension.lastIndexOf('.')
+            const f1Position = parseInt(f1.nameWithExtension.substring(startIndex, f1EndIndex - startIndex), 10)
+            const f2Position = parseInt(f2.nameWithExtension.substring(startIndex, f2EndIndex - startIndex), 10)
             return f1Position - f2Position
         })
 
         for (let file of files) {
-            const bytes = FakeFileSystem.ReadFile(file)
+            const bytes = file.bytes
             const br = new BinaryReader(bytes)
             const l = new LumpInfo()
             l.offset = br.readInt32()
