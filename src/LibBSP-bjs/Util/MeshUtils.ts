@@ -41,6 +41,10 @@ export class MeshUtils {
         mesh.uvs2 = this.Vector2sToArray(vertices.map(x => x.uv1))
         mesh.colors = this.ColorsToArray(vertices.map(x => x.color))
 
+        for (let i = 1; i < mesh.uvs.length; i += 2) {
+            mesh.uvs[i] = 1 - mesh.uvs[i]
+        }
+
         return mesh
     }
 
