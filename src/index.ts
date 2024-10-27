@@ -1,4 +1,6 @@
 import './styles/main.css'
+import './styles/mapSelector.css'
+
 import {Engine, FlyCamera, HemisphericLight, Scene, Tools, TransformNode, Vector3} from '@babylonjs/core'
 import '@babylonjs/inspector'
 import {BSPLoader, EntityInstance, MeshCombineOptions} from './LibBSP-bjs/Util/BSPLoader'
@@ -33,9 +35,9 @@ engine.runRenderLoop(() => {
 
 const spawns: EntityInstance[] = []
 const urlParams = new URLSearchParams(location.search)
-let map = 'mp/mp_uo_harbor.bsp'
-if (urlParams.has('map')) {
-    map = urlParams.get('map')
+let map = 'maps/mp/mp_uo_harbor.bsp'
+if (urlParams.has('m')) {
+    map = urlParams.get('m')
 }
 
 let loader: BSPLoader
@@ -45,12 +47,13 @@ async function start() {
     await FakeFileSystem.Init()
 
     const mapIndex = new MapIndex()
-    await mapIndex.init()
+    await mapIndex.startIndexing()
+    createMapSelector(mapIndex)
 
     loader = new BSPLoader()
     loader.settings = {
         scene: scene,
-        path: 'maps/' + map,
+        path: map,
         // baseUrl: 'quake/',
         // path: 'maps/anodm4.bsp',
         meshCombineOptions: MeshCombineOptions.PerMaterial,
@@ -79,17 +82,28 @@ async function start() {
 
 start()
 
-const btn = document.createElement('button')
-btn.innerText = 'To Random Spawn'
-btn.style.position = 'absolute'
-btn.style.left = '0'
-btn.style.top = '0'
-document.body.appendChild(btn)
-btn.addEventListener('click', () => {
+const buttonsContainer = document.createElement('div')
+buttonsContainer.style.position = 'absolute'
+buttonsContainer.style.left = '0'
+buttonsContainer.style.top = '0'
+
+const mapSelectorBtn = document.createElement('button')
+mapSelectorBtn.innerText = 'Map Selector'
+buttonsContainer.appendChild(mapSelectorBtn)
+mapSelectorBtn.addEventListener('click', () => {
+    document.querySelector('.map-selector-root').classList.remove('closed')
+})
+
+const randomSpawnBtn = document.createElement('button')
+randomSpawnBtn.innerText = 'To Random Spawn'
+buttonsContainer.appendChild(randomSpawnBtn)
+randomSpawnBtn.addEventListener('click', () => {
     if (loader?.root) {
         teleportToRandomSpawn(loader.root)
     }
 })
+
+document.body.appendChild(buttonsContainer)
 
 function teleportToRandomSpawn(root: TransformNode) {
     const spawn = randomFromArray(spawns)
@@ -114,4 +128,47 @@ function getPosFromSpawn(spawn: EntityInstance): Vector3 {
 
 function randomFromArray<T>(arr: T[]): T {
     return arr[Math.floor(Math.random() * arr.length)]
+}
+
+function createMapSelector(mapIndex: MapIndex) {
+    const root = document.createElement('div')
+    root.classList.add('map-selector-root', 'closed')
+    root.addEventListener('click', (e) => {
+        if (e.target === root)
+            root.classList.add('closed')
+    })
+
+    const container = document.createElement('div')
+    container.classList.add('container')
+    root.appendChild(container)
+
+    const header = document.createElement('h1')
+    header.innerText = 'Map Selector'
+    container.appendChild(header)
+
+    const itemsContainer = document.createElement('div')
+    itemsContainer.classList.add('items')
+    for (let map of mapIndex.mapItems) {
+        if (!map.bspFile) {
+            continue
+        }
+        const itemElem = document.createElement('a')
+        itemElem.classList.add('item')
+        itemElem.href = '?m=' + map.bspFile.originalPath
+        if (map.thumbnailPath) {
+            itemElem.style.backgroundImage = `url(${FakeFileSystem.baseUrl}${map.thumbnailPath})`
+        }
+
+        const nameElem = document.createElement('p')
+        nameElem.innerText = map.longname.replaceAll(/\^\d/g, '') ?? map.map
+        // if (map.thumbnailPath) {
+        //     nameElem.innerText += map.thumbnailPath
+        // }
+        itemElem.appendChild(nameElem)
+
+        itemsContainer.appendChild(itemElem)
+    }
+    container.appendChild(itemsContainer)
+
+    document.body.appendChild(root)
 }

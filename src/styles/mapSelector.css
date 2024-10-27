@@ -1,0 +1,66 @@
+.map-selector-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.37);
+    z-index: 999;
+
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 16px;
+    color: #fff;
+}
+
+.map-selector-root.closed {
+    display: none;
+}
+
+.map-selector-root .container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background: #000;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.map-selector-root .container .items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 5px;
+}
+
+.map-selector-root .container .items .item {
+    width: 150px;
+    height: 150px;
+    border: 1px solid black;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: black;
+    background-size: cover;
+
+    transition: .1s;
+}
+
+.map-selector-root .container .items .item:hover {
+    transform: scale(1.5);
+}
+
+.map-selector-root .container .items .item p {
+    max-width: 100%;
+    word-break: break-all;
+    text-align: center;
+
+    color: white;
+    background-color: black;
+}

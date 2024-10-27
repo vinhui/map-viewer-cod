@@ -1,6 +1,6 @@
 import {FakeFileSystem, File} from './LibBSP/FakeFileSystem'
 
-type MapDisplayItem = {
+type MapItem = {
     map: string
     bspFile: File
     longname: string
@@ -8,23 +8,27 @@ type MapDisplayItem = {
 }
 
 export class MapIndex {
-    private displayItems: MapDisplayItem[] = []
+    private _mapItems: MapItem[] = []
 
-    public async init() {
+    public get mapItems(): MapItem[] {
+        return this._mapItems
+    }
+
+    public async startIndexing() {
         const arenaFiles = FakeFileSystem.FindFiles('', /\.arena$/i, false)
         await FakeFileSystem.DownloadFiles(arenaFiles)
 
         for (let arenaFile of arenaFiles) {
-            this.displayItems.push(this.parseArenaFile(arenaFile))
+            this._mapItems.push(this.parseArenaFile(arenaFile))
         }
 
         const bspFiles = FakeFileSystem.FindFiles('', /\.bsp$/i, false)
         for (let bspFile of bspFiles) {
             const fileName = bspFile.nameWithoutExtension
 
-            const match = this.displayItems.find(x => x.map === fileName)
+            const match = this._mapItems.find(x => x.map === fileName)
             if (!match) {
-                this.displayItems.push({
+                this._mapItems.push({
                     map: fileName,
                     bspFile: bspFile,
                     longname: fileName,
@@ -34,20 +38,19 @@ export class MapIndex {
             }
         }
 
-        for (let item of this.displayItems) {
-            const matches = FakeFileSystem.FindFiles('mp/levelshots/' + item.map, null, false)
+        for (let item of this._mapItems) {
+            const matches = FakeFileSystem.FindFiles('levelshots/' + item.map, null, false)
             if (matches.length > 0) {
-                console.log(item)
                 item.thumbnailPath = matches[0].originalPath
             }
         }
 
-        // console.log(this.displayItems)
+        this.mapItems.sort((a, b) => a.longname.localeCompare(b.longname))
     }
 
-    private parseArenaFile(file: File): MapDisplayItem {
+    private parseArenaFile(file: File): MapItem {
         const lines = file.text.split('\n')
-        const obj: MapDisplayItem = {
+        const obj: MapItem = {
             map: '',
             bspFile: null,
             longname: file.originalPath,
