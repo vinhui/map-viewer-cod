@@ -1,6 +1,7 @@
-import {FakeFileSystem, File} from './LibBSP/FakeFileSystem'
+import {FakeFileSystem, File} from 'libbsp-js'
+import {animationFrame} from './utils/async'
 
-type MapItem = {
+export type MapItem = {
     map: string
     bspFile: File
     longname: string
@@ -16,7 +17,10 @@ export class MapIndex {
 
     public async startIndexing() {
         const arenaFiles = FakeFileSystem.FindFiles('', /\.arena$/i, false)
-        await FakeFileSystem.DownloadFiles(arenaFiles)
+        for (let i = 0; i < arenaFiles.length; i += 10) {
+            const chunk = arenaFiles.slice(i, i + 10)
+            await FakeFileSystem.DownloadFiles(chunk)
+        }
 
         for (let arenaFile of arenaFiles) {
             this._mapItems.push(this.parseArenaFile(arenaFile))
@@ -38,10 +42,23 @@ export class MapIndex {
             }
         }
 
-        for (let item of this._mapItems) {
+        for (let i = 0; i < this._mapItems.length; i++) {
+            let item = this._mapItems[i]
             const matches = FakeFileSystem.FindFiles('levelshots/' + item.map, null, false)
-            if (matches.length > 0) {
+            if (matches.length > 1) {
+                for (let match of matches) {
+                    if (match.extension.toLowerCase() === '.dds') {
+                        continue
+                    }
+                    item.thumbnailPath = match.originalPath
+                    break
+                }
+            } else if (matches.length > 1) {
                 item.thumbnailPath = matches[0].originalPath
+            }
+            if (i % 10 === 0) {
+                await animationFrame()
+                await animationFrame()
             }
         }
 

@@ -6,6 +6,7 @@
     <explicitExcludes>
       <Path>dist</Path>
       <Path>js</Path>
+      <Path>public</Path>
     </explicitExcludes>
   </component>
 </project>

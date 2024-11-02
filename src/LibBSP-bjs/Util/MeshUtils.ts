@@ -1,16 +1,9 @@
 import {FloatArray, ISize, Matrix, Vector2 as BjsVec2, Vector3 as BjsVec3, VertexData} from '@babylonjs/core'
-import {BSP} from '../../LibBSP/Structs/BSP/BSP'
-import {Face} from '../../LibBSP/Structs/BSP/Face'
+import {BSP, Color, Face, LODTerrain, TextureInfo, Vector2 as BspVec2, Vector3 as BspVec3, Vertex} from 'libbsp-js'
 import {BSPExtension} from '../Extensions/BSPExtension'
-import {Vertex} from '../../LibBSP/Structs/Common/Vertex'
-import {TextureInfo} from '../../LibBSP/Structs/Common/TextureInfo'
-import {LODTerrain} from '../../LibBSP/Structs/BSP/LODTerrain'
-import {Color} from '../../LibBSP/Util/Color'
-import {Vector2 as BspVec2, Vector3 as BspVec3} from '../../LibBSP/Util/Vector'
 import {TextureInfoExtensions} from '../Extensions/TextureInfoExtensions'
 
 export class MeshUtils {
-    public static readonly maxMeshVertices = 32767
     public static readonly inch2MeterScale = 0.0254
 
     public static CreateFaceMesh(bsp: BSP, face: Face, dims: ISize, curveTesselationLevel: number): VertexData {
@@ -42,7 +35,7 @@ export class MeshUtils {
         mesh.colors = this.ColorsToArray(vertices.map(x => x.color))
 
         for (let i = 1; i < mesh.uvs.length; i += 2) {
-            mesh.uvs[i] = 1 - mesh.uvs[i]
+            // mesh.uvs[i] = 1 - mesh.uvs[i]
         }
 
         return mesh
@@ -50,7 +43,7 @@ export class MeshUtils {
 
     public static LoadVerticesFromFace(bsp: BSP, face: Face): VertexData {
         const mesh = this.LoadVertices(bsp.getReferencedObjects<Vertex>(face, 'vertices'))
-        const indices = bsp.getReferencedObjects<bigint>(face, 'indices')
+        const indices = face.indices// bsp.getReferencedObjects<bigint>(face, 'indices')
         const triangles = new Int32Array(indices.length)
         for (let i = 0; i < indices.length; i++) {
             triangles[i] = Number(indices[i])

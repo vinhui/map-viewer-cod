@@ -1,5 +1,7 @@
-import {Entity} from '../../LibBSP/Structs/Common/Entity'
+import {BSP, Entity, Face, FakeFileSystem, File, LODTerrain, Texture as BspTex} from 'libbsp-js'
 import {
+    Color3,
+    CubeTexture,
     ISize,
     Material,
     Mesh,
@@ -11,13 +13,9 @@ import {
     Vector3 as BjsVec3,
     VertexData,
 } from '@babylonjs/core'
-import {BSP} from '../../LibBSP/Structs/BSP/BSP'
-import {FakeFileSystem, File} from '../../LibBSP/FakeFileSystem'
-import {Face} from '../../LibBSP/Structs/BSP/Face'
-import {Texture as BspTex} from '../../LibBSP/Structs/BSP/Texture'
-import {LODTerrain} from '../../LibBSP/Structs/BSP/LODTerrain'
 import {BSPExtension} from '../Extensions/BSPExtension'
 import {MeshUtils} from './MeshUtils'
+import {doesDdsHaveAlpha} from '../../utils/dds'
 
 export enum MeshCombineOptions {
     None,
@@ -90,7 +88,8 @@ export class BSPLoader {
 
             this._root = new TransformNode(bsp.mapName)
             this._root.rotation.x = -Math.PI / 2
-            this._root.scaling.x = -1
+            this._root.scaling.setAll(MeshUtils.inch2MeterScale)
+            this._root.scaling.x *= -1
             for (let value of this.namedEntities.values()) {
                 this.SetUpEntityHierarchy(value)
             }
@@ -117,8 +116,6 @@ export class BSPLoader {
         }
         const bjsTex = this.materialDirectory.get(textureName).diffuseTexture
         if (bjsTex) {
-            // TODO: Not sure if loading textures from uint8array will still load async
-            // If they load async, this probably won't work
             dims = bjsTex.getSize()
         } else {
             dims = {
@@ -144,7 +141,16 @@ export class BSPLoader {
         return MeshUtils.CreateMoHAATerrainMesh(this._bsp, lodTerrain)
     }
 
-    private loadTextureAtPath(path: string) {
+    private loadTextureAtPath(path: string, onTexChanged: () => void): BjsTex {
+        const s = path.toLowerCase()
+        const s2 = path.replaceAll('_', '')
+        if (s.startsWith('textures/sky/') || s2.startsWith('textures/sky/') || s.startsWith('textures/skies/') || s2.startsWith('textures/skies/')) {
+            const skyTex = this.loadSkyTextureAtPath(path)
+            if (skyTex) {
+                return skyTex
+            }
+        }
+
         if (FakeFileSystem.hasLoadedIndex) {
             const matches = FakeFileSystem.FindFiles(path, null, false)
             if (matches.length === 0) {
@@ -157,7 +163,15 @@ export class BSPLoader {
                         if (match.extension === '.ftx') {
                             return this.getFtxTexture(match)
                         } else {
-                            return new BjsTex(
+                            if (match.extension.toLowerCase() === '.dds') {
+                                const view = new DataView(match.bytes.buffer)
+                                // Some old DDS files have bits per pixels that are way too high
+                                // So we're just limiting those
+                                if (view.getInt32(22 * 4, true) >= 256) {
+                                    view.setInt32(22 * 4, 0, true)
+                                }
+                            }
+                            const tex = new BjsTex(
                                 'data:' + match.originalPath, // url
                                 this.settings.scene, // scene
                                 null, // no mipmap or options
@@ -173,23 +187,39 @@ export class BSPLoader {
                                 null, // creationflags
                                 null, // forced extension
                             )
+                            if (match.extension.toLowerCase() === '.dds') {
+                                tex.hasAlpha = doesDdsHaveAlpha(match.bytes)
+                            }
+                            return tex
                         }
                     } else {
                         if (match.extension === '.ftx') {
                             console.error(`Using FTX textures that aren't preloaded is currently not supported.\nYou need to pre-download them through the FakeFileSystem beforehand.`)
                             return null
                         }
-                        let tex = new BjsTex(null, this.settings.scene)
+                        let tex = new BjsTex(null, this.settings.scene, false, true)
                         tex.name = match.originalPath
                         match.download()
-                            .then(x => {
-                                if (x) {
+                            .then(success => {
+                                if (success) {
+                                    if (match.extension.toLowerCase() === '.dds') {
+                                        const view = new DataView(match.bytes.buffer)
+                                        // Some old DDS files have bits per pixels that are way too high
+                                        // So we're just limiting those
+                                        if (view.getInt32(22 * 4, true) >= 256) {
+                                            view.setInt32(22 * 4, 0, true)
+                                        }
+                                    }
                                     tex.updateURL(
                                         'data:' + match.originalPath, // url
                                         match.bytes.buffer, // buffer
                                         null, // onload
                                         null, // forced extension
                                     )
+                                    if (match.extension.toLowerCase() === '.dds') {
+                                        tex.hasAlpha = doesDdsHaveAlpha(match.bytes)
+                                    }
+                                    onTexChanged()
                                 } else {
                                     console.error(`Downloading ${match.originalPath} failed while index indicated it should exist. Maybe index file is out of date?`)
                                 }
@@ -214,13 +244,82 @@ export class BSPLoader {
                             foundMatch = true
                             tex.updateURL(url)
                         }
-                        if (responseCount === extensions.length && !foundMatch) {
-                            console.error(`Failed to find texture ${path}`)
+                        if (responseCount === extensions.length) {
+                            onTexChanged()
+                            if (!foundMatch) {
+                                console.error(`Failed to find texture ${path}`)
+                            }
                         }
                     })
             }
             return tex
         }
+    }
+
+    private loadSkyTextureAtPath(path: string): BjsTex {
+        type Sides = 'bk' | 'dn' | 'ft' | 'lf' | 'rt' | 'up'
+
+        let fileName: string
+        if (path.startsWith('textures/sky/'))
+            fileName = path.substring('textures/sky/'.length)
+        else if (path.startsWith('textures/skies/'))
+            fileName = path.substring('textures/skies/'.length)
+        const sides: Sides[] = ['bk', 'dn', 'ft', 'lf', 'rt', 'up']
+        const files = new Map<Sides, File>()
+        for (let side of sides) {
+            let f: File[]
+            f = FakeFileSystem.FindFiles(`env/${fileName}_${side}.`, null, false)
+            if (f?.length === 0) {
+                console.warn(`Couldn't find skybox texture`, path)
+                return null
+            }
+            files.set(side, f[0])
+        }
+
+        const cubeTex = new CubeTexture(null, this.settings.scene)
+        Promise.all(files.values().map(x => x.download()))
+            .then(x => {
+                if (x.some(x => !x)) {
+                    return
+                }
+
+                const blobUrls = new Map<Sides, string>()
+                for (let [side, file] of files.entries()) {
+                    const blob = new Blob([file.bytes])
+                    const f = new window.File([blob], file.nameWithExtension)
+                    blobUrls.set(side, URL.createObjectURL(f))
+                }
+                const cleanup = (e?: unknown) => {
+                    for (let url of blobUrls.values()) {
+                        URL.revokeObjectURL(url)
+                    }
+                }
+                const ext = files.get('up').extension
+                console.log(ext)
+                cubeTex.updateURL(
+                    path, // url
+                    ext, // forced extension
+                    cleanup, // onload
+                    null, // prefiltered
+                    (e) => {
+                        console.error('Failed to load sky texture:', e)
+                        cleanup()
+                    }, // onerror
+                    null, // extensions
+                    null, // delayload
+                    [
+                        blobUrls.get('rt'),
+                        blobUrls.get('up'),
+                        blobUrls.get('ft'),
+                        blobUrls.get('lf'),
+                        blobUrls.get('dn'),
+                        blobUrls.get('bk'),
+                    ],
+                    null, // buffer
+                )
+            })
+
+        return null
     }
 
     private getFtxTexture(file: File) {
@@ -244,17 +343,25 @@ export class BSPLoader {
     }
 
     private loadMaterial(textureName: string) {
-        const tex = this.loadTextureAtPath(textureName)
+        let material: StandardMaterial
+        const tex = this.loadTextureAtPath(textureName, () => {
+            if (tex.hasAlpha) {
+                material.diffuseTexture = tex
+                material.useAlphaFromDiffuseTexture = true
+                material.needDepthPrePass = true
+            }
+        })
         if (!tex) {
             console.warn(`Texture ${textureName} could not be loaded (does the file exist?)`)
         }
 
-        const material = new StandardMaterial(textureName)
-        material.roughness = 1
-        material.specularPower = 5
+        material = new StandardMaterial(textureName, this.settings.scene)
+        material.specularColor = Color3.Black()
+        if (textureName.toLowerCase().includes('decal@')) {
+            material.zOffset = -1
+        }
         if (tex) {
             material.diffuseTexture = tex
-            material.useAlphaFromDiffuseTexture = true
         }
 
         this.materialDirectory.set(textureName, material)
@@ -265,9 +372,15 @@ export class BSPLoader {
             this.namedEntities.set(entity.name, [])
         }
 
+        const mesh = new Mesh(`${entity.className}${entity.name ? ` ${entity.name}` : ''}`, this.settings.scene)
+        if (!mesh.metadata)
+            mesh.metadata = {}
+        for (let [k, v] of entity.map.entries()) {
+            mesh.metadata[k] = v
+        }
         return {
             entity: entity,
-            bjsNode: new Mesh(`${entity.className}${entity.name ? ` ${entity.name}` : ''}`, this.settings.scene),
+            bjsNode: mesh,
         }
     }
 

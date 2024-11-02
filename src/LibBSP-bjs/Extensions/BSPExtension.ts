@@ -1,10 +1,4 @@
-import {BSP} from '../../LibBSP/Structs/BSP/BSP'
-import {Face} from '../../LibBSP/Structs/BSP/Face'
-import {Model} from '../../LibBSP/Structs/BSP/Model'
-import {Leaf} from '../../LibBSP/Structs/BSP/Leaf'
-import {Node} from '../../LibBSP/Structs/BSP/Node'
-import {TextureInfo} from '../../LibBSP/Structs/Common/TextureInfo'
-import {LumpObjDataCtor} from '../../LibBSP/Structs/Common/ILumpObject'
+import {BSP, Face, Leaf, LumpObjDataCtor, Model, Node, TextureInfo} from 'libbsp-js'
 
 export class BSPExtension {
     public static GetLeavesInModel(bsp: BSP, model: Model): Leaf[] {

@@ -1,4 +1,4 @@
-import {TextureInfo} from '../../LibBSP/Structs/Common/TextureInfo'
+import {TextureInfo} from 'libbsp-js'
 import {ISize, Matrix, Vector2, Vector3} from '@babylonjs/core'
 
 export class TextureInfoExtensions {
