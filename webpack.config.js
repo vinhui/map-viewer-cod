@@ -9,14 +9,21 @@ module.exports = {
         filename: 'index.js',
     },
     plugins: [
-        new HtmlWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            title: "Map Viewer",
+            hash: true,
+            minify: {
+                minifyJS: true,
+                minifyCSS: true,
+                removeComments: true,
+            },
+        }),
         new MiniCssExtractPlugin()
     ],
     resolve: {
         extensions: ['.ts', '.js'],
         symlinks: true
     },
-    mode: 'development',
     module: {
         rules: [
             {

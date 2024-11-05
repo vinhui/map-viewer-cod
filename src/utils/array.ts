@@ -36,3 +36,19 @@ export function generate2dTypedArray<T extends TypedArray>(type: TypedArrayCtor<
     }
     return arr
 }
+
+export function asciiFromArray(data: Uint8Array): string {
+    let s = ''
+    for (let i = 0; i < data.length; i++) {
+        s += String.fromCharCode(data[i])
+    }
+    return s
+}
+
+export function asciiToArray(text: string): Uint8Array {
+    const arr = new Uint8Array(text.length)
+    for (let i = 0; i < arr.length; i++) {
+        arr[i] = text.charCodeAt(i)
+    }
+    return arr
+}

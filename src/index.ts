@@ -8,20 +8,22 @@ import {
     HemisphericLight,
     MeshBuilder,
     PhysicsAggregate,
+    PhysicsRaycastResult,
     PhysicsShapeType,
     Scene,
+    Sound,
     StandardMaterial,
     Tools,
-    TransformNode,
     Vector3,
     VertexBuffer,
 } from '@babylonjs/core'
 import '@babylonjs/inspector'
 import {BSPLoader, EntityInstance, MeshCombineOptions} from './LibBSP-bjs/Util/BSPLoader'
 import {FakeFileSystem} from 'libbsp-js'
-import {MapIndex, MapItem} from './MapIndex'
 import HavokPhysics from '@babylonjs/havok'
 import {FirstPersonPlayer} from './FirstPersonPlayer'
+import {MapSelector} from './MapSelector'
+import {parseSoundAliasLine} from './utils/soundalias'
 
 const canvas = document.createElement('canvas')
 canvas.style.width = '100%'
@@ -32,8 +34,17 @@ document.body.appendChild(canvas)
 const engine = new Engine(canvas, true)
 const scene = new Scene(engine)
 const gravityVector = new Vector3(0, -9.81, 0)
-// const gravityVector = new Vector3(0, -1, 0)
-// scene.gravity = gravityVector
+Engine.audioEngine.useCustomUnlockedButton = true
+
+window.addEventListener(
+    'click',
+    () => {
+        if (!Engine.audioEngine.unlocked) {
+            Engine.audioEngine.unlock()
+        }
+    },
+    {once: true},
+)
 
 const light1: HemisphericLight = new HemisphericLight('light1', new Vector3(1, 1, 0), scene)
 light1.intensity = 1.5
@@ -45,15 +56,72 @@ if (urlParams.has('m')) {
     map = urlParams.get('m')
 }
 
+let havok: HavokPlugin
 let loader: BSPLoader
 let player: FirstPersonPlayer
+let mapSelector: MapSelector
+
+async function findAmbientSound() {
+    const gscFilePath = map.substring(0, map.length - 3) + 'gsc'
+    const matches = FakeFileSystem.FindFiles(gscFilePath, null, false)
+    if (!matches) {
+        return
+    }
+    const gsc = matches[0]
+    if (!await gsc.download()) {
+        return
+    }
+    const gscText = gsc.text
+    const regexMatches = gscText.match(/(?<!\/\/\s*)ambientPlay\("(.*?)"\)/)
+    if (!regexMatches) {
+        return
+    }
+    const soundName = regexMatches[1]
+    if (!soundName) {
+        return
+    }
+
+    const soundAliases = FakeFileSystem.FindFiles('soundaliases/', /\.csv$/mi, false)
+
+    for (let i = 0; i < soundAliases.length; i += 20) {
+        const chunk = soundAliases.slice(i, i + 20)
+        await FakeFileSystem.DownloadFiles(chunk)
+
+        for (let file of chunk) {
+            const content = file.text
+            for (const line of content.split('\n')) {
+                if (!line.startsWith(soundName + ',')) {
+                    continue
+                }
+                const obj = parseSoundAliasLine(line)
+                const soundFiles = FakeFileSystem.FindFiles(`sound/${obj.file}`, null, false)
+                if (soundFiles.length === 0) {
+                    console.warn(`Failed to find ambient sound ${obj.file}`, line, obj)
+                    return
+                }
+                if (!await soundFiles[0].download()) {
+                    return
+                }
+                const sound = new Sound(obj.name, soundFiles[0].bytes.buffer, scene, null, {
+                    loop: obj.loop === 'looping',
+                    autoplay: true,
+                    volume: obj.vol_min,
+                })
+                console.log('Playing ambient sound', obj.name, obj.file)
+                return
+            }
+        }
+    }
+
+    console.warn('Failed to find ambient sound', soundName)
+}
 
 async function start() {
     const havokInstance = await HavokPhysics()
-    const havokPlugin = new HavokPlugin(true, havokInstance)
-    scene.enablePhysics(gravityVector, havokPlugin)
+    havok = new HavokPlugin(true, havokInstance)
+    scene.enablePhysics(gravityVector, havok)
 
-    player = new FirstPersonPlayer(scene, havokPlugin)
+    player = new FirstPersonPlayer(scene, havok)
 
     FakeFileSystem.baseUrl = 'cod/'
     await FakeFileSystem.Init()
@@ -83,7 +151,7 @@ async function start() {
                 }
             }
 
-            teleportToRandomSpawn(root)
+            teleportToRandomSpawn()
             const mat = new StandardMaterial('spawn', scene)
             mat.emissiveColor = Color3.Red()
             for (let spawn of spawns) {
@@ -91,21 +159,20 @@ async function start() {
                 m.position = transformPoint(spawn.entity.origin)
                 m.material = mat
             }
+
+            findAmbientSound()
+
             console.log('BSP loaded!')
         })
         .catch(e => {
             console.error('Failed to load:', e)
         })
 
-
     engine.runRenderLoop(() => {
         scene.render()
     })
 
-    const mapIndex = new MapIndex()
-    await mapIndex.startIndexing()
-    createMapSelector(mapIndex)
-    mapSelectorBtn.disabled = false
+    mapSelector = new MapSelector()
 }
 
 start()
@@ -117,10 +184,10 @@ buttonsContainer.style.top = '0'
 
 const mapSelectorBtn = document.createElement('button')
 mapSelectorBtn.innerText = 'Map Selector'
-mapSelectorBtn.disabled = true
 buttonsContainer.appendChild(mapSelectorBtn)
-mapSelectorBtn.addEventListener('click', () => {
+mapSelectorBtn.addEventListener('click', async () => {
     document.querySelector('.map-selector-root').classList.remove('closed')
+    mapSelector.show()
 })
 
 const randomSpawnBtn = document.createElement('button')
@@ -128,8 +195,9 @@ randomSpawnBtn.innerText = 'To Random Spawn'
 buttonsContainer.appendChild(randomSpawnBtn)
 randomSpawnBtn.addEventListener('click', () => {
     if (loader?.root) {
-        teleportToRandomSpawn(loader.root)
+        teleportToRandomSpawn()
     }
+    randomSpawnBtn.blur()
 })
 
 const inspectorBtn = document.createElement('button')
@@ -143,15 +211,24 @@ inspectorBtn.addEventListener('click', () => {
 
 document.body.appendChild(buttonsContainer)
 
-function teleportToRandomSpawn(root: TransformNode) {
-    const spawn = randomFromArray(spawns)
-    if (!spawn) {
-        console.log(spawns)
+function teleportToRandomSpawn(tryCount = 0) {
+    if (!spawns || spawns.length === 0 || tryCount >= 10) {
         return
     }
+    const spawn = randomFromArray(spawns)
     const spawnPos = getPosFromSpawn(spawn)
+    const raycastResult = new PhysicsRaycastResult()
+    havok.raycast(spawnPos, spawnPos.add(Vector3.DownReadOnly), raycastResult)
+    if (!raycastResult.hasHit) {
+        teleportToRandomSpawn(tryCount++)
+        return
+    }
+    if (!spawn) {
+        return
+    }
+
     player.position.copyFrom(spawnPos)
-    player.position.y += .1
+    player.position.y += .25
     const angle = spawn.entity.angles.y + 180
     if (!isNaN(angle)) {
         player.rotation = Tools.ToRadians(angle)
@@ -171,68 +248,4 @@ function getPosFromSpawn(spawn: EntityInstance): Vector3 {
 
 function randomFromArray<T>(arr: T[]): T {
     return arr[Math.floor(Math.random() * arr.length)]
-}
-
-function createMapSelector(mapIndex: MapIndex) {
-    const root = document.createElement('div')
-    root.classList.add('map-selector-root', 'closed')
-    root.addEventListener('click', (e) => {
-        if (e.target === root)
-            root.classList.add('closed')
-    })
-
-    const container = document.createElement('div')
-    container.classList.add('container')
-    root.appendChild(container)
-
-    const header = document.createElement('h1')
-    header.innerText = 'Map Selector'
-    container.appendChild(header)
-
-    const search = document.createElement('input')
-    search.placeholder = 'Search'
-    container.appendChild(search)
-
-    const itemsContainer = document.createElement('div')
-    itemsContainer.classList.add('items')
-    const items = mapIndex.mapItems.filter(x => x.bspFile)
-
-    const generateForMap = (map: MapItem) => {
-        const itemElem = document.createElement('a')
-        itemElem.classList.add('item')
-        itemElem.href = '?m=' + map.bspFile.originalPath
-        if (map.thumbnailPath) {
-            itemElem.style.backgroundImage = `url(${FakeFileSystem.baseUrl}${map.thumbnailPath})`
-        }
-
-        const nameElem = document.createElement('p')
-        nameElem.innerText = map.longname.replaceAll(/\^\d/g, '') ?? map.map
-        itemElem.appendChild(nameElem)
-
-        itemsContainer.appendChild(itemElem)
-    }
-
-    const generateForItems = (items: MapItem[]) => {
-        for (let item of items) {
-            if (!item) continue
-            generateForMap(item)
-        }
-    }
-
-    for (let i = 0; i < items.length; i += 50) {
-        window.setTimeout(() => {
-            generateForItems(items.slice(i, i + 50))
-        }, i * 100)
-    }
-    container.appendChild(itemsContainer)
-
-    search.addEventListener('keydown', () => {
-        for (const child of itemsContainer.children) {
-            const c = child as HTMLElement
-            const match = c.innerText.toLowerCase().includes(search.value.toLowerCase())
-            c.style.display = match ? 'flex' : 'none'
-        }
-    })
-
-    document.body.appendChild(root)
 }
