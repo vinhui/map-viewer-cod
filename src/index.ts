@@ -73,7 +73,7 @@ let mapSelector: MapSelector
 async function findAmbientSound() {
     const gscFilePath = map.substring(0, map.length - 3) + 'gsc'
     const matches = FakeFileSystem.FindFiles(gscFilePath, null, false)
-    if (!matches) {
+    if (!matches || matches.length === 0) {
         return
     }
     const gsc = matches[0]
