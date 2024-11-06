@@ -2,6 +2,7 @@ import {BSP, Entity, Face, FakeFileSystem, File, LODTerrain, Texture as BspTex} 
 import {
     Color3,
     CubeTexture,
+    Engine,
     ISize,
     Material,
     Mesh,
@@ -40,7 +41,8 @@ export class BSPLoader {
     public settings: Settings
     private entityInstances: EntityInstance[] = []
     private namedEntities: Map<string, EntityInstance[]> = new Map()
-    private materialDirectory: Map<string, StandardMaterial> = new Map()
+    private materialDirectory: Map<string, Map<number, StandardMaterial>> = new Map()
+    private lightmapTextures: RawTexture[] = []
 
     private _root: TransformNode
 
@@ -111,10 +113,10 @@ export class BSPLoader {
 
     protected createFaceMesh(face: Face, textureName: string): VertexData {
         let dims: ISize
-        if (!this.materialDirectory.has(textureName)) {
-            this.loadMaterial(textureName)
+        if (!this.materialDirectory.has(textureName) || !this.materialDirectory.get(textureName).has(face.lightmap)) {
+            this.loadMaterial(textureName, face.lightmap)
         }
-        const bjsTex = this.materialDirectory.get(textureName).diffuseTexture
+        const bjsTex = this.materialDirectory.get(textureName).get(face.lightmap).diffuseTexture
         if (bjsTex) {
             dims = bjsTex.getSize()
         } else {
@@ -136,7 +138,7 @@ export class BSPLoader {
 
     protected createLoDTerrainMesh(lodTerrain: LODTerrain, textureName: string): VertexData {
         if (!this.materialDirectory.has(textureName)) {
-            this.loadMaterial(textureName)
+            this.loadMaterial(textureName, lodTerrain.lightmap)
         }
         return MeshUtils.CreateMoHAATerrainMesh(this._bsp, lodTerrain)
     }
@@ -342,7 +344,7 @@ export class BSPLoader {
         return tex
     }
 
-    private loadMaterial(textureName: string) {
+    private loadMaterial(textureName: string, lightmapIndex: number) {
         let material: StandardMaterial
         const tex = this.loadTextureAtPath(textureName, () => {
             if (tex.hasAlpha) {
@@ -355,8 +357,10 @@ export class BSPLoader {
             console.warn(`Texture ${textureName} could not be loaded (does the file exist?)`)
         }
 
-        material = new StandardMaterial(textureName, this.settings.scene)
+        material = new StandardMaterial(lightmapIndex + textureName, this.settings.scene)
         material.specularColor = Color3.Black()
+        material.lightmapTexture = this.getLightmapTexture(lightmapIndex)
+        material.useLightmapAsShadowmap = true
         if (textureName.toLowerCase().includes('decal@')) {
             material.zOffset = -1
         }
@@ -364,7 +368,27 @@ export class BSPLoader {
             material.diffuseTexture = tex
         }
 
-        this.materialDirectory.set(textureName, material)
+        if (!this.materialDirectory.get(textureName)) {
+            this.materialDirectory.set(textureName, new Map<number, StandardMaterial>())
+        }
+        this.materialDirectory.get(textureName).set(lightmapIndex, material)
+    }
+
+    private getLightmapTexture(index: number): RawTexture {
+        if (index < 0) {
+            return null
+        }
+
+        if (!this.lightmapTextures[index]) {
+            const byteSize = 512 * 512 * 3
+            const byteOffset = byteSize * index
+            const bytes = this._bsp.lightmaps.data.slice(byteOffset, byteOffset + byteSize)
+            const tex = new RawTexture(bytes, 512, 512, Engine.TEXTUREFORMAT_RGB, this.settings.scene, false, false)
+            tex.name = `Lightmap${index}`
+            tex.coordinatesIndex = 1
+            this.lightmapTextures[index] = tex
+        }
+        return this.lightmapTextures[index]
     }
 
     private createEntityInstance(entity: Entity): EntityInstance {
@@ -412,7 +436,7 @@ export class BSPLoader {
     private buildMesh(instance: EntityInstance) {
         const modelNumber = instance.entity.modelNumber
         const model = this._bsp.models.get(modelNumber)
-        const textureMeshMap: Map<string, VertexData[]> = new Map()
+        const textureMeshMap: Map<string, Map<number, VertexData[]>> = new Map()
         const bjsNode = instance.bjsNode
 
         const faces: Face[] = BSPExtension.GetFacesInModel(this._bsp, model)
@@ -430,10 +454,14 @@ export class BSPLoader {
                 textureName = BspTex.SanitizeName(texture.name, this._bsp.mapType)
                 if (!textureName.startsWith('tools/')) {
                     if (!textureMeshMap.has(textureName) || !textureMeshMap.get(textureName)) {
-                        textureMeshMap.set(textureName, [])
+                        const map = new Map<number, VertexData[]>()
+                        textureMeshMap.set(textureName, map)
+                    }
+                    if (!textureMeshMap.get(textureName).has(face.lightmap)) {
+                        textureMeshMap.get(textureName).set(face.lightmap, [])
                     }
 
-                    textureMeshMap.get(textureName).push(this.createFaceMesh(face, textureName))
+                    textureMeshMap.get(textureName).get(face.lightmap).push(this.createFaceMesh(face, textureName))
                 }
             }
         }
@@ -446,10 +474,14 @@ export class BSPLoader {
                         const textureName = texture.name
 
                         if (!textureMeshMap.has(textureName) || !textureMeshMap.get(textureName)) {
-                            textureMeshMap.set(textureName, [])
+                            const map = new Map<number, VertexData[]>()
+                            textureMeshMap.set(textureName, map)
+                        }
+                        if (!textureMeshMap.get(textureName).has(lodTerrain.lightmap)) {
+                            textureMeshMap.get(textureName).set(lodTerrain.lightmap, [])
                         }
 
-                        textureMeshMap.get(textureName).push(this.createLoDTerrainMesh(lodTerrain, textureName))
+                        textureMeshMap.get(textureName).get(lodTerrain.lightmap).push(this.createLoDTerrainMesh(lodTerrain, textureName))
                     }
                 }
             }
@@ -460,51 +492,56 @@ export class BSPLoader {
             const materials: Material[] = []
             i = 0
 
-            for (let [key, value] of textureMeshMap.entries()) {
-                textureMeshes[i] = MeshUtils.CombineAllMeshes(value)
-                if (textureMeshes[i].positions.length > 0) {
-                    if (this.materialDirectory.has(key)) {
-                        materials[i] = this.materialDirectory.get(key)
-                    }
-                    const textureNode = new Mesh(key, this.settings.scene)
-                    textureNode.parent = bjsNode
-                    for (let j = 0; j < textureMeshes[i].positions.length; j++) {
-                        textureMeshes[i].positions[j] *= this.settings.scaleFactor
-                    }
-                    if (textureMeshes[i].normals.length < 3
-                        || (!textureMeshes[i].normals[0] || !textureMeshes[i].normals[1] || !textureMeshes[i].normals[2])) {
-                        VertexData.ComputeNormals(textureMeshes[i].positions, textureMeshes[i].indices, textureMeshes[i].normals)
-                    }
+            for (let [texName, map] of textureMeshMap.entries()) {
+                for (let [lightmapIndex, vertexData] of map.entries()) {
+                    textureMeshes[i] = MeshUtils.CombineAllMeshes(vertexData)
+                    if (textureMeshes[i].positions.length > 0) {
+                        if (this.materialDirectory.has(texName)) {
+                            materials[i] = this.materialDirectory.get(texName).get(lightmapIndex)
+                        }
+                        const textureNode = new Mesh(texName, this.settings.scene)
+                        textureNode.parent = bjsNode
+                        for (let j = 0; j < textureMeshes[i].positions.length; j++) {
+                            textureMeshes[i].positions[j] *= this.settings.scaleFactor
+                        }
+                        if (textureMeshes[i].normals.length < 3
+                            || (!textureMeshes[i].normals[0] || !textureMeshes[i].normals[1] || !textureMeshes[i].normals[2])) {
+                            VertexData.ComputeNormals(textureMeshes[i].positions, textureMeshes[i].indices, textureMeshes[i].normals)
+                        }
 
-                    textureMeshes[i].applyToMesh(textureNode, false)
-                    textureNode.material = materials[i]
-                    ++i
+                        textureMeshes[i].applyToMesh(textureNode, false)
+                        textureNode.material = materials[i]
+                        ++i
+                    }
                 }
             }
         } else {
             i = 0
-            for (let [key, value] of textureMeshMap.entries()) {
-                const textureNode = new Mesh(key, this.settings.scene)
-                textureNode.parent = bjsNode
-                const material = this.materialDirectory.get(key)
-                for (let mesh of value) {
-                    if (mesh.positions.length > 3) {
-                        const faceNode = new Mesh('Face')
-                        faceNode.parent = textureNode
-                        for (let j = 0; j < mesh.positions.length; j++) {
-                            mesh.positions[j] *= this.settings.scaleFactor
-                        }
+            for (let [texName, map] of textureMeshMap.entries()) {
+                for (let [lightmapIndex, vertexData] of map.entries()) {
 
-                        if (mesh.normals.length < 3
-                            || (!mesh.normals[0] || !mesh.normals[1] || !mesh.normals[2])) {
-                            VertexData.ComputeNormals(mesh.positions, mesh.indices, mesh.normals)
-                        }
+                    const textureNode = new Mesh(texName, this.settings.scene)
+                    textureNode.parent = bjsNode
+                    const material = this.materialDirectory.get(texName).get(lightmapIndex)
+                    for (let mesh of vertexData) {
+                        if (mesh.positions.length > 3) {
+                            const faceNode = new Mesh('Face')
+                            faceNode.parent = textureNode
+                            for (let j = 0; j < mesh.positions.length; j++) {
+                                mesh.positions[j] *= this.settings.scaleFactor
+                            }
 
-                        mesh.applyToMesh(faceNode, false)
-                        faceNode.material = material
+                            if (mesh.normals.length < 3
+                                || (!mesh.normals[0] || !mesh.normals[1] || !mesh.normals[2])) {
+                                VertexData.ComputeNormals(mesh.positions, mesh.indices, mesh.normals)
+                            }
+
+                            mesh.applyToMesh(faceNode, false)
+                            faceNode.material = material
+                        }
                     }
+                    ++i
                 }
-                ++i
             }
         }
     }
