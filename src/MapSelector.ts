@@ -33,6 +33,9 @@ export class MapSelector {
                     case LoadingStep.SortResults:
                         stepName = 'Sorting Results'
                         break
+                    case LoadingStep.SetupCache:
+                        stepName = 'Creating Cache'
+                        break
                 }
                 this.loadingTextElement.innerText = `${stepName}: ${Math.round(pct * 100)}%`
             }

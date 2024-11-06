@@ -1,7 +1,5 @@
 import {FakeFileSystem, File} from 'libbsp-js'
 import {animationFrame} from './utils/async'
-import {deflate, inflate} from 'pako'
-import {asciiFromArray, asciiToArray} from './utils/array'
 
 export type MapItem = {
     map: string
@@ -15,7 +13,8 @@ export enum LoadingStep {
     ParseArenaFiles,
     FindBspFiles,
     FindLevelShots,
-    SortResults
+    SortResults,
+    SetupCache,
 }
 
 export class MapIndex {
@@ -38,12 +37,28 @@ export class MapIndex {
             return
         }
 
-        const sessionStorageContent = window.sessionStorage.getItem('mapIndex')
-        if (sessionStorageContent) {
-            const asArray = asciiToArray(sessionStorageContent)
-            const decompressed = inflate(asArray, {to: 'string'})
-            this._mapItems = JSON.parse(decompressed)
-            return
+        if (!window.sessionStorage.getItem('MapIndexSession')) {
+            indexedDB.deleteDatabase('MapIndex')
+        }
+        window.sessionStorage.setItem('MapIndexSession', new Date().toUTCString())
+
+        try {
+            const db = await this.getIndexedDB()
+            const transaction = db.transaction(['MapIndex'], 'readwrite')
+            const objectStore = transaction.objectStore('MapIndex')
+            if (objectStore) {
+                const results = await new Promise((resolve, reject) => {
+                    const request = objectStore.getAll()
+                    request.onerror = e => reject(e)
+                    request.onsuccess = e => resolve(request.result)
+                }) as unknown as MapItem[]
+                if (results.length > 0) {
+                    this._mapItems = results
+                    return
+                }
+            }
+        } catch (e) {
+            console.error('Map index DB error', e)
         }
 
         this._isIndexing = true
@@ -123,11 +138,40 @@ export class MapIndex {
         await animationFrame()
         this.mapItems.sort((a, b) => a.longname.localeCompare(b.longname))
 
-        const storageValue = JSON.stringify(this.mapItems)
-        const compressed = deflate(storageValue)
-        const compressedAsString = asciiFromArray(compressed)
-        window.sessionStorage.setItem('mapIndex', compressedAsString)
+        if (this.onLoadingProgress)
+            this.onLoadingProgress(LoadingStep.SetupCache, 0)
+        await animationFrame()
+
+
+        try {
+            const db = await this.getIndexedDB()
+            const transaction = db.transaction(['MapIndex'], 'readwrite')
+            const objectStore = transaction.objectStore('MapIndex')
+            if (objectStore) {
+                for (let mapItem of this._mapItems) {
+                    objectStore.add(mapItem)
+                }
+            }
+        } catch (e) {
+            console.error('Map index DB error', e)
+        }
         this._isIndexing = false
+    }
+
+    private getIndexedDB() {
+        return new Promise((resolve, reject) => {
+            const dbRequest = window.indexedDB.open('MapIndex', 1)
+            dbRequest.onerror = e => reject(e)
+            dbRequest.onupgradeneeded = e => {
+                // @ts-ignore
+                const db = e.target.result
+                db.createObjectStore('MapIndex', {autoIncrement: true})
+            }
+            dbRequest.onsuccess = () => {
+                const db = dbRequest.result
+                resolve(db)
+            }
+        }) as Promise<IDBDatabase>
     }
 
     private parseArenaFile(file: File): MapItem {
