@@ -36,6 +36,11 @@ const scene = new Scene(engine)
 const gravityVector = new Vector3(0, -9.81, 0)
 Engine.audioEngine.useCustomUnlockedButton = true
 
+const ro = new ResizeObserver((entries) => {
+    engine.resize()
+})
+ro.observe(canvas)
+
 window.addEventListener(
     'click',
     () => {
