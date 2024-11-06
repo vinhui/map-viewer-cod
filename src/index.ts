@@ -6,10 +6,12 @@ import {
     Engine,
     HavokPlugin,
     HemisphericLight,
+    Light,
     MeshBuilder,
     PhysicsAggregate,
     PhysicsRaycastResult,
     PhysicsShapeType,
+    PointLight,
     Scene,
     Sound,
     StandardMaterial,
@@ -19,11 +21,12 @@ import {
 } from '@babylonjs/core'
 import '@babylonjs/inspector'
 import {BSPLoader, EntityInstance, MeshCombineOptions} from './LibBSP-bjs/Util/BSPLoader'
-import {FakeFileSystem} from 'libbsp-js'
+import {FakeFileSystem, parseFloatUS} from 'libbsp-js'
 import HavokPhysics from '@babylonjs/havok'
 import {FirstPersonPlayer} from './FirstPersonPlayer'
 import {MapSelector} from './MapSelector'
 import {parseSoundAliasLine} from './utils/soundalias'
+import {MeshUtils} from './LibBSP-bjs/Util/MeshUtils'
 
 const canvas = document.createElement('canvas')
 canvas.style.width = '100%'
@@ -52,7 +55,8 @@ window.addEventListener(
 )
 
 const light1: HemisphericLight = new HemisphericLight('light1', new Vector3(1, 1, 0), scene)
-light1.intensity = 1.5
+light1.intensity = 1
+light1.lightmapMode = Light.LIGHTMAP_SHADOWSONLY
 
 const spawns: EntityInstance[] = []
 const urlParams = new URLSearchParams(location.search)
@@ -143,6 +147,18 @@ async function start() {
         entityCreatedCallback: (inst: EntityInstance) => {
             if (inst.entity.className.includes('_spawn') && !inst.entity.model) {
                 spawns.push(inst)
+            } else if (inst.entity.className === 'light') {
+                const color = inst.entity.map.get('_color').split(' ').map(parseFloatUS)
+                const light = new PointLight('PointLight', transformPoint(inst.entity.origin), scene)
+                light.diffuse = new Color3(color[0], color[1], color[2])
+                light.intensity = .1
+                light.lightmapMode = Light.LIGHTMAP_SHADOWSONLY
+
+                if (inst.entity.map.get('radius')) {
+                    light.range = parseFloatUS(inst.entity.map.get('radius')) * MeshUtils.inch2MeterScale
+                } else {
+                    light.range = 10
+                }
             }
         },
     }
