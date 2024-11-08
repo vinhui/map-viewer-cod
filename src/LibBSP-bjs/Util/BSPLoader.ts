@@ -1,10 +1,10 @@
-import {BSP, Entity, Face, FakeFileSystem, File, LODTerrain, Texture as BspTex} from 'libbsp-js'
+import {BSP, Entity, Face, FakeFileSystem, File, LODTerrain, MapType, Texture as BspTex} from 'libbsp-js'
 import {
+    BaseTexture,
     Color3,
     CubeTexture,
     Engine,
     ISize,
-    Material,
     Mesh,
     RawTexture,
     Scene,
@@ -17,6 +17,7 @@ import {
 import {BSPExtension} from '../Extensions/BSPExtension'
 import {MeshUtils} from './MeshUtils'
 import {doesDdsHaveAlpha} from '../../utils/dds'
+import {loadSkyTextureAtPath} from './Sky'
 
 export enum MeshCombineOptions {
     None,
@@ -143,11 +144,10 @@ export class BSPLoader {
         return MeshUtils.CreateMoHAATerrainMesh(this._bsp, lodTerrain)
     }
 
-    private loadTextureAtPath(path: string, onTexChanged: () => void): BjsTex {
+    private loadTextureAtPath(path: string, onTexChanged: () => void): BaseTexture {
         const s = path.toLowerCase()
-        const s2 = path.replaceAll('_', '')
-        if (s.startsWith('textures/sky/') || s2.startsWith('textures/sky/') || s.startsWith('textures/skies/') || s2.startsWith('textures/skies/')) {
-            const skyTex = this.loadSkyTextureAtPath(path)
+        if (s.includes('/sky/') || s.startsWith('/skies/')) {
+            const skyTex = loadSkyTextureAtPath(path, this.settings.scene, onTexChanged)
             if (skyTex) {
                 return skyTex
             }
@@ -258,72 +258,6 @@ export class BSPLoader {
         }
     }
 
-    private loadSkyTextureAtPath(path: string): BjsTex {
-        type Sides = 'bk' | 'dn' | 'ft' | 'lf' | 'rt' | 'up'
-
-        let fileName: string
-        if (path.startsWith('textures/sky/'))
-            fileName = path.substring('textures/sky/'.length)
-        else if (path.startsWith('textures/skies/'))
-            fileName = path.substring('textures/skies/'.length)
-        const sides: Sides[] = ['bk', 'dn', 'ft', 'lf', 'rt', 'up']
-        const files = new Map<Sides, File>()
-        for (let side of sides) {
-            let f: File[]
-            f = FakeFileSystem.FindFiles(`env/${fileName}_${side}.`, null, false)
-            if (f?.length === 0) {
-                console.warn(`Couldn't find skybox texture`, path)
-                return null
-            }
-            files.set(side, f[0])
-        }
-
-        const cubeTex = new CubeTexture(null, this.settings.scene)
-        Promise.all(files.values().map(x => x.download()))
-            .then(x => {
-                if (x.some(x => !x)) {
-                    return
-                }
-
-                const blobUrls = new Map<Sides, string>()
-                for (let [side, file] of files.entries()) {
-                    const blob = new Blob([file.bytes])
-                    const f = new window.File([blob], file.nameWithExtension)
-                    blobUrls.set(side, URL.createObjectURL(f))
-                }
-                const cleanup = (e?: unknown) => {
-                    for (let url of blobUrls.values()) {
-                        URL.revokeObjectURL(url)
-                    }
-                }
-                const ext = files.get('up').extension
-                console.log(ext)
-                cubeTex.updateURL(
-                    path, // url
-                    ext, // forced extension
-                    cleanup, // onload
-                    null, // prefiltered
-                    (e) => {
-                        console.error('Failed to load sky texture:', e)
-                        cleanup()
-                    }, // onerror
-                    null, // extensions
-                    null, // delayload
-                    [
-                        blobUrls.get('rt'),
-                        blobUrls.get('up'),
-                        blobUrls.get('ft'),
-                        blobUrls.get('lf'),
-                        blobUrls.get('dn'),
-                        blobUrls.get('bk'),
-                    ],
-                    null, // buffer
-                )
-            })
-
-        return null
-    }
-
     private getFtxTexture(file: File) {
         const bytes = file.bytes
         if (bytes.byteLength < 12) {
@@ -347,7 +281,12 @@ export class BSPLoader {
     private loadMaterial(textureName: string, lightmapIndex: number) {
         let material: StandardMaterial
         const tex = this.loadTextureAtPath(textureName, () => {
-            if (tex.hasAlpha) {
+            if (tex instanceof CubeTexture) {
+                material.diffuseTexture = null
+                material.backFaceCulling = false
+                material.disableLighting = true
+                material.reflectionTexture = tex
+            } else if (tex.hasAlpha) {
                 material.diffuseTexture = tex
                 material.useAlphaFromDiffuseTexture = true
                 material.needDepthPrePass = true
@@ -364,7 +303,10 @@ export class BSPLoader {
         if (textureName.toLowerCase().includes('decal@')) {
             material.zOffset = -1
         }
-        if (tex) {
+        if (tex instanceof CubeTexture) {
+            // TODO: Should probably use a different material for the skyboxes
+            material.reflectionTexture = tex
+        } else {
             material.diffuseTexture = tex
         }
 
@@ -462,7 +404,7 @@ export class BSPLoader {
             if (textureIndex >= 0) {
                 const texture = this._bsp.textures.get(textureIndex)
                 textureName = BspTex.SanitizeName(texture.name, this._bsp.mapType)
-                if (!textureName.startsWith('tools/')) {
+                if (!textureName.toLowerCase().startsWith('textures/tools/')) {
                     if (!textureMeshMap.has(textureName) || !textureMeshMap.get(textureName)) {
                         const map = new Map<number, VertexData[]>()
                         textureMeshMap.set(textureName, map)
@@ -499,7 +441,7 @@ export class BSPLoader {
 
         if (this.settings.meshCombineOptions === MeshCombineOptions.PerMaterial) {
             const textureMeshes: VertexData[] = []
-            const materials: Material[] = []
+            const materials: StandardMaterial[] = []
             i = 0
 
             for (let [texName, map] of textureMeshMap.entries()) {
