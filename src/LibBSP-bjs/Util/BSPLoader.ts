@@ -380,7 +380,17 @@ export class BSPLoader {
         }
 
         if (!this.lightmapTextures[index]) {
-            const byteSize = 512 * 512 * 3
+            let dim: number = 0
+            if (this.bsp.mapType === MapType.CoD || this.bsp.mapType === MapType.CoDDemo) {
+                dim = 512
+            } else if (this.bsp.mapType === MapType.Quake3) {
+                dim = 128
+            } else {
+                console.warn(`Lightmap for mapType ${this.bsp.mapType} currently not supported`)
+                return null
+            }
+
+            const byteSize = dim * dim * 3
             const byteOffset = byteSize * index
             const bytes = this._bsp.lightmaps.data.slice(byteOffset, byteOffset + byteSize)
             const tex = new RawTexture(bytes, 512, 512, Engine.TEXTUREFORMAT_RGB, this.settings.scene, false, false)
