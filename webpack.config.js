@@ -8,6 +8,7 @@ module.exports = {
         path: path.resolve(__dirname, './dist'),
         filename: 'index.js',
     },
+    devtool: 'source-map',
     plugins: [
         new HtmlWebpackPlugin({
             title: "Map Viewer",
