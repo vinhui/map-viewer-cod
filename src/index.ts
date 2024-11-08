@@ -252,7 +252,7 @@ function teleportToRandomSpawn(tryCount = 0) {
     }
 
     player.position.copyFrom(spawnPos)
-    player.position.y += .25
+    player.position.y += .5
     const angle = spawn.entity.angles.y + 180
     if (!isNaN(angle)) {
         player.rotation = Tools.ToRadians(angle)
