@@ -8,6 +8,7 @@ import {
     RawTexture,
     Scene,
     StandardMaterial,
+    Tools,
     TransformNode,
     Vector3 as BjsVec3,
     VertexData,
@@ -81,7 +82,7 @@ export class BSPLoader {
                     this.buildMesh(instance)
                 } else {
                     const angles = entity.angles
-                    instance.bjsNode.rotation = new BjsVec3(angles.x, angles.y, angles.z)
+                    instance.bjsNode.rotation = new BjsVec3(Tools.ToRadians(angles.x), Tools.ToRadians(angles.z), Tools.ToRadians(angles.y))
                 }
                 instance.bjsNode.position = new BjsVec3(entity.origin.x, entity.origin.y, entity.origin.z).scaleInPlace(this.settings.scaleFactor)
             }
