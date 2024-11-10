@@ -18,7 +18,7 @@ import {
     Viewport,
 } from '@babylonjs/core'
 import {TempVec3Factory} from './utils/TempObjectFactory'
-import {clamp} from './utils/number'
+import {Clamp as clamp} from '@babylonjs/core/Maths/math.scalar.functions'
 
 export class FirstPersonPlayer {
     public moveSpeed: number = 50
