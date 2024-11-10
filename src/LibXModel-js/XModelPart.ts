@@ -198,6 +198,12 @@ export class XModelPartLoader {
     }
 
     private generateWorldTransform(bone: XModelPartBone, parent: XModelPartBone): XModelPartBoneTransform {
+        if (!parent) {
+            return {
+                position: bone.localTransform.position,
+                rotation: bone.localTransform.rotation,
+            }
+        }
         return {
             position: vec3_add(
                 parent.worldTransform.position,

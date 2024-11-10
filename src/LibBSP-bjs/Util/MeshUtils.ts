@@ -159,8 +159,13 @@ export class MeshUtils {
     }
 
     public static CombineAllMeshes(meshes: VertexData[]): VertexData {
-        const result = meshes.pop()
-        result.merge(meshes)
+        let result: VertexData
+        do {
+            result = meshes.pop()
+        } while (!result && meshes.length > 0)
+        if (result) {
+            result.merge(meshes.filter(x => x))
+        }
         return result
     }
 

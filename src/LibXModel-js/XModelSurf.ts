@@ -185,11 +185,13 @@ export class XModelSurfLoader {
 
                 if (xmodelPart) {
                     const xmodelPartBone = xmodelPart.bones[vertexBoneIdx]
-                    position = vec3_add(
-                        vec3_rotate(position, xmodelPartBone.worldTransform.rotation),
-                        xmodelPartBone.worldTransform.position,
-                    )
-                    normal = vec3_rotate(normal, xmodelPartBone.worldTransform.rotation)
+                    if (xmodelPartBone) {
+                        position = vec3_add(
+                            vec3_rotate(position, xmodelPartBone.worldTransform.rotation),
+                            xmodelPartBone.worldTransform.position,
+                        )
+                        normal = vec3_rotate(normal, xmodelPartBone.worldTransform.rotation)
+                    }
                 }
 
                 vertices.push({

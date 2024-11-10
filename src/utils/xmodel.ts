@@ -64,64 +64,69 @@ export async function bjsLoadXModel(file: File, scene: Scene) {
             continue
         }
         const surfLoader = new XModelSurfLoader(lodBytes)
-        const surf = await surfLoader.load(lod.name, xModelPart)
+        try {
+            const surf = await surfLoader.load(lod.name, xModelPart)
 
-        const materials: Material[] = []
-        for (let texturePath of lod.materials) {
-            if (!modelMaterialMap.has(texturePath)) {
-                const mat = new StandardMaterial(texturePath, scene)
-                mat.specularColor = Color3.Black()
+            const materials: Material[] = []
+            for (let texturePath of lod.materials) {
+                if (!modelMaterialMap.has(texturePath)) {
+                    const mat = new StandardMaterial(texturePath, scene)
+                    mat.specularColor = Color3.Black()
 
-                const tex = loadTextureAtPath(`skins/${texturePath}`, scene, () => {
-                    if (tex.hasAlpha) {
-                        mat.useAlphaFromDiffuseTexture = true
-                        mat.needDepthPrePass = true
-                    }
-                })
+                    const tex = loadTextureAtPath(`skins/${texturePath}`, scene, () => {
+                        if (tex.hasAlpha) {
+                            mat.useAlphaFromDiffuseTexture = true
+                            mat.needDepthPrePass = true
+                        }
+                    })
 
-                mat.diffuseTexture = tex
-                modelMaterialMap.set(texturePath, mat)
+                    mat.diffuseTexture = tex
+                    modelMaterialMap.set(texturePath, mat)
+                }
+                materials.push(modelMaterialMap.get(texturePath))
             }
-            materials.push(modelMaterialMap.get(texturePath))
-        }
 
-        const lodMesh = new Mesh(lod.name, scene, root)
-        let collisionVertexData: VertexData
-        if (i === xModel.collisionLodIndex) {
-            collisionMesh = new Mesh('collision_' + lod.name, scene, root)
-            collisionMesh.setEnabled(false)
-            collisionMesh.isPickable = false
-            collisionMesh.isVisible = false
-        }
-        for (let n = 0; n < surf.surfaces.length; n++) {
-            let surface = surf.surfaces[n]
-
-            const vertexData = new VertexData()
-            vertexData.positions = surface.vertices.flatMap(x => x.position)
-            vertexData.normals = surface.vertices.flatMap(x => x.normal)
-            vertexData.uvs = surface.vertices.flatMap(x => x.uv)
-            vertexData.colors = surface.vertices.flatMap(x => x.color)
-            vertexData.indices = surface.triangles
-            vertexData.transform(correctionMatrix)
-
-            const mesh = new Mesh(`${n}_${materials[n].name}`, scene, lodMesh)
-            vertexData.applyToMesh(mesh)
-            mesh.material = materials[n]
-
+            const lodMesh = new Mesh(lod.name, scene, root)
+            let collisionVertexData: VertexData
             if (i === xModel.collisionLodIndex) {
-                if (!collisionVertexData) {
-                    collisionVertexData = vertexData
-                } else {
-                    collisionVertexData.merge(vertexData)
+                collisionMesh = new Mesh('collision_' + lod.name, scene, root)
+                collisionMesh.setEnabled(false)
+                collisionMesh.isPickable = false
+                collisionMesh.isVisible = false
+            }
+            for (let n = 0; n < surf.surfaces.length; n++) {
+                let surface = surf.surfaces[n]
+
+                const vertexData = new VertexData()
+                vertexData.positions = surface.vertices.flatMap(x => x.position)
+                vertexData.normals = surface.vertices.flatMap(x => x.normal)
+                vertexData.uvs = surface.vertices.flatMap(x => x.uv)
+                vertexData.colors = surface.vertices.flatMap(x => x.color)
+                vertexData.indices = surface.triangles
+                vertexData.transform(correctionMatrix)
+
+                const mesh = new Mesh(`${n}_${materials[n].name}`, scene, lodMesh)
+                vertexData.applyToMesh(mesh)
+                mesh.material = materials[n]
+
+                if (i === xModel.collisionLodIndex) {
+                    if (!collisionVertexData) {
+                        collisionVertexData = vertexData
+                    } else {
+                        collisionVertexData.merge(vertexData)
+                    }
                 }
             }
-        }
-        if (i === xModel.collisionLodIndex) {
-            collisionVertexData.applyToMesh(collisionMesh)
-        }
+            if (i === xModel.collisionLodIndex) {
+                collisionVertexData.applyToMesh(collisionMesh)
+            }
 
-        root.addLODLevel(lod.distance * MeshUtils.inch2MeterScale, lodMesh)
-        lodMeshes.push({distance: lod.distance * MeshUtils.inch2MeterScale, mesh: lodMesh})
+            root.addLODLevel(lod.distance * MeshUtils.inch2MeterScale, lodMesh)
+            lodMeshes.push({distance: lod.distance * MeshUtils.inch2MeterScale, mesh: lodMesh})
+        } catch (e) {
+            console.error('Failed to load xmodel ' + xModel.name, e)
+            return root
+        }
     }
 
     root.onLODLevelSelection = (distance) => {
