@@ -63,6 +63,7 @@ light1.lightmapMode = Light.LIGHTMAP_SHADOWSONLY
 
 const spawns: EntityInstance[] = []
 const spawnsRoot = new TransformNode('Spawns', scene)
+spawnsRoot.setEnabled(false)
 const xmodelsRoot = new TransformNode('XModels', scene)
 const urlParams = new URLSearchParams(location.search)
 let map = 'maps/mp/mp_uo_harbor.bsp'
