@@ -1,15 +1,4 @@
-import {
-    Color3,
-    Material,
-    Matrix,
-    Mesh,
-    PhysicsAggregate,
-    PhysicsPrestepType,
-    PhysicsShapeType,
-    Scene,
-    StandardMaterial,
-    VertexData,
-} from '@babylonjs/core'
+import {Color3, Material, Matrix, Mesh, Scene, StandardMaterial, VertexData} from '@babylonjs/core'
 import {XModelLoader} from '../LibXModel-js/XModel'
 import {GameVersion} from '../LibXModel-js/GameVersion'
 import {XModelPartLoader} from '../LibXModel-js/XModelPart'
@@ -33,7 +22,7 @@ async function getFileBytes(path: string) {
 const modelMaterialMap = new Map<string, Material>()
 const correctionMatrix = Matrix.Scaling(-MeshUtils.inch2MeterScale, MeshUtils.inch2MeterScale, MeshUtils.inch2MeterScale)
 
-export async function bjsLoadXModel(file: File, scene: Scene) {
+export async function bjsLoadXModel(file: File, scene: Scene): Promise<{ root: Mesh, collisionMesh: Mesh | null }> {
     if (!file.isLoaded) {
         if (!await file.download()) {
             return null
@@ -105,7 +94,7 @@ export async function bjsLoadXModel(file: File, scene: Scene) {
                 vertexData.indices = surface.triangles
                 vertexData.transform(correctionMatrix)
 
-                const mesh = new Mesh(`${n}_${materials[n].name}`, scene, lodMesh)
+                const mesh = new Mesh(`${n}_${materials[n]?.name}`, scene, lodMesh)
                 vertexData.applyToMesh(mesh)
                 mesh.material = materials[n]
 
@@ -125,7 +114,10 @@ export async function bjsLoadXModel(file: File, scene: Scene) {
             lodMeshes.push({distance: lod.distance * MeshUtils.inch2MeterScale, mesh: lodMesh})
         } catch (e) {
             console.error('Failed to load xmodel ' + xModel.name, e)
-            return root
+            return {
+                root: root,
+                collisionMesh: null,
+            }
         }
     }
 
@@ -144,16 +136,8 @@ export async function bjsLoadXModel(file: File, scene: Scene) {
     root.rotation.x = -Math.PI / 2
     root.rotation.y += Math.PI / 2
 
-    if (collisionMesh) {
-        new PhysicsAggregate(root, PhysicsShapeType.MESH, {
-            mesh: collisionMesh,
-            mass: 0,
-        })
-        root.physicsBody.disablePreStep = false
-        root.physicsBody.setPrestepType(PhysicsPrestepType.TELEPORT)
-        collisionMesh.dispose()
+    return {
+        root: root,
+        collisionMesh: collisionMesh,
     }
-
-
-    return root
 }

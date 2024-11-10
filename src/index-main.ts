@@ -9,6 +9,7 @@ import {
     Light,
     MeshBuilder,
     PhysicsAggregate,
+    PhysicsPrestepType,
     PhysicsRaycastResult,
     PhysicsShapeType,
     PointLight,
@@ -174,11 +175,22 @@ async function start() {
                 if (modelFiles.length > 0) {
                     const file = modelFiles[0]
                     bjsLoadXModel(file, scene).then(x => {
-                        if (x) {
-                            x.parent = xmodelsRoot
-                            x.position = inst.bjsNode.absolutePosition
-                            x.rotationQuaternion = inst.bjsNode.absoluteRotationQuaternion
-                            x.metadata = inst.bjsNode.metadata
+                        if (x.root) {
+                            x.root.parent = xmodelsRoot
+                            x.root.position = inst.bjsNode.absolutePosition
+                            x.root.rotationQuaternion = inst.bjsNode.absoluteRotationQuaternion
+                            const scale = inst.entity.getFloat('modelscale', 1)
+                            x.root.scaling.scaleInPlace(scale)
+                            x.root.metadata = inst.bjsNode.metadata
+
+                            if (x.collisionMesh) {
+                                new PhysicsAggregate(x.root, PhysicsShapeType.MESH, {
+                                    mesh: x.collisionMesh,
+                                    mass: 0,
+                                })
+                                x.root.physicsBody.disablePreStep = false
+                                x.root.physicsBody.setPrestepType(PhysicsPrestepType.TELEPORT)
+                            }
                         }
                     })
                 } else {
