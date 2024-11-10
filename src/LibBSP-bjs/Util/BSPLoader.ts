@@ -85,7 +85,8 @@ export class BSPLoader {
                     const angles = entity.angles
                     instance.bjsNode.rotation = new BjsVec3(Tools.ToRadians(angles.x), Tools.ToRadians(angles.z), Tools.ToRadians(angles.y))
                 }
-                instance.bjsNode.position = new BjsVec3(entity.origin.x, entity.origin.y, entity.origin.z).scaleInPlace(this.settings.scaleFactor)
+                const origin = entity.origin
+                instance.bjsNode.position = new BjsVec3(origin.x, origin.y, origin.z).scaleInPlace(this.settings.scaleFactor)
             }
 
             this._root = new TransformNode(bsp.mapName)

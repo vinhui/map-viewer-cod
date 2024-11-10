@@ -57,3 +57,22 @@ export function quat_multiply(q1: Quat, q2: Quat): Quat {
         w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
     ]
 }
+
+export function euler_to_quat(euler: Vec3): Quat {
+    const [x, y, z] = euler
+
+    // Half angles
+    const cx = Math.cos(x / 2)
+    const sx = Math.sin(x / 2)
+    const cy = Math.cos(y / 2)
+    const sy = Math.sin(y / 2)
+    const cz = Math.cos(z / 2)
+    const sz = Math.sin(z / 2)
+
+    const qw = cx * cy * cz + sx * sy * sz
+    const qx = sx * cy * cz - cx * sy * sz
+    const qy = cx * sy * cz + sx * cy * sz
+    const qz = cx * cy * sz - sx * sy * cz
+
+    return [qx, qy, qz, qw]
+}

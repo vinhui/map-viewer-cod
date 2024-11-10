@@ -11,6 +11,7 @@ export interface XModel {
     name: string
     version: XModelVersion
     lods: XModelLod[]
+    collisionLodIndex: number
 }
 
 export class XModelLoader {
@@ -29,7 +30,7 @@ export class XModelLoader {
             throw new Error(`Invalid XModel version ${versionNumber}`)
         }
 
-        const xmodel: XModel = {name, version, lods: []}
+        const xmodel: XModel = {name, version, lods: [], collisionLodIndex: -1}
 
         switch (selectedVersion) {
             case GameVersion.CoD:
@@ -50,6 +51,12 @@ export class XModelLoader {
         }
 
         return xmodel
+    }
+
+    private readUInt8(): number {
+        const value = this.buffer.getUint8(this.offset)
+        this.offset += 1
+        return value
     }
 
     private readUInt16(): number {
@@ -110,7 +117,11 @@ export class XModelLoader {
             }
         }
 
-        this.skip(4)
+        const collisionLodIndex = this.readUInt16()
+        if (collisionLodIndex < xmodel.lods.length) {
+            xmodel.collisionLodIndex = collisionLodIndex
+        }
+        this.skip(2)
 
         const paddingCount = this.readUInt32()
         for (let i = 0; i < paddingCount; i++) {
@@ -138,7 +149,11 @@ export class XModelLoader {
             }
         }
 
-        this.skip(4)
+        const collisionLodIndex = this.readUInt16()
+        if (collisionLodIndex < xmodel.lods.length) {
+            xmodel.collisionLodIndex = collisionLodIndex
+        }
+        this.skip(2)
 
         const paddingCount = this.readUInt32()
         for (let i = 0; i < paddingCount; i++) {
@@ -171,7 +186,11 @@ export class XModelLoader {
             }
         }
 
-        this.skip(4)
+        const collisionLodIndex = this.readUInt16()
+        if (collisionLodIndex < xmodel.lods.length) {
+            xmodel.collisionLodIndex = collisionLodIndex
+        }
+        this.skip(2)
 
         const paddingCount = this.readUInt32()
         for (let i = 0; i < paddingCount; i++) {
@@ -202,7 +221,11 @@ export class XModelLoader {
             }
         }
 
-        this.skip(4)
+        const collisionLodIndex = this.readUInt16()
+        if (collisionLodIndex < xmodel.lods.length) {
+            xmodel.collisionLodIndex = collisionLodIndex
+        }
+        this.skip(2)
 
         const paddingCount = this.readUInt32()
         for (let i = 0; i < paddingCount; i++) {

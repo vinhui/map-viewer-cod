@@ -1,4 +1,4 @@
-import {Quat, quat_multiply, Vec3, vec3_add, vec3_div, vec3_rotate} from './math'
+import {euler_to_quat, Quat, quat_multiply, Vec3, vec3_add, vec3_rotate} from './math'
 import {XModelVersion} from './XModelVersion'
 
 export enum XModelType {
@@ -29,8 +29,8 @@ export interface XModelPart {
 }
 
 export class XModelPartLoader {
-    private static readonly ROTATION_DIVISOR = 32768.0
-    private static readonly INCH_TO_CM = 2.54
+    // private static readonly ROTATION_DIVISOR = 32768.0
+    // private static readonly INCH_TO_CM = 2.54
     private buffer: DataView
     private offset = 0
 
@@ -108,12 +108,7 @@ export class XModelPartLoader {
             const position = this.readVec3()
             const rotation = this.readVec3Int16()
 
-            const qx = rotation[0] / XModelPartLoader.ROTATION_DIVISOR
-            const qy = rotation[1] / XModelPartLoader.ROTATION_DIVISOR
-            const qz = rotation[2] / XModelPartLoader.ROTATION_DIVISOR
-            const qw = Math.sqrt(Math.max(1.0 - qx * qx - qy * qy - qz * qz, 0.0))
-
-            const boneTransform = {position, rotation: [qw, qx, qy, qz] as Quat}
+            const boneTransform = {position, rotation: euler_to_quat(rotation)}
 
             xmodelPart.bones.push({
                 name: '',
@@ -135,12 +130,7 @@ export class XModelPartLoader {
             const position = this.readVec3()
             const rotation = this.readVec3Int16()
 
-            const qx = rotation[0] / XModelPartLoader.ROTATION_DIVISOR
-            const qy = rotation[1] / XModelPartLoader.ROTATION_DIVISOR
-            const qz = rotation[2] / XModelPartLoader.ROTATION_DIVISOR
-            const qw = Math.sqrt(Math.max(1.0 - qx * qx - qy * qy - qz * qz, 0.0))
-
-            const boneTransform = {position, rotation: [qw, qx, qy, qz] as Quat}
+            const boneTransform = {position, rotation: euler_to_quat(rotation)}
 
             xmodelPart.bones.push({
                 name: '',
@@ -166,8 +156,8 @@ export class XModelPartLoader {
             xmodelPart.bones.push({
                 name: '',
                 parent: -1,
-                localTransform: {position: [0.0, 0.0, 0.0], rotation: [1.0, 0.0, 0.0, 0.0] as Quat},
-                worldTransform: {position: [0.0, 0.0, 0.0], rotation: [1.0, 0.0, 0.0, 0.0] as Quat},
+                localTransform: {position: [0.0, 0.0, 0.0], rotation: [0.0, 0.0, 0.0, 1.0] as Quat},
+                worldTransform: {position: [0.0, 0.0, 0.0], rotation: [0.0, 0.0, 0.0, 1.0] as Quat},
             })
         }
     }
@@ -181,8 +171,8 @@ export class XModelPartLoader {
             if (xmodelPart.modelType === XModelType.Viewhands) {
                 const viewmodelPos = viewhandTable(boneName)
                 if (viewmodelPos) {
-                    currentBone.localTransform.position = vec3_div(viewmodelPos, XModelPartLoader.INCH_TO_CM)
-                    currentBone.worldTransform.position = vec3_div(viewmodelPos, XModelPartLoader.INCH_TO_CM)
+                    currentBone.localTransform.position = viewmodelPos
+                    currentBone.worldTransform.position = viewmodelPos
                 }
             }
 

@@ -146,13 +146,15 @@ async function start() {
         scaleFactor: 1,
         curveTesselationLevel: 3,
         entityCreatedCallback: (inst: EntityInstance) => {
+            const origin = transformPoint(inst.entity.origin)
+
             if (inst.entity.className.includes('_spawn') && !inst.entity.model) {
                 spawns.push(inst)
             } else if (inst.entity.className === 'light') {
-                const light = new PointLight('PointLight', transformPoint(inst.entity.origin), scene)
+                const light = new PointLight('PointLight', origin, scene)
                 const c = inst.entity.map.get('_color')
                 if (c) {
-                    const color = c.split(' ').map(parseFloatUS)
+                    const color = c.split(' ').map(parseFloat)
                     light.diffuse = new Color3(color[0], color[1], color[2])
                 }
                 light.intensity = .1
@@ -170,7 +172,9 @@ async function start() {
                     const file = modelFiles[0]
                     bjsLoadXModel(file, scene).then(x => {
                         if (x) {
-                            x.parent = inst.bjsNode
+                            x.position = inst.bjsNode.absolutePosition
+                            x.rotationQuaternion = inst.bjsNode.absoluteRotationQuaternion
+                            x.metadata = inst.bjsNode.metadata
                         }
                     })
                 } else {

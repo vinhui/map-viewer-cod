@@ -34,10 +34,6 @@ export class MeshUtils {
         mesh.uvs2 = this.Vector2sToArray(vertices.map(x => x.uv1))
         mesh.colors = this.ColorsToArray(vertices.map(x => x.color))
 
-        for (let i = 1; i < mesh.uvs.length; i += 2) {
-            // mesh.uvs[i] = 1 - mesh.uvs[i]
-        }
-
         return mesh
     }
 
@@ -118,14 +114,14 @@ export class MeshUtils {
 
     public static CalculateUVs(mesh: VertexData, textureInfo: TextureInfo, dims: ISize) {
         const uv = new Float32Array(mesh.positions.length / 3 * 2)
-        const textureMatrixInverse: Matrix = TextureInfoExtensions.BuildTexMatrix(textureInfo).invert()
+        const textureMatrix: Matrix = TextureInfoExtensions.BuildTexMatrix(textureInfo)
         for (let i = 0; i < uv.length; i += 2) {
             const vec3 = new BjsVec3(
                 mesh.positions[i / 2 * 3 + 0],
                 mesh.positions[i / 2 * 3 + 1],
                 mesh.positions[i / 2 * 3 + 2],
             )
-            const transformVertex = BjsVec3.TransformCoordinates(vec3, textureMatrixInverse)
+            const transformVertex = BjsVec3.TransformCoordinates(vec3, textureMatrix)
             const uv0: BjsVec2 = TextureInfoExtensions.CalculateUV(textureInfo, transformVertex, dims)
             uv[i + 0] = uv0.x
             uv[i + 1] = uv0.y

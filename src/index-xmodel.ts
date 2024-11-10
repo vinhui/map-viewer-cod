@@ -1,9 +1,10 @@
 import './styles/main.css'
 
-import {Color3, Engine, MeshBuilder, Scene} from '@babylonjs/core'
+import {ArcRotateCamera, Engine, HavokPlugin, MeshBuilder, Scene, Vector3} from '@babylonjs/core'
 import '@babylonjs/inspector'
 import {FakeFileSystem} from 'libbsp-js'
 import {bjsLoadXModel} from './utils/xmodel'
+import HavokPhysics from '@babylonjs/havok'
 
 async function main() {
     const canvas = document.createElement('canvas')
@@ -15,6 +16,10 @@ async function main() {
     const engine = new Engine(canvas, true)
     const scene = new Scene(engine)
 
+    const havokInstance = await HavokPhysics()
+    const havokPlugin = new HavokPlugin(true, havokInstance)
+    scene.enablePhysics(new Vector3(0, -9.81, 0), havokPlugin)
+
     const ro = new ResizeObserver((entries) => {
         engine.resize()
     })
@@ -22,11 +27,14 @@ async function main() {
 
     scene.createDefaultCameraOrLight(true, true, true)
     scene.createDefaultEnvironment({
-        createGround: false,
+        createGround: true,
         createSkybox: true,
-        groundColor: Color3.Black(),
-        enableGroundMirror: false,
+        enableGroundMirror: true,
     })
+    const cam = scene.activeCamera as ArcRotateCamera
+    cam.radius = 5
+    cam.beta = 1
+    cam.alpha = Math.PI / 2
 
     const inspector = await scene.debugLayer.show({
         embedMode: true,
@@ -42,18 +50,21 @@ async function main() {
 
     MeshBuilder.CreateBox('box', {size: 1})
 
-    const modelFile = FakeFileSystem.FindFiles('xmodel/barrels', null, false)
-    await modelFile[0].download()
-    const xModel = await bjsLoadXModel(modelFile[0], scene)
+    const models = [
+        // 'xmodel/mp_vehicle_civilian_car_d_red',
+        // 'xmodel/0_forklift',
+        // 'xmodel/1andbags_short',
+        // 'xmodel/crate_misc1a',
+        'xmodel/trenches_tree1',
+    ]
 
-    inspector.select(xModel)
-}
+    for (let model of models) {
+        const modelFile = FakeFileSystem.FindFiles(model, null, false)
+        await modelFile[0].download()
+        const xModel = await bjsLoadXModel(modelFile[0], scene)
 
-async function getFileBytes(path: string) {
-    const files = FakeFileSystem.FindFiles(path, null, false)
-    const file = files[0]
-    await file.download()
-    return file.bytes
+        inspector.select(xModel)
+    }
 }
 
 main()

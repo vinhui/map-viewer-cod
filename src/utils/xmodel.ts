@@ -1,10 +1,22 @@
-import {Color3, Material, Mesh, Scene, StandardMaterial, TransformNode, VertexData} from '@babylonjs/core'
+import {
+    Color3,
+    Material,
+    Matrix,
+    Mesh,
+    PhysicsAggregate,
+    PhysicsPrestepType,
+    PhysicsShapeType,
+    Scene,
+    StandardMaterial,
+    VertexData,
+} from '@babylonjs/core'
 import {XModelLoader} from '../LibXModel-js/XModel'
 import {GameVersion} from '../LibXModel-js/GameVersion'
 import {XModelPartLoader} from '../LibXModel-js/XModelPart'
-import {XModelSurf, XModelSurfLoader} from '../LibXModel-js/XModelSurf'
+import {XModelSurfLoader} from '../LibXModel-js/XModelSurf'
 import {FakeFileSystem, File} from 'libbsp-js'
 import {loadTextureAtPath} from '../LibBSP-bjs/Util/texture'
+import {MeshUtils} from '../LibBSP-bjs/Util/MeshUtils'
 
 async function getFileBytes(path: string) {
     const files = FakeFileSystem.FindFiles(path, null, false)
@@ -19,6 +31,7 @@ async function getFileBytes(path: string) {
 }
 
 const modelMaterialMap = new Map<string, Material>()
+const correctionMatrix = Matrix.Scaling(-MeshUtils.inch2MeterScale, MeshUtils.inch2MeterScale, MeshUtils.inch2MeterScale)
 
 export async function bjsLoadXModel(file: File, scene: Scene) {
     if (!file.isLoaded) {
@@ -39,11 +52,12 @@ export async function bjsLoadXModel(file: File, scene: Scene) {
     const xModelPartLoader = new XModelPartLoader(xModelPartBytes)
     const xModelPart = await xModelPartLoader.load(firstLod.name)
 
-    const surfs: {
-        xmodelSurf: XModelSurf,
-        materials: Material[]
-    }[] = []
-    for (let lod of xModel.lods) {
+    const root = new Mesh(xModel.name, scene)
+    const lodMeshes: { distance: number, mesh: Mesh }[] = []
+    let collisionMesh: Mesh
+
+    for (let i = 0; i < xModel.lods.length; i++) {
+        let lod = xModel.lods[i]
         const lodBytes = await getFileBytes(`xmodelsurfs/${lod.name}`)
         if (!lodBytes) {
             console.error(`Failed to find xmodelsurfs file xmodelsurfs/${lod.name}`)
@@ -71,32 +85,70 @@ export async function bjsLoadXModel(file: File, scene: Scene) {
             materials.push(modelMaterialMap.get(texturePath))
         }
 
-        surfs.push({
-            xmodelSurf: surf,
-            materials: materials,
-        })
-    }
+        const lodMesh = new Mesh(lod.name, scene, root)
+        let collisionVertexData: VertexData
+        if (i === xModel.collisionLodIndex) {
+            collisionMesh = new Mesh('collision_' + lod.name, scene, root)
+            collisionMesh.setEnabled(false)
+            collisionMesh.isPickable = false
+            collisionMesh.isVisible = false
+        }
+        for (let n = 0; n < surf.surfaces.length; n++) {
+            let surface = surf.surfaces[n]
 
-    const root = new TransformNode(xModel.name, scene)
-    for (let surf of surfs) {
-        const surfNode = new TransformNode(surf.xmodelSurf.name, scene)
-        surfNode.parent = root
-
-        for (let i = 0; i < surf.xmodelSurf.surfaces.length; i++) {
-            let surface = surf.xmodelSurf.surfaces[i]
             const vertexData = new VertexData()
             vertexData.positions = surface.vertices.flatMap(x => x.position)
             vertexData.normals = surface.vertices.flatMap(x => x.normal)
             vertexData.uvs = surface.vertices.flatMap(x => x.uv)
             vertexData.colors = surface.vertices.flatMap(x => x.color)
             vertexData.indices = surface.triangles
+            vertexData.transform(correctionMatrix)
 
-            const mesh = new Mesh(i.toString(10), scene, surfNode)
+            const mesh = new Mesh(`${n}_${materials[n].name}`, scene, lodMesh)
             vertexData.applyToMesh(mesh)
-            mesh.material = surf.materials[i]
+            mesh.material = materials[n]
+
+            if (i === xModel.collisionLodIndex) {
+                if (!collisionVertexData) {
+                    collisionVertexData = vertexData
+                } else {
+                    collisionVertexData.merge(vertexData)
+                }
+            }
+        }
+        if (i === xModel.collisionLodIndex) {
+            collisionVertexData.applyToMesh(collisionMesh)
+        }
+
+        root.addLODLevel(lod.distance * MeshUtils.inch2MeterScale, lodMesh)
+        lodMeshes.push({distance: lod.distance * MeshUtils.inch2MeterScale, mesh: lodMesh})
+    }
+
+    root.onLODLevelSelection = (distance) => {
+        let match = false
+        for (let level of lodMeshes) {
+            if (!match && (distance <= level.distance || level.distance === 0)) {
+                match = true
+                level.mesh.setEnabled(true)
+            } else {
+                level.mesh.setEnabled(false)
+            }
         }
     }
-    // root.scaling.setAll(.1 / 2.54)
-    // root.rotation.x = -Math.PI / 2
+
+    root.rotation.x = -Math.PI / 2
+    root.rotation.y += Math.PI / 2
+
+    if (collisionMesh) {
+        new PhysicsAggregate(root, PhysicsShapeType.MESH, {
+            mesh: collisionMesh,
+            mass: 0,
+        })
+        root.physicsBody.disablePreStep = false
+        root.physicsBody.setPrestepType(PhysicsPrestepType.TELEPORT)
+        collisionMesh.dispose()
+    }
+
+
     return root
 }
