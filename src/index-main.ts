@@ -16,6 +16,7 @@ import {
     Sound,
     StandardMaterial,
     Tools,
+    TransformNode,
     Vector3,
     VertexBuffer,
 } from '@babylonjs/core'
@@ -60,6 +61,8 @@ light1.intensity = 1
 light1.lightmapMode = Light.LIGHTMAP_SHADOWSONLY
 
 const spawns: EntityInstance[] = []
+const spawnsRoot = new TransformNode('Spawns', scene)
+const xmodelsRoot = new TransformNode('XModels', scene)
 const urlParams = new URLSearchParams(location.search)
 let map = 'maps/mp/mp_uo_harbor.bsp'
 if (urlParams.has('m')) {
@@ -172,6 +175,7 @@ async function start() {
                     const file = modelFiles[0]
                     bjsLoadXModel(file, scene).then(x => {
                         if (x) {
+                            x.parent = xmodelsRoot
                             x.position = inst.bjsNode.absolutePosition
                             x.rotationQuaternion = inst.bjsNode.absoluteRotationQuaternion
                             x.metadata = inst.bjsNode.metadata
@@ -198,6 +202,7 @@ async function start() {
             mat.emissiveColor = Color3.Red()
             for (let spawn of spawns) {
                 const m = MeshBuilder.CreateSphere('spawn ' + spawn.entity.className, {diameter: 1, segments: 3})
+                m.parent = spawnsRoot
                 m.position = transformPoint(spawn.entity.origin)
                 m.material = mat
             }
