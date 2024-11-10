@@ -1,17 +1,8 @@
 import {FakeFileSystem, File} from 'libbsp-js'
 import {BaseTexture, RawTexture, Scene, Texture} from '@babylonjs/core'
 import {doesDdsHaveAlpha} from '../../utils/dds'
-import {loadSkyTextureAtPath} from './Sky'
 
 export function loadTextureAtPath(path: string, scene: Scene, onTexChanged: () => void): BaseTexture {
-    const s = path.toLowerCase()
-    if (s.includes('/sky/') || s.startsWith('/skies/')) {
-        const skyTex = loadSkyTextureAtPath(path, scene, onTexChanged)
-        if (skyTex) {
-            return skyTex
-        }
-    }
-
     if (FakeFileSystem.hasLoadedIndex) {
         const matches = FakeFileSystem.FindFiles(path, null, false)
         if (matches.length === 0) {

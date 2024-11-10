@@ -96,7 +96,7 @@ export class FirstPersonPlayer {
         this._camera.position.y = 1.65
         // this._camera.viewport = new Viewport(0, 0, 1, .5)
         this._camera.minZ = .1
-        this._camera.maxZ = 500
+        this._camera.maxZ = 1000
         this._camera.fov = Math.PI / 2
         const thirdPersonCam = new ArcRotateCamera('camera', Tools.ToRadians(90), Tools.ToRadians(65), 10, Vector3.Zero(), this.scene)
         thirdPersonCam.setTarget(this._root, true, false, false)

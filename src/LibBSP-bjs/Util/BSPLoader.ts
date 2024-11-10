@@ -1,9 +1,9 @@
 import {BSP, Entity, Face, FakeFileSystem, LODTerrain, MapType, Texture as BspTex} from 'libbsp-js'
 import {
     Color3,
-    CubeTexture,
     Engine,
     ISize,
+    Material,
     Mesh,
     RawTexture,
     Scene,
@@ -16,6 +16,7 @@ import {
 import {BSPExtension} from '../Extensions/BSPExtension'
 import {MeshUtils} from './MeshUtils'
 import {loadTextureAtPath} from './texture'
+import {buildSkybox} from './Sky'
 
 export enum MeshCombineOptions {
     None,
@@ -40,7 +41,7 @@ export class BSPLoader {
     public settings: Settings
     private entityInstances: EntityInstance[] = []
     private namedEntities: Map<string, EntityInstance[]> = new Map()
-    private materialDirectory: Map<string, Map<number, StandardMaterial>> = new Map()
+    private materialDirectory: Map<string, Map<number, Material>> = new Map()
     private lightmapTextures: RawTexture[] = []
 
     private _root: TransformNode
@@ -113,11 +114,20 @@ export class BSPLoader {
     }
 
     protected createFaceMesh(face: Face, textureName: string): VertexData {
+        const s = textureName.toLowerCase()
+        if (s.includes('textures/sky/') || s.startsWith('textures/skies/')) {
+            buildSkybox(s, this.settings.scene)
+            return
+        }
+
         let dims: ISize
         if (!this.materialDirectory.has(textureName) || !this.materialDirectory.get(textureName).has(face.lightmap)) {
             this.loadMaterial(textureName, face.lightmap)
         }
-        const bjsTex = this.materialDirectory.get(textureName).get(face.lightmap).diffuseTexture
+        const material = this.materialDirectory.get(textureName).get(face.lightmap)
+        const textures = material.getActiveTextures()
+        const bjsTex = textures[0]
+
         if (bjsTex) {
             dims = bjsTex.getSize()
         } else {
@@ -147,12 +157,7 @@ export class BSPLoader {
     private loadMaterial(textureName: string, lightmapIndex: number) {
         let material: StandardMaterial
         const tex = loadTextureAtPath(textureName, this.settings.scene, () => {
-            if (tex instanceof CubeTexture) {
-                material.diffuseTexture = null
-                material.backFaceCulling = false
-                material.disableLighting = true
-                material.reflectionTexture = tex
-            } else if (tex.hasAlpha) {
+            if (tex.hasAlpha) {
                 material.diffuseTexture = tex
                 material.useAlphaFromDiffuseTexture = true
                 material.needDepthPrePass = true
@@ -161,7 +166,6 @@ export class BSPLoader {
         if (!tex) {
             console.warn(`Texture ${textureName} could not be loaded (does the file exist?)`)
         }
-
         material = new StandardMaterial(lightmapIndex + textureName, this.settings.scene)
         material.specularColor = Color3.Black()
         material.lightmapTexture = this.getLightmapTexture(lightmapIndex)
@@ -169,12 +173,7 @@ export class BSPLoader {
         if (textureName.toLowerCase().includes('decal@')) {
             material.zOffset = -1
         }
-        if (tex instanceof CubeTexture) {
-            // TODO: Should probably use a different material for the skyboxes
-            material.reflectionTexture = tex
-        } else {
-            material.diffuseTexture = tex
-        }
+        material.diffuseTexture = tex
 
         if (!this.materialDirectory.get(textureName)) {
             this.materialDirectory.set(textureName, new Map<number, StandardMaterial>())
@@ -279,7 +278,10 @@ export class BSPLoader {
                         textureMeshMap.get(textureName).set(face.lightmap, [])
                     }
 
-                    textureMeshMap.get(textureName).get(face.lightmap).push(this.createFaceMesh(face, textureName))
+                    const mesh = this.createFaceMesh(face, textureName)
+                    if (mesh) {
+                        textureMeshMap.get(textureName).get(face.lightmap).push(mesh)
+                    }
                 }
             }
         }
@@ -307,13 +309,13 @@ export class BSPLoader {
 
         if (this.settings.meshCombineOptions === MeshCombineOptions.PerMaterial) {
             const textureMeshes: VertexData[] = []
-            const materials: StandardMaterial[] = []
+            const materials: Material[] = []
             i = 0
 
             for (let [texName, map] of textureMeshMap.entries()) {
                 for (let [lightmapIndex, vertexData] of map.entries()) {
                     textureMeshes[i] = MeshUtils.CombineAllMeshes(vertexData)
-                    if (textureMeshes[i].positions.length > 0) {
+                    if (textureMeshes[i]?.positions.length > 0) {
                         if (this.materialDirectory.has(texName)) {
                             materials[i] = this.materialDirectory.get(texName).get(lightmapIndex)
                         }
