@@ -9,7 +9,6 @@ import {
     Light,
     MeshBuilder,
     PhysicsAggregate,
-    PhysicsPrestepType,
     PhysicsRaycastResult,
     PhysicsShapeType,
     PointLight,
@@ -180,7 +179,10 @@ async function start() {
                             x.root.parent = xmodelsRoot
                             x.root.position = inst.bjsNode.absolutePosition
                             x.root.rotationQuaternion = inst.bjsNode.absoluteRotationQuaternion
-                            const scale = inst.entity.getFloat('modelscale', 1)
+                            let scale = inst.entity.getFloat('modelscale', 1)
+                            if (isNaN(scale)) {
+                                scale = 1
+                            }
                             x.root.scaling.scaleInPlace(scale)
                             x.root.metadata = inst.bjsNode.metadata
 
@@ -189,8 +191,6 @@ async function start() {
                                     mesh: x.collisionMesh,
                                     mass: 0,
                                 })
-                                x.root.physicsBody.disablePreStep = false
-                                x.root.physicsBody.setPrestepType(PhysicsPrestepType.TELEPORT)
                             }
                         }
                     })
