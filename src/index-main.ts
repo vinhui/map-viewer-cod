@@ -21,7 +21,7 @@ import {
 } from '@babylonjs/core'
 import '@babylonjs/inspector'
 import {BSPLoader, EntityInstance, MeshCombineOptions} from './LibBSP-bjs/Util/BSPLoader'
-import {FakeFileSystem, parseFloatUS} from 'libbsp-js'
+import {FakeFileSystem} from 'libbsp-js'
 import HavokPhysics from '@babylonjs/havok'
 import {FirstPersonPlayer} from './FirstPersonPlayer'
 import {MapSelector} from './MapSelector'
@@ -159,7 +159,7 @@ async function start() {
                 light.lightmapMode = Light.LIGHTMAP_SHADOWSONLY
 
                 if (inst.entity.map.get('radius')) {
-                    light.range = parseFloatUS(inst.entity.map.get('radius')) * MeshUtils.inch2MeterScale
+                    light.range = parseFloat(inst.entity.map.get('radius')) * MeshUtils.inch2MeterScale
                 } else {
                     light.range = 10
                 }

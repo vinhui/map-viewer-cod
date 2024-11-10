@@ -61,13 +61,14 @@ export class BSPLoader {
                 throw new Error(`Cannot import ${this.settings.path}: The path is invalid`)
             }
 
-            if (!await FakeFileSystem.DownloadFile(this.settings.path)) {
+            const bspFile = await FakeFileSystem.DownloadFile(this.settings.path)
+            if (!bspFile) {
                 throw new Error(`Failed to download bsp file: ${this.settings.path}`)
             }
 
             const lumpFiles = FakeFileSystem.FindFiles(this.settings.path.substring(0, this.settings.path.lastIndexOf('.')), /\.lmp$/, false)
             await FakeFileSystem.DownloadFiles(lumpFiles)
-            this._bsp = new BSP(FakeFileSystem.GetFile(this.settings.path))
+            this._bsp = new BSP(bspFile)
             await this.loadBSP(this._bsp)
         } else {
             this._bsp = bsp

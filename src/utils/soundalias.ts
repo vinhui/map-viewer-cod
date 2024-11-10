@@ -1,5 +1,3 @@
-import {parseFloatUS} from 'libbsp-js'
-
 const header = [
     'name',
     'sequence',
@@ -79,12 +77,12 @@ export function parseSoundAliasLine(line: string): SoundAlias {
     }
 
     if (items[3]) {
-        const val = parseFloatUS(items[3])
+        const val = parseFloat(items[3])
         if (!isNaN(val))
             obj.vol_min = val
     }
     if (items[4]) {
-        const val = parseFloatUS(items[4])
+        const val = parseFloat(items[4])
         if (!isNaN(val))
             obj.vol_max = val
     } else {
@@ -92,12 +90,12 @@ export function parseSoundAliasLine(line: string): SoundAlias {
     }
 
     if (items[5]) {
-        const val = parseFloatUS(items[5])
+        const val = parseFloat(items[5])
         if (!isNaN(val))
             obj.pitch_min = val
     }
     if (items[6]) {
-        const val = parseFloatUS(items[6])
+        const val = parseFloat(items[6])
         if (!isNaN(val))
             obj.pitch_max = val
     } else {
@@ -105,12 +103,12 @@ export function parseSoundAliasLine(line: string): SoundAlias {
     }
 
     if (items[7]) {
-        const val = parseFloatUS(items[7])
+        const val = parseFloat(items[7])
         if (!isNaN(val))
             obj.dist_min = val
     }
     if (items[8]) {
-        const val = parseFloatUS(items[8])
+        const val = parseFloat(items[8])
         if (!isNaN(val))
             obj.dist_max = val
     } else {
@@ -127,7 +125,7 @@ export function parseSoundAliasLine(line: string): SoundAlias {
     }
 
     if (items[11]) {
-        const val = parseFloatUS(items[11])
+        const val = parseFloat(items[11])
         if (!isNaN(val))
             obj.probability = val
     }
@@ -140,7 +138,7 @@ export function parseSoundAliasLine(line: string): SoundAlias {
         if (items[13] === 'master') {
             obj.masterslave = 'master'
         } else {
-            const val = parseFloatUS(items[13])
+            const val = parseFloat(items[13])
             if (!isNaN(val))
                 obj.masterslave = val
         }
