@@ -178,10 +178,14 @@ export class FirstPersonPlayer {
 
     onPointerDown(e: PointerEvent) {
         const inputElem = this.scene.getEngine().getInputElement()
+        console.log(inputElem, inputElem.requestPointerLock)
         if (inputElem.requestPointerLock) {
-            inputElem.requestPointerLock()
-                .catch(() => {
+            const result = inputElem.requestPointerLock()
+            if (typeof result !== 'undefined') {
+                result.catch(e => {
+                    console.error('Failed to request pointer lock', e)
                 })
+            }
         }
     }
 
