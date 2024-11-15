@@ -178,7 +178,6 @@ export class FirstPersonPlayer {
 
     onPointerDown(e: PointerEvent) {
         const inputElem = this.scene.getEngine().getInputElement()
-        console.log(inputElem, inputElem.requestPointerLock)
         if (inputElem.requestPointerLock) {
             const result = inputElem.requestPointerLock()
             if (typeof result !== 'undefined') {
