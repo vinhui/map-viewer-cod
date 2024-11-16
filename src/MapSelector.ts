@@ -9,6 +9,8 @@ export class MapSelector {
     private loadingContainer: HTMLElement
     private loadingTextElement: HTMLElement
 
+    private searchItems: { text: string, elem: HTMLElement }[] = []
+
     constructor() {
         this.createMainHtml()
     }
@@ -56,10 +58,15 @@ export class MapSelector {
             }
 
             const nameElem = document.createElement('p')
-            nameElem.innerText = map.longname.replaceAll(/\^\d/g, '') ?? map.map
+            const prettyName = map.longname.replaceAll(/\^\d/g, '') ?? map.map
+            nameElem.innerText = prettyName
             nameElem.innerHTML += `<br /><i>${map.map}</i>`
             itemElem.appendChild(nameElem)
             this.itemsContainer.appendChild(itemElem)
+            this.searchItems.push({
+                text: `${prettyName} ${map.map}`,
+                elem: itemElem,
+            })
         }
 
         const items = this.mapIndex.mapItems.filter(x => x.bspFile)
@@ -101,21 +108,22 @@ export class MapSelector {
         this.itemsContainer.classList.add('items')
 
 
-        const updateSearchResults = () => {
-            for (const child of this.itemsContainer.children) {
-                const c = child as HTMLElement
-                const match = c.innerText.toLowerCase().includes(search.value.toLowerCase())
-                c.style.display = match ? 'flex' : 'none'
+        const debounce = (func: () => void, delay) => {
+            let timer: number
+            return () => {
+                clearTimeout(timer)
+                timer = window.setTimeout(() => func(), delay)
             }
         }
 
-        let timer = -1
-        search.addEventListener('keydown', () => {
-            window.clearTimeout(timer)
-            timer = window.setTimeout(() => {
-                updateSearchResults()
-            }, 500)
-        })
+        const updateSearchResults = debounce(() => {
+            for (const item of this.searchItems) {
+                const match = item.text.includes(search.value.toLowerCase())
+                item.elem.style.display = match ? 'flex' : 'none'
+            }
+        }, 500)
+
+        search.addEventListener('keydown', () => updateSearchResults())
 
         container.appendChild(this.itemsContainer)
         document.body.appendChild(this.rootElement)
