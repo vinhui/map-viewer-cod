@@ -278,7 +278,7 @@ function teleportToRandomSpawn(tryCount = 0) {
     const spawn = randomFromArray(spawns)
     const spawnPos = getPosFromSpawn(spawn)
     const raycastResult = new PhysicsRaycastResult()
-    havok.raycast(spawnPos, spawnPos.add(Vector3.DownReadOnly), raycastResult)
+    havok.raycast(spawnPos, spawnPos.add(Vector3.DownReadOnly.scale(2)), raycastResult)
     if (!raycastResult.hasHit) {
         teleportToRandomSpawn(tryCount++)
         return
@@ -288,7 +288,6 @@ function teleportToRandomSpawn(tryCount = 0) {
     }
 
     player.position.copyFrom(spawnPos)
-    player.position.y += .5
     const angle = spawn.entity.angles.y + 180
     if (!isNaN(angle)) {
         player.rotation = Tools.ToRadians(angle)
