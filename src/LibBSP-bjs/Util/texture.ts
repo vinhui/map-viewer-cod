@@ -24,13 +24,15 @@ export async function loadTextureAtPath(path: string, scene: Scene): Promise<Bas
                 } else if (extension === '.dds') {
                     return getDdsTexture(match.bytes, match.originalPath, scene)
                 } else {
-                    return new Texture(
+                    const tex = new Texture(
                         'data:' + match.originalPath, // url
                         scene, // scene
                         null, // no mipmap or options
                         true, // inverty
                         null, // samplingmode
-                        null, // onload
+                        () => {
+                            tex.updateSamplingMode(Texture.TRILINEAR_SAMPLINGMODE)
+                        }, // onload
                         null, // onerror
                         match.bytes.buffer, // buffer
                         false, // delete buffer
@@ -40,6 +42,7 @@ export async function loadTextureAtPath(path: string, scene: Scene): Promise<Bas
                         null, // creationflags
                         null, // forced extension
                     )
+                    return tex
                 }
             }
         }
@@ -123,5 +126,6 @@ export function getDdsTexture(bytes: Uint8Array, name: string, scene: Scene) {
     tex.hasAlpha = doesDdsHaveAlpha(bytes)
     tex.wrapU = Texture.WRAP_ADDRESSMODE
     tex.wrapV = Texture.WRAP_ADDRESSMODE
+    tex.updateSamplingMode(Texture.TRILINEAR_SAMPLINGMODE)
     return tex
 }
