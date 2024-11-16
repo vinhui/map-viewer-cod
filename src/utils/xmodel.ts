@@ -61,12 +61,30 @@ export async function bjsLoadXModel(file: File, scene: Scene): Promise<{ root: M
                 if (!modelMaterialMap.has(texturePath)) {
                     const mat = new StandardMaterial(texturePath, scene)
                     mat.specularColor = Color3.Black()
+                    mat.customShaderNameResolve = (shaderName, uniforms, uniformBuffers, samplers, defines, attributes, options) => {
+                        if (texturePath.startsWith('foliage_')) {
+                            if (Array.isArray(defines)) {
+                                defines.push('INVERT_OPACITY_TEX')
+                            } else {
+                                defines['INVERT_OPACITY_TEX'] = true
+                                defines.rebuild()
+                            }
+                        }
+                        return shaderName
+                    }
 
                     loadTextureAtPath(`skins/${texturePath}`, scene)
                         .then(tex => {
+                            if (!tex) {
+                                console.error(`Failed to load xmodel texture "${texturePath}"`)
+                                return
+                            }
                             if (tex.hasAlpha) {
                                 mat.useAlphaFromDiffuseTexture = true
                                 mat.needDepthPrePass = true
+                            }
+                            if (texturePath.startsWith('foliage_')) {
+                                mat.opacityTexture = tex
                             }
                             mat.diffuseTexture = tex
                         })

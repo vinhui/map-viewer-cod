@@ -28,7 +28,7 @@ export async function loadTextureAtPath(path: string, scene: Scene): Promise<Bas
                         'data:' + match.originalPath, // url
                         scene, // scene
                         null, // no mipmap or options
-                        null, // inverty
+                        true, // inverty
                         null, // samplingmode
                         null, // onload
                         null, // onerror

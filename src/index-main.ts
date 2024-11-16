@@ -13,6 +13,7 @@ import {
     PhysicsShapeType,
     PointLight,
     Scene,
+    ShaderStore,
     Sound,
     StandardMaterial,
     Tools,
@@ -131,6 +132,12 @@ async function findAmbientSound() {
 }
 
 async function start() {
+    ShaderStore.ShadersStore['defaultPixelShader'] = ShaderStore.ShadersStore['defaultPixelShader'].replace('alpha*=opacityMap.a*vOpacityInfos.y;', `#ifdef INVERT_OPACITY_TEX
+alpha*=(1.0 - opacityMap.a)*vOpacityInfos.y;
+#else
+alpha*=opacityMap.a*vOpacityInfos.y;
+#endif`)
+
     const havokInstance = await HavokPhysics()
     havok = new HavokPlugin(true, havokInstance)
     scene.enablePhysics(gravityVector, havok)
