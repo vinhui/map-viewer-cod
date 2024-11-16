@@ -39,6 +39,7 @@ async function start() {
     const havokInstance = await HavokPhysics()
     const havokPlugin = new HavokPlugin(true, havokInstance)
     scene.enablePhysics(gravityVector, havokPlugin)
+    havokPlugin.setTimeStep(1 / 20)
 
     const light1: HemisphericLight = new HemisphericLight('light1', new Vector3(1, 1, 0), scene)
     light1.intensity = .5

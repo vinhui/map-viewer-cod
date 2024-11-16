@@ -3,6 +3,7 @@ import {
     HavokPlugin,
     MeshBuilder,
     PhysicsBody,
+    PhysicsMaterialCombineMode,
     PhysicsMotionType,
     PhysicsShapeCapsule,
     PhysicsShapeContainer,
@@ -121,16 +122,20 @@ export class FirstPersonPlayer {
         const capsule = new PhysicsShapeCapsule(new Vector3(0, 0 + .5, 0), new Vector3(0, 1.8 - .5, 0), .4, this.scene)
         capsule.material.friction = 1
         capsule.material.restitution = 0
+        capsule.material.staticFriction = 20
+        capsule.material.frictionCombine = PhysicsMaterialCombineMode.MULTIPLY
         const cylinder = new PhysicsShapeCylinder(new Vector3(0, .4, 0), new Vector3(0, 1.8, 0), .5, this.scene)
-        capsule.material.friction = 1
-        capsule.material.restitution = 1
+        cylinder.material.friction = 1
+        cylinder.material.restitution = 0
+        cylinder.material.staticFriction = 20
+        cylinder.material.frictionCombine = PhysicsMaterialCombineMode.MULTIPLY
         const rootShape = new PhysicsShapeContainer(this.scene)
         rootShape.addChild(capsule)
         rootShape.addChild(cylinder)
         const body = new PhysicsBody(this._root, PhysicsMotionType.DYNAMIC, false, this.scene)
         body.shape = rootShape
         body.disablePreStep = false
-        body.setMassProperties({mass: 10, inertia: Vector3.ZeroReadOnly})
+        body.setMassProperties({mass: 1000, inertia: Vector3.ZeroReadOnly})
     }
 
     onKeyDown(e: KeyboardEvent) {

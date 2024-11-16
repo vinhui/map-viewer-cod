@@ -213,7 +213,11 @@ alpha*=opacityMap.a*vOpacityInfos.y;
             for (let childMesh of root.getChildMeshes()) {
                 const verticesData = childMesh.getVerticesData(VertexBuffer.PositionKind)
                 if (verticesData && verticesData.length > 0) {
-                    new PhysicsAggregate(childMesh, PhysicsShapeType.MESH, {mass: 0}, scene)
+                    new PhysicsAggregate(childMesh, PhysicsShapeType.MESH, {
+                        mass: 0,
+                        friction: 10,
+                        restitution: 0,
+                    }, scene)
                 }
             }
 
@@ -236,6 +240,7 @@ alpha*=opacityMap.a*vOpacityInfos.y;
         })
 
     engine.runRenderLoop(() => {
+        havok.setTimeStep(1 / 20)
         scene.render()
     })
 
