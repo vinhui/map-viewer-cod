@@ -1,8 +1,9 @@
-import {FakeFileSystem, File} from 'libbsp-js'
+import {FakeFileSystem} from 'libbsp-js'
 import {BaseTexture, RawTexture, Scene, Texture} from '@babylonjs/core'
 import {doesDdsHaveAlpha} from '../../utils/dds'
+import {loadDDSFromMemory} from './dds'
 
-export function loadTextureAtPath(path: string, scene: Scene, onTexChanged: () => void): BaseTexture {
+export async function loadTextureAtPath(path: string, scene: Scene): Promise<BaseTexture> {
     if (FakeFileSystem.hasLoadedIndex) {
         const matches = FakeFileSystem.FindFiles(path, null, false)
         if (matches.length === 0) {
@@ -11,107 +12,82 @@ export function loadTextureAtPath(path: string, scene: Scene, onTexChanged: () =
 
         for (let match of matches) {
             if (match.caseInsensitivePath === path.toLowerCase() || match.directory + match.nameWithoutExtension === path) {
-                if (match.isLoaded) {
-                    if (match.extension === '.ftx') {
-                        return getFtxTexture(match, scene)
-                    } else {
-                        if (match.extension.toLowerCase() === '.dds') {
-                            const view = new DataView(match.bytes.buffer)
-                            // Some old DDS files have bits per pixels that are way too high
-                            // So we're just limiting those
-                            if (view.getInt32(22 * 4, true) >= 256) {
-                                view.setInt32(22 * 4, 0, true)
-                            }
-                        }
-                        const tex = new Texture(
-                            'data:' + match.originalPath, // url
-                            scene, // scene
-                            null, // no mipmap or options
-                            null, // inverty
-                            null, // samplingmode
-                            null, // onload
-                            null, // onerror
-                            match.bytes.buffer, // buffer
-                            false, // delete buffer
-                            null, // format
-                            null, // mimetype
-                            null, // loaderoptions
-                            null, // creationflags
-                            null, // forced extension
-                        )
-                        if (match.extension.toLowerCase() === '.dds') {
-                            tex.hasAlpha = doesDdsHaveAlpha(match.bytes)
-                        }
-                        return tex
-                    }
+                const extension = match.extension.toLowerCase()
+                await match.download()
+                if (match.failedToDownload) {
+                    console.error(`Downloading ${match.originalPath} failed while index indicated it should exist. Maybe index file is out of date?`)
+                    return null
+                }
+
+                if (extension === '.ftx') {
+                    return getFtxTexture(match.bytes, match.originalPath, scene)
+                } else if (extension === '.dds') {
+                    return getDdsTexture(match.bytes, match.originalPath, scene)
                 } else {
-                    if (match.extension === '.ftx') {
-                        console.error(`Using FTX textures that aren't preloaded is currently not supported.\nYou need to pre-download them through the FakeFileSystem beforehand.`)
-                        return null
-                    }
-                    let tex = new Texture(null, scene, false, true)
-                    tex.name = match.originalPath
-                    match.download()
-                        .then(success => {
-                            if (success) {
-                                if (match.extension.toLowerCase() === '.dds') {
-                                    const view = new DataView(match.bytes.buffer)
-                                    // Some old DDS files have bits per pixels that are way too high
-                                    // So we're just limiting those
-                                    if (view.getInt32(22 * 4, true) >= 256) {
-                                        view.setInt32(22 * 4, 0, true)
-                                    }
-                                }
-                                tex.updateURL(
-                                    'data:' + match.originalPath, // url
-                                    match.bytes.buffer, // buffer
-                                    null, // onload
-                                    null, // forced extension
-                                )
-                                if (match.extension.toLowerCase() === '.dds') {
-                                    tex.hasAlpha = doesDdsHaveAlpha(match.bytes)
-                                }
-                                onTexChanged()
-                            } else {
-                                console.error(`Downloading ${match.originalPath} failed while index indicated it should exist. Maybe index file is out of date?`)
-                            }
-                        })
-                    return tex
+                    return new Texture(
+                        'data:' + match.originalPath, // url
+                        scene, // scene
+                        null, // no mipmap or options
+                        null, // inverty
+                        null, // samplingmode
+                        null, // onload
+                        null, // onerror
+                        match.bytes.buffer, // buffer
+                        false, // delete buffer
+                        null, // format
+                        null, // mimetype
+                        null, // loaderoptions
+                        null, // creationflags
+                        null, // forced extension
+                    )
                 }
             }
         }
         return null
     } else {
         // Fallback to trying to download the file
-        const tex = new Texture(null, scene)
-        let responseCount = 0
-        let foundMatch = false
         const extensions = ['dds', 'jpg', 'tga', 'gif', 'jpeg', 'png'].flatMap(x => [x, x.toUpperCase()])
         for (const extension of extensions) {
             const url = `${FakeFileSystem.baseUrl}${path}.${extension}`
-            fetch(url, {method: 'HEAD'})
-                .then((res) => {
-                    responseCount++
-                    if (res.ok) {
-                        foundMatch = true
-                        tex.updateURL(url)
-                    }
-                    if (responseCount === extensions.length) {
-                        onTexChanged()
-                        if (!foundMatch) {
-                            console.error(`Failed to find texture ${path}`)
-                        }
-                    }
-                })
+            const headerRes = await fetch(url, {method: 'HEAD'})
+
+            if (headerRes.ok) {
+                const res = await fetch(url)
+                const arrayBuffer = await res.arrayBuffer()
+
+                if (extension === '.ftx') {
+                    const bytes = new Uint8Array(arrayBuffer)
+                    return getFtxTexture(bytes, path, scene)
+                } else if (extension === '.dds') {
+                    const bytes = new Uint8Array(arrayBuffer)
+                    return getDdsTexture(bytes, path, scene)
+                } else {
+                    return new Texture(
+                        'data:' + path, // url
+                        scene, // scene
+                        null, // no mipmap or options
+                        null, // inverty
+                        null, // samplingmode
+                        null, // onload
+                        null, // onerror
+                        arrayBuffer, // buffer
+                        false, // delete buffer
+                        null, // format
+                        null, // mimetype
+                        null, // loaderoptions
+                        null, // creationflags
+                        null, // forced extension
+                    )
+                }
+            }
         }
-        return tex
+        console.error(`Failed to find texture ${path}`)
     }
 }
 
-export function getFtxTexture(file: File, scene: Scene) {
-    const bytes = file.bytes
+export function getFtxTexture(bytes: Uint8Array, name: string, scene: Scene) {
     if (bytes.byteLength < 12) {
-        console.warn(`Invalid FTX texture file "${file.originalPath}": File too small`)
+        console.warn(`Invalid FTX texture file "${name}": File too small`)
         return null
     }
     const view = new DataView(bytes.buffer)
@@ -119,11 +95,33 @@ export function getFtxTexture(file: File, scene: Scene) {
     const height = view.getInt32(4)
 
     if (bytes.byteLength < (width * height * 4) + 12) {
-        console.warn(`Invalid FTX texture file "${file.originalPath}": Not enough pixels`)
+        console.warn(`Invalid FTX texture file "${name}": Not enough pixels`)
         return null
     }
 
     const tex = RawTexture.CreateRGBATexture(bytes.slice(12), width, height, scene, true, false)
-    tex.name = file.originalPath
+    tex.name = name
+    return tex
+}
+
+export function getDdsTexture(bytes: Uint8Array, name: string, scene: Scene) {
+    const ddsImage = loadDDSFromMemory(bytes)
+    if (!ddsImage) {
+        console.error(`Failed to load DDS image`, name)
+        return null
+    }
+
+    const tex = RawTexture.CreateRGBATexture(
+        ddsImage.pixels,
+        ddsImage.header.width,
+        ddsImage.header.height,
+        scene,
+        true,
+        true,
+    )
+    tex.name = name
+    tex.hasAlpha = doesDdsHaveAlpha(bytes)
+    tex.wrapU = Texture.WRAP_ADDRESSMODE
+    tex.wrapV = Texture.WRAP_ADDRESSMODE
     return tex
 }

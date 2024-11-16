@@ -155,25 +155,26 @@ export class BSPLoader {
     }
 
     private loadMaterial(textureName: string, lightmapIndex: number) {
-        let material: StandardMaterial
-        const tex = loadTextureAtPath(textureName, this.settings.scene, () => {
-            if (tex.hasAlpha) {
-                material.diffuseTexture = tex
-                material.useAlphaFromDiffuseTexture = true
-                material.needDepthPrePass = true
-            }
-        })
-        if (!tex) {
-            console.warn(`Texture ${textureName} could not be loaded (does the file exist?)`)
-        }
-        material = new StandardMaterial(lightmapIndex + textureName, this.settings.scene)
+        const material = new StandardMaterial(lightmapIndex + textureName, this.settings.scene)
         material.specularColor = Color3.Black()
         material.lightmapTexture = this.getLightmapTexture(lightmapIndex)
         material.useLightmapAsShadowmap = true
         if (textureName.toLowerCase().includes('decal@')) {
             material.zOffset = -1
         }
-        material.diffuseTexture = tex
+        loadTextureAtPath(textureName, this.settings.scene)
+            .then(tex => {
+                if (!tex) {
+                    console.warn(`Texture ${textureName} could not be loaded (does the file exist?)`)
+                    return
+                }
+                material.diffuseTexture = tex
+
+                if (tex.hasAlpha) {
+                    material.useAlphaFromDiffuseTexture = true
+                    material.needDepthPrePass = true
+                }
+            })
 
         if (!this.materialDirectory.get(textureName)) {
             this.materialDirectory.set(textureName, new Map<number, StandardMaterial>())

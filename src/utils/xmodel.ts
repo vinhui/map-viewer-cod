@@ -62,14 +62,15 @@ export async function bjsLoadXModel(file: File, scene: Scene): Promise<{ root: M
                     const mat = new StandardMaterial(texturePath, scene)
                     mat.specularColor = Color3.Black()
 
-                    const tex = loadTextureAtPath(`skins/${texturePath}`, scene, () => {
-                        if (tex.hasAlpha) {
-                            mat.useAlphaFromDiffuseTexture = true
-                            mat.needDepthPrePass = true
-                        }
-                    })
+                    loadTextureAtPath(`skins/${texturePath}`, scene)
+                        .then(tex => {
+                            if (tex.hasAlpha) {
+                                mat.useAlphaFromDiffuseTexture = true
+                                mat.needDepthPrePass = true
+                            }
+                            mat.diffuseTexture = tex
+                        })
 
-                    mat.diffuseTexture = tex
                     modelMaterialMap.set(texturePath, mat)
                 }
                 materials.push(modelMaterialMap.get(texturePath))

@@ -94,14 +94,15 @@ export function buildSkybox(texturePath: string, scene: Scene) {
     getEnvTextureFromShaderName(texturePath, (path) => {
         const sides: Sides[] = ['bk', 'dn', 'ft', 'lf', 'rt', 'up']
         for (let side of sides) {
-            const tex = loadTextureAtPath(`${path}_${side}`, scene, () => {
-            })
-            tex.wrapU = Texture.CLAMP_ADDRESSMODE
-            tex.wrapV = Texture.CLAMP_ADDRESSMODE
-            if (!tex) {
-                console.warn(`Failed to load sky texture ${path}_${side}`)
-            }
-            sidesMap.get(side).emissiveTexture = tex
+            loadTextureAtPath(`${path}_${side}`, scene)
+                .then(tex => {
+                    tex.wrapU = Texture.CLAMP_ADDRESSMODE
+                    tex.wrapV = Texture.CLAMP_ADDRESSMODE
+                    if (!tex) {
+                        console.warn(`Failed to load sky texture ${path}_${side}`)
+                    }
+                    sidesMap.get(side).emissiveTexture = tex
+                })
         }
     })
 }
