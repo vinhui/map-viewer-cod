@@ -175,7 +175,7 @@ async function start() {
                 if (modelFiles.length > 0) {
                     const file = modelFiles[0]
                     bjsLoadXModel(file, scene).then(x => {
-                        if (x.root) {
+                        if (x?.root) {
                             x.root.parent = xmodelsRoot
                             x.root.position = inst.bjsNode.absolutePosition
                             x.root.rotationQuaternion = inst.bjsNode.absoluteRotationQuaternion
