@@ -162,9 +162,10 @@ alpha*=opacityMap.a*vOpacityInfos.y;
         entityCreatedCallback: (inst: EntityInstance) => {
             const origin = transformPoint(inst.entity.origin)
 
-            if (inst.entity.className.includes('_spawn') && !inst.entity.model) {
+            const className = inst.entity.className
+            if (className.includes('_spawn') && !inst.entity.model) {
                 spawns.push(inst)
-            } else if (inst.entity.className === 'light') {
+            } else if (className === 'light') {
                 const light = new PointLight('PointLight', origin, scene)
                 light.parent = lightRoot
                 const c = inst.entity.map.get('_color')
@@ -180,31 +181,38 @@ alpha*=opacityMap.a*vOpacityInfos.y;
                 } else {
                     light.range = 10
                 }
-            } else if (inst.entity.className === 'misc_model') {
+            } else if (className === 'misc_model' || className === 'script_model') {
                 const modelName = inst.entity.model
+                if (!modelName) {
+                    return
+                }
                 const modelFiles = FakeFileSystem.FindFiles(modelName, null, false)
                 if (modelFiles.length > 0) {
                     const file = modelFiles[0]
-                    bjsLoadXModel(file, scene).then(x => {
-                        if (x?.root) {
-                            x.root.parent = xmodelsRoot
-                            x.root.position = inst.bjsNode.absolutePosition
-                            x.root.rotationQuaternion = inst.bjsNode.absoluteRotationQuaternion
-                            let scale = inst.entity.getFloat('modelscale', 1)
-                            if (isNaN(scale)) {
-                                scale = 1
-                            }
-                            x.root.scaling.scaleInPlace(scale)
-                            x.root.metadata = inst.bjsNode.metadata
+                    bjsLoadXModel(file, scene)
+                        .then(x => {
+                            if (x?.root) {
+                                x.root.parent = xmodelsRoot
+                                x.root.position = inst.bjsNode.absolutePosition
+                                x.root.rotationQuaternion = inst.bjsNode.absoluteRotationQuaternion
+                                let scale = inst.entity.getFloat('modelscale', 1)
+                                if (isNaN(scale)) {
+                                    scale = 1
+                                }
+                                x.root.scaling.scaleInPlace(scale)
+                                x.root.metadata = inst.bjsNode.metadata
 
-                            if (x.collisionMesh) {
-                                new PhysicsAggregate(x.root, PhysicsShapeType.MESH, {
-                                    mesh: x.collisionMesh,
-                                    mass: 0,
-                                })
+                                if (x.collisionMesh) {
+                                    new PhysicsAggregate(x.root, PhysicsShapeType.MESH, {
+                                        mesh: x.collisionMesh,
+                                        mass: 0,
+                                    })
+                                }
                             }
-                        }
-                    })
+                        })
+                        .catch(e => {
+                            console.error('Failed to load xmodel', file, e)
+                        })
                 } else {
                     console.error('Could not find model file', modelName)
                 }
