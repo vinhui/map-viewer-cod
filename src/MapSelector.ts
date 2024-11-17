@@ -64,7 +64,7 @@ export class MapSelector {
             itemElem.appendChild(nameElem)
             this.itemsContainer.appendChild(itemElem)
             this.searchItems.push({
-                text: `${prettyName} ${map.map}`,
+                text: `${prettyName} ${map.map}`.toLowerCase(),
                 elem: itemElem,
             })
         }
@@ -117,8 +117,9 @@ export class MapSelector {
         }
 
         const updateSearchResults = debounce(() => {
+            const searchString = search.value.toLowerCase()
             for (const item of this.searchItems) {
-                const match = item.text.includes(search.value.toLowerCase())
+                const match = item.text.includes(searchString)
                 item.elem.style.display = match ? 'flex' : 'none'
             }
         }, 500)
