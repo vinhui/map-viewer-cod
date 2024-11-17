@@ -8,6 +8,7 @@ export class MapSelector {
     private itemsContainer: HTMLElement
     private loadingContainer: HTMLElement
     private loadingTextElement: HTMLElement
+    private searchInput: HTMLInputElement
 
     private searchItems: { text: string, elem: HTMLElement }[] = []
 
@@ -45,6 +46,7 @@ export class MapSelector {
             this.areMapsIndexed = true
             this.loadingContainer.remove()
             this.createItemsHtml()
+            this.searchInput.disabled = false
         }
     }
 
@@ -94,6 +96,8 @@ export class MapSelector {
 
         const search = document.createElement('input')
         search.placeholder = 'Search'
+        search.disabled = true
+        this.searchInput = search
         container.appendChild(search)
 
         this.loadingContainer = document.createElement('div')
@@ -122,7 +126,7 @@ export class MapSelector {
                 const match = item.text.includes(searchString)
                 item.elem.style.display = match ? 'flex' : 'none'
             }
-        }, 500)
+        }, 300)
 
         search.addEventListener('keydown', () => updateSearchResults())
 
