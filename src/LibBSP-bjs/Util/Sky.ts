@@ -41,22 +41,25 @@ export function buildSkybox(texturePath: string, scene: Scene) {
     root.infiniteDistance = true
     const left = MeshBuilder.CreatePlane('left', {size: size}, scene)
     left.parent = root
-    left.position.x -= size / 2
-    left.rotation.y = -Math.PI / 2
+    left.position.x += size / 2
+    left.rotation.y = Math.PI / 2
+    left.rotation.z = Math.PI
     const matLeft = new StandardMaterial('left_' + texturePath, scene)
     matLeft.disableLighting = true
     left.material = matLeft
 
     const right = MeshBuilder.CreatePlane('right', {size: size}, scene)
     right.parent = root
-    right.position.x += size / 2
-    right.rotation.y = Math.PI / 2
+    right.position.x -= size / 2
+    right.rotation.y = -Math.PI / 2
+    right.rotation.z = Math.PI
     const matRight = matLeft.clone('right_' + texturePath)
     right.material = matRight
 
     const front = MeshBuilder.CreatePlane('front', {size: size}, scene)
     front.parent = root
     front.position.z += size / 2
+    front.rotation.z = Math.PI
     const matFront = matLeft.clone('front_' + texturePath)
     front.material = matFront
 
@@ -64,6 +67,7 @@ export function buildSkybox(texturePath: string, scene: Scene) {
     back.parent = root
     back.position.z -= size / 2
     back.rotation.y = Math.PI
+    back.rotation.z = Math.PI
     const matBack = matLeft.clone('back_' + texturePath)
     back.material = matBack
 
