@@ -1,38 +1,8 @@
 import {MeshBuilder, Scene, StandardMaterial, Texture, TransformNode} from '@babylonjs/core'
-import {FakeFileSystem} from 'libbsp-js'
-import {loadTextureAtPath} from './texture'
+import {findTextureFromShader, loadTextureAtPath} from './texture'
 
-function getEnvTextureFromShaderName(texturePath: string, callback: (file: string) => void) {
-    const scriptFiles = FakeFileSystem.FindFiles('scripts/', /\.shader$/i, false)
-    FakeFileSystem.DownloadFiles(scriptFiles)
-        .then(() => {
-            for (let scriptFile of scriptFiles) {
-                if (!scriptFile.text) {
-                    continue
-                }
-                const lines = scriptFile.text.split('\n')
-                let shaderMatch = false
-                for (let line of lines) {
-                    line = line.trim()
-                    if (line === texturePath) {
-                        shaderMatch = true
-                        continue
-                    }
-                    if (shaderMatch) {
-                        if (line.startsWith('skyParms')) {
-                            const split = line.split(' ')
-                            const textureFile = split[1]
-                            callback(textureFile)
-                            return
-                        }
-                        if (line.includes('}')) {
-                            return
-                        }
-                    }
-                }
-            }
-            console.warn(`Failed to find skybox texture for shader ${texturePath}`)
-        })
+async function getEnvTextureFromShaderName(texturePath: string) {
+    return findTextureFromShader(texturePath, 'skyParms')
 }
 
 export function buildSkybox(texturePath: string, scene: Scene) {
@@ -95,16 +65,17 @@ export function buildSkybox(texturePath: string, scene: Scene) {
     sidesMap.set('dn', matBottom)
     sidesMap.set('up', matTop)
 
-    getEnvTextureFromShaderName(texturePath, (path) => {
+    getEnvTextureFromShaderName(texturePath).then((path) => {
         const sides: Sides[] = ['bk', 'dn', 'ft', 'lf', 'rt', 'up']
         for (let side of sides) {
             loadTextureAtPath(`${path}_${side}`, scene)
                 .then(tex => {
-                    tex.wrapU = Texture.CLAMP_ADDRESSMODE
-                    tex.wrapV = Texture.CLAMP_ADDRESSMODE
                     if (!tex) {
                         console.warn(`Failed to load sky texture ${path}_${side}`)
+                        return
                     }
+                    tex.wrapU = Texture.CLAMP_ADDRESSMODE
+                    tex.wrapV = Texture.CLAMP_ADDRESSMODE
                     sidesMap.get(side).emissiveTexture = tex
                 })
         }

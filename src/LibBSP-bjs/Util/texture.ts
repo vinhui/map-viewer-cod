@@ -1,9 +1,63 @@
-import {FakeFileSystem} from 'libbsp-js'
-import {BaseTexture, RawTexture, Scene, Texture} from '@babylonjs/core'
+import {FakeFileSystem, File} from 'libbsp-js'
+import {BaseTexture, Engine, RawTexture, Scene, Texture} from '@babylonjs/core'
 import {doesDdsHaveAlpha} from '../../utils/dds'
 import {loadDDSFromMemory} from './dds'
+import TgaLoader from 'tga-js'
 
-function getTextureFromBuffer(extension: string, arrayBuffer: ArrayBuffer, path: string, scene: Scene): Promise<BaseTexture> {
+let shadersLoadPromise: Promise<(File | null)[]>
+let scriptFiles: File[]
+
+export async function findTextureFromShader(texturePath: string, propertyName: string | string[]) {
+    if (!scriptFiles) {
+        if (shadersLoadPromise) {
+            await shadersLoadPromise
+        } else {
+            const files = FakeFileSystem.FindFiles('scripts/', /\.shader$/i, false)
+            shadersLoadPromise = FakeFileSystem.DownloadFiles(files)
+            await shadersLoadPromise
+            scriptFiles = files
+            shadersLoadPromise = null
+        }
+    }
+
+    for (let scriptFile of scriptFiles) {
+        if (!scriptFile.text) {
+            continue
+        }
+
+        const lines = scriptFile.text.split('\n')
+        let shaderMatch = false
+        for (let line of lines) {
+            line = line.trim()
+            if (line === texturePath) {
+                shaderMatch = true
+                continue
+            }
+            if (shaderMatch) {
+                if (Array.isArray(propertyName)) {
+                    for (let name of propertyName) {
+                        if (line.startsWith(name)) {
+                            const split = line.split(' ')
+                            return split[1]
+                        }
+                    }
+                } else {
+                    if (line.startsWith(propertyName)) {
+                        const split = line.split(' ')
+                        return split[1]
+                    }
+                }
+                if (line.includes('}')) {
+                    break
+                }
+            }
+        }
+    }
+
+    return null
+}
+
+async function getTextureFromBuffer(extension: string, arrayBuffer: ArrayBuffer, path: string, scene: Scene): Promise<BaseTexture> {
     let tex: BaseTexture
     if (extension === '.ftx') {
         const bytes = new Uint8Array(arrayBuffer)
@@ -11,6 +65,28 @@ function getTextureFromBuffer(extension: string, arrayBuffer: ArrayBuffer, path:
     } else if (extension === '.dds') {
         const bytes = new Uint8Array(arrayBuffer)
         tex = getDdsTexture(bytes, path, scene)
+    } else if (extension === '.tga') {
+        const bytes = new Uint8Array(arrayBuffer)
+        const loader = new TgaLoader()
+        loader.load(bytes)
+        let format: number
+        if (loader.header.pixelDepth === 32) {
+            format = Engine.TEXTUREFORMAT_RGBA
+        } else {
+            format = Engine.TEXTUREFORMAT_RGB
+        }
+
+        tex = new RawTexture(
+            loader.imageData,
+            loader.header.width,
+            loader.header.height,
+            format,
+            scene,
+            true,
+            true,
+        )
+        tex.name = path
+        tex.hasAlpha = loader.header.pixelDepth === 32
     } else {
         return new Promise<BaseTexture>((resolve, reject) => {
             tex = new Texture(
@@ -23,6 +99,10 @@ function getTextureFromBuffer(extension: string, arrayBuffer: ArrayBuffer, path:
                     tex.wrapU = Texture.WRAP_ADDRESSMODE
                     tex.wrapV = Texture.WRAP_ADDRESSMODE
                     tex.updateSamplingMode(Texture.TRILINEAR_SAMPLINGMODE)
+
+                    if (extension === '.tga') {
+                        tex.hasAlpha = true
+                    }
                     resolve(tex)
                 }, // onload
                 null, // onerror
@@ -34,7 +114,6 @@ function getTextureFromBuffer(extension: string, arrayBuffer: ArrayBuffer, path:
                 null, // creationflags
                 null, // forced extension
             )
-
         })
     }
 
@@ -50,6 +129,11 @@ export async function loadTextureAtPath(path: string, scene: Scene): Promise<Bas
     if (FakeFileSystem.hasLoadedIndex) {
         const matches = FakeFileSystem.FindFiles(path, null, false)
         if (matches.length === 0) {
+            // Fallback to checking the shader files
+            const shaderTexPath = await findTextureFromShader(path, 'map')
+            if (shaderTexPath) {
+                return loadTextureAtPath(shaderTexPath, scene)
+            }
             return null
         }
 
@@ -79,6 +163,12 @@ export async function loadTextureAtPath(path: string, scene: Scene): Promise<Bas
 
                 return getTextureFromBuffer(extension, arrayBuffer, path, scene)
             }
+        }
+
+        // Fallback to checking the shader files
+        const shaderTexPath = await findTextureFromShader(path, 'map')
+        if (shaderTexPath) {
+            return loadTextureAtPath(shaderTexPath, scene)
         }
         console.error(`Failed to find texture ${path}`)
     }
