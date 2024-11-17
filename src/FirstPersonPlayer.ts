@@ -1,5 +1,4 @@
 import {
-    ArcRotateCamera,
     HavokPlugin,
     MeshBuilder,
     PhysicsBody,
@@ -11,12 +10,10 @@ import {
     Quaternion,
     Scene,
     ShapeCastResult,
-    Tools,
     TransformNode,
     UniversalCamera,
     Vector2,
     Vector3,
-    Viewport,
 } from '@babylonjs/core'
 import {TempVec3Factory} from './utils/TempObjectFactory'
 import {Clamp as clamp} from '@babylonjs/core/Maths/math.scalar.functions'
@@ -99,25 +96,25 @@ export class FirstPersonPlayer {
         this._camera.minZ = .1
         this._camera.maxZ = 1000
         this._camera.fov = Math.PI / 2
-        const thirdPersonCam = new ArcRotateCamera('camera', Tools.ToRadians(90), Tools.ToRadians(65), 10, Vector3.Zero(), this.scene)
-        thirdPersonCam.setTarget(this._root, true, false, false)
-        thirdPersonCam.allowUpsideDown = false
-        thirdPersonCam.panningSensibility = 0
-        thirdPersonCam.allowUpsideDown = false
-        thirdPersonCam.lowerRadiusLimit = 0
-        thirdPersonCam.upperRadiusLimit = 30
-        thirdPersonCam.upperBetaLimit = Math.PI / 2.2
-        thirdPersonCam.panningSensibility = 0
-        thirdPersonCam.pinchDeltaPercentage = 0.00060
-        thirdPersonCam.wheelPrecision = 20
-        thirdPersonCam.useBouncingBehavior = false
-        thirdPersonCam.useAutoRotationBehavior = false
-        thirdPersonCam.attachControl(this.scene.getEngine().inputElement, true)
-        thirdPersonCam.radius = 10
-        thirdPersonCam.alpha = -1
-        thirdPersonCam.beta = 1
-        thirdPersonCam.viewport = new Viewport(.8, .8, .2, .2)
-        this.scene.activeCameras.push(this._camera, thirdPersonCam)
+        // const thirdPersonCam = new ArcRotateCamera('camera', Tools.ToRadians(90), Tools.ToRadians(65), 10, Vector3.Zero(), this.scene)
+        // thirdPersonCam.setTarget(this._root, true, false, false)
+        // thirdPersonCam.allowUpsideDown = false
+        // thirdPersonCam.panningSensibility = 0
+        // thirdPersonCam.allowUpsideDown = false
+        // thirdPersonCam.lowerRadiusLimit = 0
+        // thirdPersonCam.upperRadiusLimit = 30
+        // thirdPersonCam.upperBetaLimit = Math.PI / 2.2
+        // thirdPersonCam.panningSensibility = 0
+        // thirdPersonCam.pinchDeltaPercentage = 0.00060
+        // thirdPersonCam.wheelPrecision = 20
+        // thirdPersonCam.useBouncingBehavior = false
+        // thirdPersonCam.useAutoRotationBehavior = false
+        // thirdPersonCam.attachControl(this.scene.getEngine().inputElement, true)
+        // thirdPersonCam.radius = 10
+        // thirdPersonCam.alpha = -1
+        // thirdPersonCam.beta = 1
+        // thirdPersonCam.viewport = new Viewport(.8, .8, .2, .2)
+        // this.scene.activeCameras.push(this._camera, thirdPersonCam)
 
         const capsule = new PhysicsShapeCapsule(new Vector3(0, 0 + .5, 0), new Vector3(0, 1.8 - .5, 0), .4, this.scene)
         capsule.material.friction = 1
