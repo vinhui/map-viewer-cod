@@ -90,12 +90,15 @@ export async function bjsLoadXModel(file: File, scene: Scene): Promise<resultTyp
                     const mat = new StandardMaterial(texturePath, scene)
                     mat.specularColor = Color3.Black()
                     mat.customShaderNameResolve = (shaderName, uniforms, uniformBuffers, samplers, defines, attributes, options) => {
-                        if (texturePath.startsWith('foliage_')) {
-                            if (Array.isArray(defines)) {
-                                defines.push('INVERT_OPACITY_TEX')
-                            } else {
-                                defines['INVERT_OPACITY_TEX'] = true
-                                defines.rebuild()
+                        const atSplit = texturePath.split('@')
+                        if (atSplit.length > 1) {
+                            if (atSplit[0].includes('masked') || atSplit[0].includes('foliage')) {
+                                if (Array.isArray(defines)) {
+                                    defines.push('INVERT_OPACITY_TEX')
+                                } else {
+                                    defines['INVERT_OPACITY_TEX'] = true
+                                    defines.rebuild()
+                                }
                             }
                         }
                         return shaderName
@@ -108,12 +111,14 @@ export async function bjsLoadXModel(file: File, scene: Scene): Promise<resultTyp
                                 return
                             }
                             if (tex.hasAlpha) {
-                                mat.useAlphaFromDiffuseTexture = true
-                                mat.needDepthPrePass = true
-                            }
-                            if (texturePath.startsWith('foliage_')) {
                                 mat.opacityTexture = tex
-                                mat.transparencyMode = 1
+                                // mat.transparencyMode = 1
+                            }
+                            const atSplit = texturePath.split('@')
+                            if (atSplit.length > 1) {
+                                if (atSplit[0].includes('masked') || atSplit[0].includes('foliage')) {
+                                    mat.transparencyMode = 1
+                                }
                             }
                             mat.diffuseTexture = tex
                         })
