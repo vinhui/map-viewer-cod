@@ -201,6 +201,9 @@ export class BSPLoader {
             const byteSize = dim * dim * 3
             const byteOffset = byteSize * index
             const bytes = this._bsp.lightmaps.data.slice(byteOffset, byteOffset + byteSize)
+            if (bytes.length === 0) {
+                return
+            }
             const tex = new RawTexture(bytes, 512, 512, Engine.TEXTUREFORMAT_RGB, this.settings.scene, false, false)
             tex.name = `Lightmap${index}`
             tex.coordinatesIndex = 1
