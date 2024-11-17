@@ -85,6 +85,7 @@ export async function bjsLoadXModel(file: File, scene: Scene): Promise<{ root: M
                             }
                             if (texturePath.startsWith('foliage_')) {
                                 mat.opacityTexture = tex
+                                mat.transparencyMode = 1
                             }
                             mat.diffuseTexture = tex
                         })

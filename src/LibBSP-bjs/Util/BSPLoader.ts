@@ -171,8 +171,9 @@ export class BSPLoader {
                 material.diffuseTexture = tex
 
                 if (tex.hasAlpha) {
-                    material.useAlphaFromDiffuseTexture = true
+                    // material.useAlphaFromDiffuseTexture = true
                     material.needDepthPrePass = true
+                    material.opacityTexture = tex
                 }
             })
 

@@ -3,6 +3,49 @@ import {BaseTexture, RawTexture, Scene, Texture} from '@babylonjs/core'
 import {doesDdsHaveAlpha} from '../../utils/dds'
 import {loadDDSFromMemory} from './dds'
 
+function getTextureFromBuffer(extension: string, arrayBuffer: ArrayBuffer, path: string, scene: Scene): Promise<BaseTexture> {
+    let tex: BaseTexture
+    if (extension === '.ftx') {
+        const bytes = new Uint8Array(arrayBuffer)
+        tex = getFtxTexture(bytes, path, scene)
+    } else if (extension === '.dds') {
+        const bytes = new Uint8Array(arrayBuffer)
+        tex = getDdsTexture(bytes, path, scene)
+    } else {
+        return new Promise<BaseTexture>((resolve, reject) => {
+            tex = new Texture(
+                'data:' + path, // url
+                scene, // scene
+                null, // no mipmap or options
+                null, // inverty
+                null, // samplingmode
+                () => {
+                    tex.wrapU = Texture.WRAP_ADDRESSMODE
+                    tex.wrapV = Texture.WRAP_ADDRESSMODE
+                    tex.updateSamplingMode(Texture.TRILINEAR_SAMPLINGMODE)
+                    resolve(tex)
+                }, // onload
+                null, // onerror
+                arrayBuffer, // buffer
+                false, // delete buffer
+                null, // format
+                null, // mimetype
+                null, // loaderoptions
+                null, // creationflags
+                null, // forced extension
+            )
+
+        })
+    }
+
+    tex.wrapU = Texture.WRAP_ADDRESSMODE
+    tex.wrapV = Texture.WRAP_ADDRESSMODE
+    tex.updateSamplingMode(Texture.TRILINEAR_SAMPLINGMODE)
+    return new Promise<BaseTexture>(resolve => {
+        resolve(tex)
+    })
+}
+
 export async function loadTextureAtPath(path: string, scene: Scene): Promise<BaseTexture> {
     if (FakeFileSystem.hasLoadedIndex) {
         const matches = FakeFileSystem.FindFiles(path, null, false)
@@ -19,31 +62,7 @@ export async function loadTextureAtPath(path: string, scene: Scene): Promise<Bas
                     return null
                 }
 
-                if (extension === '.ftx') {
-                    return getFtxTexture(match.bytes, match.originalPath, scene)
-                } else if (extension === '.dds') {
-                    return getDdsTexture(match.bytes, match.originalPath, scene)
-                } else {
-                    const tex = new Texture(
-                        'data:' + match.originalPath, // url
-                        scene, // scene
-                        null, // no mipmap or options
-                        true, // inverty
-                        null, // samplingmode
-                        () => {
-                            tex.updateSamplingMode(Texture.TRILINEAR_SAMPLINGMODE)
-                        }, // onload
-                        null, // onerror
-                        match.bytes.buffer, // buffer
-                        false, // delete buffer
-                        null, // format
-                        null, // mimetype
-                        null, // loaderoptions
-                        null, // creationflags
-                        null, // forced extension
-                    )
-                    return tex
-                }
+                return getTextureFromBuffer(extension, match.bytes.buffer, match.originalPath, scene)
             }
         }
         return null
@@ -58,30 +77,7 @@ export async function loadTextureAtPath(path: string, scene: Scene): Promise<Bas
                 const res = await fetch(url)
                 const arrayBuffer = await res.arrayBuffer()
 
-                if (extension === '.ftx') {
-                    const bytes = new Uint8Array(arrayBuffer)
-                    return getFtxTexture(bytes, path, scene)
-                } else if (extension === '.dds') {
-                    const bytes = new Uint8Array(arrayBuffer)
-                    return getDdsTexture(bytes, path, scene)
-                } else {
-                    return new Texture(
-                        'data:' + path, // url
-                        scene, // scene
-                        null, // no mipmap or options
-                        null, // inverty
-                        null, // samplingmode
-                        null, // onload
-                        null, // onerror
-                        arrayBuffer, // buffer
-                        false, // delete buffer
-                        null, // format
-                        null, // mimetype
-                        null, // loaderoptions
-                        null, // creationflags
-                        null, // forced extension
-                    )
-                }
+                return getTextureFromBuffer(extension, arrayBuffer, path, scene)
             }
         }
         console.error(`Failed to find texture ${path}`)
@@ -124,8 +120,5 @@ export function getDdsTexture(bytes: Uint8Array, name: string, scene: Scene) {
     )
     tex.name = name
     tex.hasAlpha = doesDdsHaveAlpha(bytes)
-    tex.wrapU = Texture.WRAP_ADDRESSMODE
-    tex.wrapV = Texture.WRAP_ADDRESSMODE
-    tex.updateSamplingMode(Texture.TRILINEAR_SAMPLINGMODE)
     return tex
 }
