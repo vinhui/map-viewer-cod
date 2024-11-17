@@ -8,6 +8,7 @@ import {
     HemisphericLight,
     Light,
     MeshBuilder,
+    Node,
     PhysicsAggregate,
     PhysicsRaycastResult,
     PhysicsShapeType,
@@ -57,9 +58,11 @@ window.addEventListener(
     {once: true},
 )
 
-const light1: HemisphericLight = new HemisphericLight('light1', new Vector3(1, 1, 0), scene)
+const lightRoot = new Node('Lights')
+const light1: HemisphericLight = new HemisphericLight('HemiLight', new Vector3(1, 1, 0), scene)
 light1.intensity = 1
 light1.lightmapMode = Light.LIGHTMAP_SHADOWSONLY
+light1.parent = lightRoot
 
 const spawns: EntityInstance[] = []
 const spawnsRoot = new TransformNode('Spawns', scene)
@@ -163,6 +166,7 @@ alpha*=opacityMap.a*vOpacityInfos.y;
                 spawns.push(inst)
             } else if (inst.entity.className === 'light') {
                 const light = new PointLight('PointLight', origin, scene)
+                light.parent = lightRoot
                 const c = inst.entity.map.get('_color')
                 if (c) {
                     const color = c.split(' ').map(parseFloat)
