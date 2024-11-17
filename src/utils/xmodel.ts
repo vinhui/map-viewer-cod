@@ -6,6 +6,7 @@ import {XModelSurfLoader} from '../LibXModel-js/XModelSurf'
 import {FakeFileSystem, File} from 'libbsp-js'
 import {loadTextureAtPath} from '../LibBSP-bjs/Util/texture'
 import {MeshUtils} from '../LibBSP-bjs/Util/MeshUtils'
+import {AssetLoadingState} from './AssetLoadingState'
 
 async function getFileBytes(path: string) {
     const files = FakeFileSystem.FindFiles(path, null, false)
@@ -104,8 +105,10 @@ export async function bjsLoadXModel(file: File, scene: Scene): Promise<resultTyp
                         return shaderName
                     }
 
+                    AssetLoadingState.onStartLoading(texturePath)
                     loadTextureAtPath(`skins/${texturePath}`, scene)
                         .then(tex => {
+                            AssetLoadingState.onLoadingComplete(texturePath)
                             if (!tex) {
                                 console.error(`Failed to load xmodel texture "${texturePath}"`)
                                 return

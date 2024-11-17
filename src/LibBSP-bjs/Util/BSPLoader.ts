@@ -17,6 +17,7 @@ import {BSPExtension} from '../Extensions/BSPExtension'
 import {MeshUtils} from './MeshUtils'
 import {loadTextureAtPath} from './texture'
 import {buildSkybox} from './Sky'
+import {AssetLoadingState} from '../../utils/AssetLoadingState'
 
 export enum MeshCombineOptions {
     None,
@@ -162,8 +163,10 @@ export class BSPLoader {
         if (textureName.toLowerCase().includes('decal@')) {
             material.zOffset = -1
         }
+        AssetLoadingState.onStartLoading(textureName)
         loadTextureAtPath(textureName, this.settings.scene)
             .then(tex => {
+                AssetLoadingState.onLoadingComplete(textureName)
                 if (!tex) {
                     console.warn(`Texture ${textureName} could not be loaded (does the file exist?)`)
                     return

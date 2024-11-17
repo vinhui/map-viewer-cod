@@ -31,6 +31,7 @@ import {MapSelector} from './MapSelector'
 import {parseSoundAliasLine} from './utils/soundalias'
 import {MeshUtils} from './LibBSP-bjs/Util/MeshUtils'
 import {bjsLoadXModel} from './utils/xmodel'
+import {AssetLoadingState} from './utils/AssetLoadingState'
 
 const canvas = document.createElement('canvas')
 canvas.style.width = '100%'
@@ -189,6 +190,7 @@ alpha*=opacityMap.a*vOpacityInfos.y;
                 const modelFiles = FakeFileSystem.FindFiles(modelName, null, false)
                 if (modelFiles.length > 0) {
                     const file = modelFiles[0]
+                    AssetLoadingState.onStartLoading(file.originalPath)
                     bjsLoadXModel(file, scene)
                         .then(x => {
                             if (x?.root) {
@@ -209,6 +211,7 @@ alpha*=opacityMap.a*vOpacityInfos.y;
                                     })
                                 }
                             }
+                            AssetLoadingState.onLoadingComplete(file.originalPath)
                         })
                         .catch(e => {
                             console.error('Failed to load xmodel', file, e)
@@ -220,6 +223,7 @@ alpha*=opacityMap.a*vOpacityInfos.y;
         },
     }
 
+    AssetLoadingState.onStartLoading(map)
     loader.loadBSP()
         .then((root) => {
             for (let childMesh of root.getChildMeshes()) {
@@ -243,8 +247,11 @@ alpha*=opacityMap.a*vOpacityInfos.y;
                 m.material = mat
             }
 
+            AssetLoadingState.onStartLoading('ambient-audio')
             findAmbientSound()
+            AssetLoadingState.onLoadingComplete('ambient-audio')
 
+            AssetLoadingState.onLoadingComplete(map)
             console.log('BSP loaded!')
         })
         .catch(e => {
@@ -294,6 +301,28 @@ inspectorBtn.addEventListener('click', () => {
 })
 
 document.body.appendChild(buttonsContainer)
+
+const loadingContainer = document.createElement('div')
+loadingContainer.id = 'loading-info'
+const loadingHeader = document.createElement('h1')
+loadingHeader.innerText = 'Loading'
+loadingContainer.appendChild(loadingHeader)
+const loadingItems = document.createElement('p')
+loadingContainer.appendChild(loadingItems)
+AssetLoadingState.onChange = () => {
+    if (AssetLoadingState.currentlyLoading.size > 0) {
+        loadingContainer.style.display = 'block'
+    } else {
+        loadingContainer.style.display = 'none'
+    }
+
+    let t = ''
+    for (let a of AssetLoadingState.currentlyLoading) {
+        t += a + '<br />'
+    }
+    loadingItems.innerHTML = t
+}
+document.body.appendChild(loadingContainer)
 
 function teleportToRandomSpawn(tryCount = 0) {
     if (!spawns || spawns.length === 0 || tryCount >= 10) {

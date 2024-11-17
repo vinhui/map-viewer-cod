@@ -1,11 +1,13 @@
 import {MeshBuilder, Scene, StandardMaterial, Texture, TransformNode} from '@babylonjs/core'
 import {findTextureFromShader, loadTextureAtPath} from './texture'
+import {AssetLoadingState} from '../../utils/AssetLoadingState'
 
 async function getEnvTextureFromShaderName(texturePath: string) {
     return findTextureFromShader(texturePath, 'skyParms')
 }
 
 export function buildSkybox(texturePath: string, scene: Scene) {
+    AssetLoadingState.onStartLoading(texturePath)
     const size = 800
     const root = new TransformNode('Skybox ' + texturePath)
     root.infiniteDistance = true
@@ -70,6 +72,7 @@ export function buildSkybox(texturePath: string, scene: Scene) {
         for (let side of sides) {
             loadTextureAtPath(`${path}_${side}`, scene)
                 .then(tex => {
+                    AssetLoadingState.onLoadingComplete(texturePath)
                     if (!tex) {
                         console.warn(`Failed to load sky texture ${path}_${side}`)
                         return
