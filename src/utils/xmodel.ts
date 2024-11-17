@@ -19,10 +19,38 @@ async function getFileBytes(path: string) {
     return file.bytes
 }
 
+type resultType = { root: Mesh, collisionMesh: Mesh | null }
+type callback = (result: resultType) => void
+
+const xmodelLoadingCallbacks = new Map<File, callback[]>()
+const xmodelCache = new Map<File, resultType>()
 const modelMaterialMap = new Map<string, Material>()
 const correctionMatrix = Matrix.Scaling(-MeshUtils.inch2MeterScale, MeshUtils.inch2MeterScale, MeshUtils.inch2MeterScale)
 
-export async function bjsLoadXModel(file: File, scene: Scene): Promise<{ root: Mesh, collisionMesh: Mesh | null }> {
+export async function bjsLoadXModel(file: File, scene: Scene): Promise<resultType> {
+    if (xmodelCache.has(file)) {
+        const cacheResult = xmodelCache.get(file)
+        return {
+            root: cacheResult.root.clone(cacheResult.root.name + ' (clone)'),
+            collisionMesh: cacheResult.collisionMesh?.clone(cacheResult.collisionMesh.name + ' (clone)'),
+        }
+    }
+
+    if (xmodelLoadingCallbacks.has(file)) {
+        let promiseResolve: (value: resultType) => void
+        xmodelLoadingCallbacks.get(file).push((result) => {
+            promiseResolve({
+                root: result.root.clone(result.root.name + ' (clone)'),
+                collisionMesh: result.collisionMesh?.clone(result.collisionMesh.name + ' (clone)'),
+            })
+        })
+        return new Promise(resolve => {
+            promiseResolve = resolve
+        })
+    }
+
+    xmodelLoadingCallbacks.set(file, [])
+
     if (!file.isLoaded) {
         if (!await file.download()) {
             return null
@@ -156,8 +184,16 @@ export async function bjsLoadXModel(file: File, scene: Scene): Promise<{ root: M
     root.rotation.x = -Math.PI / 2
     root.rotation.y += Math.PI / 2
 
-    return {
+    const obj = {
         root: root,
         collisionMesh: collisionMesh,
     }
+
+    const callbacks = xmodelLoadingCallbacks.get(file)
+    for (let callback of callbacks) {
+        callback(obj)
+    }
+
+    xmodelCache.set(file, obj)
+    return obj
 }
