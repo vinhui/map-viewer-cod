@@ -64,29 +64,10 @@ async function getTextureFromBuffer(extension: string, arrayBuffer: ArrayBuffer,
         tex = getFtxTexture(bytes, path, scene)
     } else if (extension === '.dds') {
         const bytes = new Uint8Array(arrayBuffer)
-        tex = getDdsTexture(bytes, path, scene)
+        tex = await getDdsTexture(bytes, path, scene)
     } else if (extension === '.tga') {
         const bytes = new Uint8Array(arrayBuffer)
-        const loader = new TgaLoader()
-        loader.load(bytes)
-        let format: number
-        if (loader.header.pixelDepth === 32) {
-            format = Engine.TEXTUREFORMAT_RGBA
-        } else {
-            format = Engine.TEXTUREFORMAT_RGB
-        }
-
-        tex = new RawTexture(
-            loader.imageData,
-            loader.header.width,
-            loader.header.height,
-            format,
-            scene,
-            true,
-            true,
-        )
-        tex.name = path
-        tex.hasAlpha = loader.header.pixelDepth === 32
+        tex = getTgaTexture(bytes, path, scene)
     } else {
         return new Promise<BaseTexture>((resolve, reject) => {
             tex = new Texture(
@@ -210,5 +191,29 @@ export function getDdsTexture(bytes: Uint8Array, name: string, scene: Scene) {
     )
     tex.name = name
     tex.hasAlpha = doesDdsHaveAlpha(bytes)
+    return tex
+}
+
+function getTgaTexture(bytes: Uint8Array, name: string, scene: Scene) {
+    const loader = new TgaLoader()
+    loader.load(bytes)
+    let format: number
+    if (loader.header.pixelDepth === 32) {
+        format = Engine.TEXTUREFORMAT_RGBA
+    } else {
+        format = Engine.TEXTUREFORMAT_RGB
+    }
+
+    const tex = new RawTexture(
+        loader.imageData,
+        loader.header.width,
+        loader.header.height,
+        format,
+        scene,
+        true,
+        true,
+    )
+    tex.name = name
+    tex.hasAlpha = loader.header.pixelDepth === 32
     return tex
 }
