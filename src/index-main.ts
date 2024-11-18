@@ -259,6 +259,9 @@ alpha*=opacityMap.a*vOpacityInfos.y;
         })
 
     engine.runRenderLoop(() => {
+        if (AssetLoadingState.currentlyLoading.size > 0) {
+            return
+        }
         havok.setTimeStep(1 / 20)
         scene.render()
     })
