@@ -14,6 +14,7 @@ import {
     UniversalCamera,
     Vector2,
     Vector3,
+    VirtualJoystick,
 } from '@babylonjs/core'
 import {TempVec3Factory} from './utils/TempObjectFactory'
 import {Clamp as clamp} from '@babylonjs/core/Maths/math.scalar.functions'
@@ -42,12 +43,25 @@ export class FirstPersonPlayer {
         },
         look: new Vector2(),
     }
+    private leftJoystick?: VirtualJoystick
+    private rightJoystick?: VirtualJoystick
 
     constructor(scene: Scene, havok: HavokPlugin) {
         this.scene = scene
         this.havok = havok
         this.setupRig()
         this.bindEvents()
+
+        if (window.matchMedia('(pointer: coarse)').matches) {
+            this.leftJoystick = new VirtualJoystick(true, {
+                color: 'red',
+                limitToContainer: true,
+            })
+            this.rightJoystick = new VirtualJoystick(false, {
+                limitToContainer: true,
+            })
+            this.rightJoystick.reverseUpDown = true
+        }
     }
 
     private _isGrounded = false
@@ -205,6 +219,15 @@ export class FirstPersonPlayer {
     }
 
     updateLoop() {
+        if (this.leftJoystick && !this.leftJoystick.pressed) {
+            this.leftJoystick.clearPosition()
+            this.leftJoystick.deltaPosition.setAll(0)
+        }
+        if (this.rightJoystick && !this.rightJoystick.pressed) {
+            this.rightJoystick.clearPosition()
+            this.rightJoystick.deltaPosition.setAll(0)
+        }
+
         const shapeLocalResult = new ShapeCastResult()
         const hitWorldResult = new ShapeCastResult()
         this.havok.shapeCast({
@@ -223,6 +246,11 @@ export class FirstPersonPlayer {
         if (this.inputActions.move.down) moveAxis.z -= 1
         if (this.inputActions.move.left) moveAxis.x -= 1
         if (this.inputActions.move.right) moveAxis.x += 1
+
+        if (this.leftJoystick) {
+            moveAxis.x += this.leftJoystick.deltaPosition.x
+            moveAxis.z += this.leftJoystick.deltaPosition.y
+        }
         moveAxis.normalize()
         let speed = this.moveSpeed
         if (this.inputActions.move.sprint) {
@@ -248,8 +276,14 @@ export class FirstPersonPlayer {
         }
         this._root.physicsBody.setLinearVelocity(velocity)
 
-        this._root.addRotation(0, this.inputActions.look.x * (this.scene.deltaTime / 1000) * .25, 0)
-        this._camera.rotation.x += this.inputActions.look.y * (this.scene.deltaTime / 1000) * .15
+        let lookX = this.inputActions.look.x
+        let lookY = this.inputActions.look.y
+        if (this.rightJoystick) {
+            lookX += (this.rightJoystick.deltaPosition.x * 5)
+            lookY += (this.rightJoystick.deltaPosition.y * 5)
+        }
+        this._root.addRotation(0, lookX * (this.scene.deltaTime / 1000) * .25, 0)
+        this._camera.rotation.x += lookY * (this.scene.deltaTime / 1000) * .15
         this._camera.rotation.x = clamp(this._camera.rotation.x, -Math.PI / 2, Math.PI / 2)
         this.inputActions.look.setAll(0)
     }

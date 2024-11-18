@@ -275,6 +275,7 @@ const buttonsContainer = document.createElement('div')
 buttonsContainer.style.position = 'absolute'
 buttonsContainer.style.left = '0'
 buttonsContainer.style.top = '0'
+buttonsContainer.style.zIndex = '10'
 
 const mapSelectorBtn = document.createElement('button')
 mapSelectorBtn.innerText = 'Map Selector'
