@@ -19,7 +19,8 @@ import {TempVec3Factory} from './utils/TempObjectFactory'
 import {Clamp as clamp} from '@babylonjs/core/Maths/math.scalar.functions'
 
 export class FirstPersonPlayer {
-    public moveSpeed: number = 50
+    public moveSpeed: number = 35
+    public sprintMoveSpeed: number = 60
     private readonly scene: Scene
     private readonly havok: HavokPlugin
     private readonly eventHandlers = {
@@ -37,6 +38,7 @@ export class FirstPersonPlayer {
             left: false,
             right: false,
             jump: false,
+            sprint: false,
         },
         look: new Vector2(),
     }
@@ -138,7 +140,7 @@ export class FirstPersonPlayer {
     onKeyDown(e: KeyboardEvent) {
         // e.preventDefault()
         if (e.repeat) return
-        switch (e.key) {
+        switch (e.key.toLowerCase()) {
             case 'w':
                 this.inputActions.move.up = true
                 break
@@ -153,13 +155,17 @@ export class FirstPersonPlayer {
                 break
             case ' ':
                 this.inputActions.move.jump = true
+                break
+            case 'shift':
+                this.inputActions.move.sprint = true
+                break
         }
     }
 
     onKeyUp(e: KeyboardEvent) {
         // e.preventDefault()
         if (e.repeat) return
-        switch (e.key) {
+        switch (e.key.toLowerCase()) {
             case 'w':
                 this.inputActions.move.up = false
                 break
@@ -174,6 +180,9 @@ export class FirstPersonPlayer {
                 break
             case ' ':
                 this.inputActions.move.jump = false
+                break
+            case 'shift':
+                this.inputActions.move.sprint = false
                 break
         }
     }
@@ -215,7 +224,11 @@ export class FirstPersonPlayer {
         if (this.inputActions.move.left) moveAxis.x -= 1
         if (this.inputActions.move.right) moveAxis.x += 1
         moveAxis.normalize()
-        moveAxis.scaleInPlace(this.scene.deltaTime / 1000 * this.moveSpeed)
+        let speed = this.moveSpeed
+        if (this.inputActions.move.sprint) {
+            speed = this.sprintMoveSpeed
+        }
+        moveAxis.scaleInPlace(this.scene.deltaTime / 1000 * speed)
         if (!this._isGrounded) {
             moveAxis.scaleInPlace(.25)
         }
@@ -246,6 +259,7 @@ export class FirstPersonPlayer {
         this.inputActions.move.down = false
         this.inputActions.move.left = false
         this.inputActions.move.right = false
+        this.inputActions.move.sprint = false
     }
 
     public dispose() {
