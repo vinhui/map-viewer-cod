@@ -215,6 +215,7 @@ alpha*=opacityMap.a*vOpacityInfos.y;
                             AssetLoadingState.onLoadingComplete(file.originalPath)
                         })
                         .catch(e => {
+                            AssetLoadingState.onLoadingComplete(file.originalPath)
                             console.error('Failed to load xmodel', file, e)
                         })
                 } else {
