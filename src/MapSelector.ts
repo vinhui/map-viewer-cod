@@ -9,6 +9,7 @@ export class MapSelector {
     private loadingContainer: HTMLElement
     private loadingTextElement: HTMLElement
     private searchInput: HTMLInputElement
+    private randomButtom: HTMLButtonElement
 
     private searchItems: { text: string, elem: HTMLElement }[] = []
 
@@ -47,6 +48,7 @@ export class MapSelector {
             this.loadingContainer.remove()
             this.createItemsHtml()
             this.searchInput.disabled = false
+            this.randomButtom.disabled = false
         }
     }
 
@@ -99,6 +101,16 @@ export class MapSelector {
         search.disabled = true
         this.searchInput = search
         container.appendChild(search)
+
+        const random = document.createElement('button')
+        random.innerText = 'Random'
+        random.disabled = true
+        this.randomButtom = random
+        random.addEventListener('click', () => {
+            const randItem = this.searchItems[Math.floor(Math.random() * this.searchItems.length)]
+            randItem.elem.click()
+        })
+        container.appendChild(random)
 
         this.loadingContainer = document.createElement('div')
         const loadingHeader = document.createElement('h2')
