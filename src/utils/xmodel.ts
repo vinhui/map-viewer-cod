@@ -115,7 +115,10 @@ export async function bjsLoadXModel(file: File, scene: Scene): Promise<resultTyp
                             }
                             if (tex.hasAlpha) {
                                 mat.opacityTexture = tex
-                                // mat.transparencyMode = 1
+                                mat.transparencyMode = 2
+                                mat.backFaceCulling = false
+                                // mat.needDepthPrePass = true
+                                // mat.disableDepthWrite = true
                             }
                             const atSplit = texturePath.split('@')
                             if (atSplit.length > 1) {

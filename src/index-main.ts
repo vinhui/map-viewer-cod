@@ -41,6 +41,7 @@ document.body.appendChild(canvas)
 
 const engine = new Engine(canvas, true)
 const scene = new Scene(engine)
+scene.useOrderIndependentTransparency = true
 const gravityVector = new Vector3(0, -9.81, 0)
 Engine.audioEngine.useCustomUnlockedButton = true
 

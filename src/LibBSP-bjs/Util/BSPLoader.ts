@@ -175,7 +175,10 @@ export class BSPLoader {
 
                 if (tex.hasAlpha) {
                     material.opacityTexture = tex
-                    // material.transparencyMode = 1
+                    material.transparencyMode = 2
+                    material.backFaceCulling = false
+                    // material.needDepthPrePass = true
+                    // material.disableDepthWrite = true
                 }
             })
 
