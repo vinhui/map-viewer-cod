@@ -1,12 +1,9 @@
 import {Color3, Material, Matrix, Mesh, Scene, StandardMaterial, VertexData} from '@babylonjs/core'
-import {XModelLoader} from '../LibXModel-js/XModel'
-import {GameVersion} from '../LibXModel-js/GameVersion'
-import {XModelPartLoader} from '../LibXModel-js/XModelPart'
-import {XModelSurfLoader} from '../LibXModel-js/XModelSurf'
 import {FakeFileSystem, File} from 'libbsp-js'
 import {loadTextureAtPath} from '../LibBSP-bjs/Util/texture'
 import {MeshUtils} from '../LibBSP-bjs/Util/MeshUtils'
 import {AssetLoadingState} from './AssetLoadingState'
+import {GameVersion, XModelLoader, XModelPartLoader, XModelSurfLoader} from 'libxmodel-js'
 
 async function getFileBytes(path: string) {
     const files = FakeFileSystem.FindFiles(path, null, false)

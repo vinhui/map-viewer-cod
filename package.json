@@ -26,6 +26,7 @@
     "@types/pako": "^2.0.3",
     "disposablestack": "^1.1.6",
     "libbsp-js": "^0.9.2",
+    "libxmodel-js": "^0.8.0",
     "tga-js": "^1.1.1"
   }
 }
