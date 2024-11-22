@@ -22,7 +22,6 @@ import {
     Vector3,
     VertexBuffer,
 } from '@babylonjs/core'
-import '@babylonjs/inspector'
 import {BSPLoader, EntityInstance, MeshCombineOptions} from './LibBSP-bjs/Util/BSPLoader'
 import {FakeFileSystem} from 'libbsp-js'
 import HavokPhysics from '@babylonjs/havok'
@@ -300,8 +299,15 @@ randomSpawnBtn.addEventListener('click', () => {
 const inspectorBtn = document.createElement('button')
 inspectorBtn.innerText = 'Open Inspector'
 buttonsContainer.appendChild(inspectorBtn)
-inspectorBtn.addEventListener('click', () => {
-    scene.debugLayer.show({
+let inspectorImported = false
+inspectorBtn.addEventListener('click', async () => {
+    if (!inspectorImported) {
+        inspectorBtn.disabled = true
+        await import('@babylonjs/inspector')
+        inspectorImported = true
+        inspectorBtn.disabled = false
+    }
+    await scene.debugLayer.show({
         embedMode: true,
     })
 })
