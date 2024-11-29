@@ -16,7 +16,7 @@ import {
 } from '@babylonjs/core'
 import '@babylonjs/inspector'
 import HavokPhysics from '@babylonjs/havok'
-import {FirstPersonPlayer} from './FirstPersonPlayer'
+import {FirstPersonPlayer} from '../FirstPersonPlayer'
 
 const canvas = document.createElement('canvas')
 canvas.style.width = '100%'

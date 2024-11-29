@@ -1,7 +1,6 @@
+import './checkerboard.css'
 import {FakeFileSystem} from 'libbsp-js'
-import {loadDDSFromMemory} from './LibBSP-bjs/Util/dds'
-
-document.body.style.background = '#000'
+import {loadDDSFromMemory} from '../LibBSP-bjs/Util/dds'
 
 async function start() {
     FakeFileSystem.baseUrl = 'cod'
@@ -34,7 +33,8 @@ async function start() {
                 const imageData = new ImageData(new Uint8ClampedArray(result.pixels.slice(0, result.header.width * result.header.height * 4)), result.header.width, result.header.height)
                 ctx.drawImage(await createImageBitmap(imageData, {imageOrientation: 'flipY'}), 0, 0)
                 canvas.style.maxWidth = '10%'
-                canvas.style.maxHeight = '50%'
+                canvas.style.maxHeight = '50vh'
+                canvas.title = `${file.originalPath}\n${canvas.width}x${canvas.height}`
 
                 document.body.appendChild(canvas)
                 resolve(null)
@@ -43,7 +43,7 @@ async function start() {
 
         await Promise.all(promises)
         window.scrollTo(0, document.body.scrollHeight)
-        console.log(`Current avg time: ${totalTime / n}ms`, n)
+        console.log(`Current avg time: ${totalTime / n}ms`, n, (n / files.length * 100).toFixed(1) + '%')
     }
 }
 

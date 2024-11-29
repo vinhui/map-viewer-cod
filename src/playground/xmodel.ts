@@ -3,7 +3,7 @@ import './styles/main.css'
 import {ArcRotateCamera, Engine, HavokPlugin, MeshBuilder, Scene, Vector3} from '@babylonjs/core'
 import '@babylonjs/inspector'
 import {FakeFileSystem} from 'libbsp-js'
-import {bjsLoadXModel} from './utils/xmodel'
+import {bjsLoadXModel} from '../utils/xmodel'
 import HavokPhysics from '@babylonjs/havok'
 
 async function main() {
